@@ -19,7 +19,10 @@ import static com.google.common.truth.Truth.assertThat;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeTrue;
 
+import com.google.testing.junit.testparameterinjector.TestParameter;
+import com.google.testing.junit.testparameterinjector.TestParameterInjector;
 import com.squareup.moshi.FromJson;
 import com.squareup.moshi.JsonDataException;
 import com.squareup.moshi.JsonQualifier;
@@ -27,25 +30,30 @@ import com.squareup.moshi.JsonReader;
 import com.squareup.moshi.JsonWriter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.ToJson;
+import java.io.EOFException;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicReference;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
 import okio.Buffer;
 import okio.ByteString;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 
+@RunWith(TestParameterInjector.class)
 public final class MoshiConverterFactoryTest {
   @Retention(RUNTIME)
   @JsonQualifier
@@ -71,10 +79,10 @@ public final class MoshiConverterFactoryTest {
     }
   }
 
-  static final class Value {
+  static final class ErroringValue {
     final String theName;
 
-    Value(String theName) {
+    ErroringValue(String theName) {
       this.theName = theName;
     }
   }
@@ -120,11 +128,16 @@ public final class MoshiConverterFactoryTest {
     }
 
     @FromJson
-    public Value readWithoutEndingObject(JsonReader reader) throws IOException {
+    public ErroringValue readWithoutEndingObject(JsonReader reader) throws IOException {
       reader.beginObject();
       reader.skipName();
       String theName = reader.nextString();
-      return new Value(theName);
+      return new ErroringValue(theName);
+    }
+
+    @ToJson
+    public void write(JsonWriter writer, ErroringValue value) throws IOException {
+      throw new EOFException("oops!");
     }
   }
 
@@ -136,7 +149,10 @@ public final class MoshiConverterFactoryTest {
     Call<AnInterface> anInterface(@Body AnInterface impl);
 
     @GET("/")
-    Call<Value> value();
+    Call<ErroringValue> readErroringValue();
+
+    @POST("/")
+    Call<Void> writeErroringValue(@Body ErroringValue value);
 
     @POST("/")
     @Qualifier
@@ -146,13 +162,15 @@ public final class MoshiConverterFactoryTest {
 
   @Rule public final MockWebServer server = new MockWebServer();
 
-  private Service service;
-  private Service serviceLenient;
-  private Service serviceNulls;
-  private Service serviceFailOnUnknown;
+  private final Service service;
+  private final Service serviceLenient;
+  private final Service serviceNulls;
+  private final Service serviceFailOnUnknown;
+  private final boolean streaming;
 
-  @Before
-  public void setUp() {
+  public MoshiConverterFactoryTest(@TestParameter boolean streaming) {
+    this.streaming = streaming;
+
     Moshi moshi =
         new Moshi.Builder()
             .add(
@@ -166,7 +184,12 @@ public final class MoshiConverterFactoryTest {
                 })
             .add(new Adapters())
             .build();
+
     MoshiConverterFactory factory = MoshiConverterFactory.create(moshi);
+    if (streaming) {
+      factory = factory.withStreaming();
+    }
+
     MoshiConverterFactory factoryLenient = factory.asLenient();
     MoshiConverterFactory factoryNulls = factory.withNullSerialization();
     MoshiConverterFactory factoryFailOnUnknown = factory.failOnUnknown();
@@ -306,12 +329,42 @@ public final class MoshiConverterFactoryTest {
   public void requireFullResponseDocumentConsumption() throws Exception {
     server.enqueue(new MockResponse().setBody("{\"theName\":\"value\"}"));
 
-    Call<Value> call = service.value();
+    Call<ErroringValue> call = service.readErroringValue();
     try {
       call.execute();
       fail();
     } catch (JsonDataException e) {
       assertThat(e).hasMessageThat().isEqualTo("JSON document was not fully consumed.");
     }
+  }
+
+  @Test
+  public void serializeIsStreamed() throws InterruptedException {
+    assumeTrue(streaming);
+
+    Call<Void> call = service.writeErroringValue(new ErroringValue("hi"));
+
+    final AtomicReference<Throwable> throwableRef = new AtomicReference<>();
+    final CountDownLatch latch = new CountDownLatch(1);
+
+    // If streaming were broken, the call to enqueue would throw the exception synchronously.
+    call.enqueue(
+        new Callback<Void>() {
+          @Override
+          public void onResponse(Call<Void> call, Response<Void> response) {
+            latch.countDown();
+          }
+
+          @Override
+          public void onFailure(Call<Void> call, Throwable t) {
+            throwableRef.set(t);
+            latch.countDown();
+          }
+        });
+    latch.await();
+
+    Throwable throwable = throwableRef.get();
+    assertThat(throwable).isInstanceOf(EOFException.class);
+    assertThat(throwable).hasMessageThat().isEqualTo("oops!");
   }
 }

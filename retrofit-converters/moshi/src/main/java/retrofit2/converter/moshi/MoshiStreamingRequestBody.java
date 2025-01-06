@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Square, Inc.
+ * Copyright (C) 2025 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,34 +15,30 @@
  */
 package retrofit2.converter.moshi;
 
+import static retrofit2.converter.moshi.MoshiRequestBodyConverter.MEDIA_TYPE;
+
 import com.squareup.moshi.JsonAdapter;
-import com.squareup.moshi.JsonWriter;
 import java.io.IOException;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
-import okio.Buffer;
-import retrofit2.Converter;
+import okio.BufferedSink;
 
-final class MoshiRequestBodyConverter<T> implements Converter<T, RequestBody> {
-  static final MediaType MEDIA_TYPE = MediaType.get("application/json; charset=UTF-8");
-
+final class MoshiStreamingRequestBody<T> extends RequestBody {
   private final JsonAdapter<T> adapter;
-  private final boolean streaming;
+  private final T value;
 
-  MoshiRequestBodyConverter(JsonAdapter<T> adapter, boolean streaming) {
+  public MoshiStreamingRequestBody(JsonAdapter<T> adapter, T value) {
     this.adapter = adapter;
-    this.streaming = streaming;
+    this.value = value;
   }
 
   @Override
-  public RequestBody convert(T value) throws IOException {
-    if (streaming) {
-      return new MoshiStreamingRequestBody<>(adapter, value);
-    }
+  public MediaType contentType() {
+    return MEDIA_TYPE;
+  }
 
-    Buffer buffer = new Buffer();
-    JsonWriter writer = JsonWriter.of(buffer);
-    adapter.toJson(writer, value);
-    return RequestBody.create(MEDIA_TYPE, buffer.readByteString());
+  @Override
+  public void writeTo(BufferedSink sink) throws IOException {
+    adapter.toJson(sink, value);
   }
 }

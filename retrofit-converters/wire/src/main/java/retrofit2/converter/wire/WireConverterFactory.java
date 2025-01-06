@@ -35,26 +35,26 @@ public final class WireConverterFactory extends Converter.Factory {
   /**
    * Create an instance which serializes request messages to bytes eagerly on the caller thread
    * when either {@link Call#execute()} or {@link Call#enqueue} is called. Response bytes are
-   * always converted to message instances on one of OKHttp's background threads.
+   * always converted to message instances on one of OkHttp's background threads.
    */
   public static WireConverterFactory create() {
     return new WireConverterFactory(false);
-  }
-
-  /**
-   * Create an instance which streams serialization of request messages to bytes on the HTTP thread
-   * This is either the calling thread for {@link Call#execute()}, or one of OKHttp's background
-   * threads for {@link Call#enqueue}. Response bytes are always converted to message instances on
-   * one of OKHttp's background threads.
-   */
-  public static WireConverterFactory createStreaming() {
-    return new WireConverterFactory(true);
   }
 
   private final boolean streaming;
 
   private WireConverterFactory(boolean streaming) {
     this.streaming = streaming;
+  }
+
+  /**
+   * Return a new factory which streams serialization of request messages to bytes on the HTTP thread
+   * This is either the calling thread for {@link Call#execute()}, or one of OkHttp's background
+   * threads for {@link Call#enqueue}. Response bytes are always converted to message instances on
+   * one of OkHttp's background threads.
+   */
+  public WireConverterFactory withStreaming() {
+    return new WireConverterFactory(true);
   }
 
   @Override
