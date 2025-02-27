@@ -17,7 +17,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: 21
+          java-version-file: .github/workflows/.java-version
 
       - name: Build and publish artifacts
         env:

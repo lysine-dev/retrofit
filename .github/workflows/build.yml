@@ -20,7 +20,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: 21
+          java-version-file: .github/workflows/.java-version
 
       - uses: gradle/actions/setup-gradle@v4
 
@@ -51,7 +51,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: 21
+          java-version-file: .github/workflows/.java-version
 
       - uses: gradle/actions/setup-gradle@v4
 
@@ -71,7 +71,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: 21
+          java-version-file: .github/workflows/.java-version
 
       - uses: gradle/actions/setup-gradle@v4
 
@@ -91,7 +91,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: 21
+          java-version-file: .github/workflows/.java-version
 
       - uses: gradle/actions/setup-gradle@v4
 
