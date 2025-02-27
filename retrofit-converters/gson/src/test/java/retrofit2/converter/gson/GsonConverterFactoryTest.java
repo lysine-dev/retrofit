@@ -66,6 +66,7 @@ public final class GsonConverterFactoryTest {
           }
 
           @Override
+          @SuppressWarnings("CheckReturnValue")
           public Value read(JsonReader reader) throws IOException {
             reader.beginObject();
             reader.nextName();
