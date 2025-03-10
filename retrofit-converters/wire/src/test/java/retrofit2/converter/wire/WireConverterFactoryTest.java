@@ -69,11 +69,11 @@ public final class WireConverterFactoryTest {
   public WireConverterFactoryTest(@TestParameter boolean streaming) {
     this.streaming = streaming;
 
+    WireConverterFactory factory = WireConverterFactory.create();
     Retrofit retrofit =
         new Retrofit.Builder()
             .baseUrl(server.url("/"))
-            .addConverterFactory(
-                streaming ? WireConverterFactory.createStreaming() : WireConverterFactory.create())
+            .addConverterFactory(streaming ? factory.withStreaming() : factory)
             .build();
     service = retrofit.create(Service.class);
   }

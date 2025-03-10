@@ -27,6 +27,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
+import retrofit2.Call;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
 
@@ -52,35 +53,51 @@ public final class MoshiConverterFactory extends Converter.Factory {
   @SuppressWarnings("ConstantConditions") // Guarding public API nullability.
   public static MoshiConverterFactory create(Moshi moshi) {
     if (moshi == null) throw new NullPointerException("moshi == null");
-    return new MoshiConverterFactory(moshi, false, false, false);
+    return new MoshiConverterFactory(moshi, false, false, false, false);
   }
 
   private final Moshi moshi;
   private final boolean lenient;
   private final boolean failOnUnknown;
   private final boolean serializeNulls;
+  private final boolean streaming;
 
   private MoshiConverterFactory(
-      Moshi moshi, boolean lenient, boolean failOnUnknown, boolean serializeNulls) {
+      Moshi moshi,
+      boolean lenient,
+      boolean failOnUnknown,
+      boolean serializeNulls,
+      boolean streaming) {
     this.moshi = moshi;
     this.lenient = lenient;
     this.failOnUnknown = failOnUnknown;
     this.serializeNulls = serializeNulls;
+    this.streaming = streaming;
   }
 
   /** Return a new factory which uses {@linkplain JsonAdapter#lenient() lenient} adapters. */
   public MoshiConverterFactory asLenient() {
-    return new MoshiConverterFactory(moshi, true, failOnUnknown, serializeNulls);
+    return new MoshiConverterFactory(moshi, true, failOnUnknown, serializeNulls, streaming);
   }
 
   /** Return a new factory which uses {@link JsonAdapter#failOnUnknown()} adapters. */
   public MoshiConverterFactory failOnUnknown() {
-    return new MoshiConverterFactory(moshi, lenient, true, serializeNulls);
+    return new MoshiConverterFactory(moshi, lenient, true, serializeNulls, streaming);
   }
 
   /** Return a new factory which includes null values into the serialized JSON. */
   public MoshiConverterFactory withNullSerialization() {
-    return new MoshiConverterFactory(moshi, lenient, failOnUnknown, true);
+    return new MoshiConverterFactory(moshi, lenient, failOnUnknown, true, streaming);
+  }
+
+  /**
+   * Return a new factory which streams serialization of request messages to bytes on the HTTP thread
+   * This is either the calling thread for {@link Call#execute()}, or one of OkHttp's background
+   * threads for {@link Call#enqueue}. Response bytes are always converted to message instances on
+   * one of OkHttp's background threads.
+   */
+  public MoshiConverterFactory withStreaming() {
+    return new MoshiConverterFactory(moshi, lenient, failOnUnknown, serializeNulls, true);
   }
 
   @Override
@@ -115,7 +132,7 @@ public final class MoshiConverterFactory extends Converter.Factory {
     if (serializeNulls) {
       adapter = adapter.serializeNulls();
     }
-    return new MoshiRequestBodyConverter<>(adapter);
+    return new MoshiRequestBodyConverter<>(adapter, streaming);
   }
 
   private static Set<? extends Annotation> jsonAnnotations(Annotation[] annotations) {
