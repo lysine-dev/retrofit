@@ -13,3 +13,4 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         reporter: 'github-pr-check'
         tool_name: 'testtool'
+        filter_mode: 'diff_context'
