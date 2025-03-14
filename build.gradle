@@ -17,6 +17,10 @@ buildscript {
     google()
     gradlePluginPortal()
   }
+  
+}
+plugins {
+    id 'checkstyle'
 }
 
 subprojects {
@@ -40,6 +44,7 @@ subprojects {
   }
 
   apply plugin: 'net.ltgt.errorprone'
+  
 
   dependencies {
     errorproneJavac libs.errorproneJavac
