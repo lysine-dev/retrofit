@@ -38,6 +38,11 @@ abstract class ServiceMethod<T> {
 
     return HttpServiceMethod.parseAnnotations(retrofit, method, requestFactory);
   }
+abstract class ServiceMethod<T>{
+        protected String getMethodName()
+        return method.getName();
+  }
+   
 
   abstract @Nullable T invoke(Object instance, Object[] args);
 }
