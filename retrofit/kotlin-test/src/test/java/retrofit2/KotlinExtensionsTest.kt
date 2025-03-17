@@ -32,7 +32,7 @@ class KotlinExtensionsTest {
 
     assertNotNull(retrofit.create<Empty>())
   }
-}
+
 fun main(args: Array<String>) {
 
     val first: Int = 10
@@ -41,4 +41,5 @@ fun main(args: Array<String>) {
     val sum = first + second
 
     println("The sum is: $sum")
+}
 }
