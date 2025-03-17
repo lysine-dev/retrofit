@@ -1,0 +1,20 @@
+name: reviewdog
+on: [ pull_request ]
+
+jobs:
+  detekt:
+    name: Check Code Quality
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+          ref: ${{ github.head_ref }}
+
+      - name: detekt
+        uses: alaegin/Detekt-Action@v1.23.7
+        with:
+          github_token: ${{ secrets.github_token }}
+          detekt_config: detekt-config.yml # Change config path
