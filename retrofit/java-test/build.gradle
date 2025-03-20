@@ -3,6 +3,7 @@ apply plugin: 'java-library'
 dependencies {
   testImplementation projects.retrofit
   testImplementation projects.retrofit.testHelpers
+  testImplementation libs.findBugsAnnotations
   testImplementation libs.junit
   testImplementation libs.truth
   testImplementation libs.guava
