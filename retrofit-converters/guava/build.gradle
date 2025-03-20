@@ -6,6 +6,7 @@ dependencies {
   api libs.guava
   compileOnly libs.findBugsAnnotations
 
+  testImplementation libs.findBugsAnnotations
   testImplementation libs.junit
   testImplementation libs.truth
   testImplementation libs.okhttp.mockwebserver
