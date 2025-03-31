@@ -40,7 +40,7 @@ errorproneJavac = { module = "com.google.errorprone:javac", version = "9+181-r41
 animalSnifferPlugin = "ru.vyarus:gradle-animalsniffer-plugin:2.0.0"
 animalSnifferAnnotations = { module = "org.codehaus.mojo:animal-sniffer-annotations", version = "1.24" }
 
-protobufPlugin = "com.google.protobuf:protobuf-gradle-plugin:0.9.4"
+protobufPlugin = "com.google.protobuf:protobuf-gradle-plugin:0.9.5"
 protobuf = { module = "com.google.protobuf:protobuf-java", version.ref = "protobuf" }
 protoc = { module = "com.google.protobuf:protoc", version.ref = "protobuf" }
 
