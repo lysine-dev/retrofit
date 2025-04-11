@@ -31,7 +31,9 @@ import java.lang.annotation.Target;
  * </code></pre>
  *
  * Tag arguments may be {@code null} which will omit them from the request. Passing a parameterized
- * type such as {@code List<String>} will use the raw type (i.e., {@code List.class}) as the key.
+ * type will use the raw type as the key (e.g., {@code List<String>} uses {@code List.class}).
+ * Primitive types will be boxed and stored using the boxed type
+ * (e.g., {@code long} uses {@code Long.class}).
  * Duplicate tag types are not allowed.
  */
 @Documented

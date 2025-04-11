@@ -800,7 +800,7 @@ final class RequestFactory {
       } else if (annotation instanceof Tag) {
         validateResolvableType(p, type);
 
-        Class<?> tagType = Utils.getRawType(type);
+        Class<?> tagType = boxIfPrimitive(Utils.getRawType(type));
         for (int i = p - 1; i >= 0; i--) {
           ParameterHandler<?> otherHandler = parameterHandlers[i];
           if (otherHandler instanceof ParameterHandler.Tag

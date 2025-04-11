@@ -7,6 +7,7 @@
  - First-party converters now support deferring serialization to happen when the request body is written (i.e., during HTTP execution) rather than when the HTTP request is created. In some cases this moves conversion from a calling thread to a background thread, such as in the case when using `Call.enqueue` directly.
 
    The following converters support this feature through a new `withStreaming()` factory method:
+   - Gson
    - Moshi
    - Wire
 
@@ -16,7 +17,7 @@
 
 **Fixed**
 
- - Nothing yet!
+ - Primitive types used with `@Tag` now work by storing the value boxed with the boxed class as the key.
 
 
 ## [2.11.0] - 2024-03-28

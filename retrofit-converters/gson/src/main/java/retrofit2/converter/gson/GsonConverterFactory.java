@@ -22,6 +22,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
+import retrofit2.Call;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
 
@@ -49,13 +50,25 @@ public final class GsonConverterFactory extends Converter.Factory {
   @SuppressWarnings("ConstantConditions") // Guarding public API nullability.
   public static GsonConverterFactory create(Gson gson) {
     if (gson == null) throw new NullPointerException("gson == null");
-    return new GsonConverterFactory(gson);
+    return new GsonConverterFactory(gson, false);
   }
 
   private final Gson gson;
+  private final boolean streaming;
 
-  private GsonConverterFactory(Gson gson) {
+  private GsonConverterFactory(Gson gson, boolean streaming) {
     this.gson = gson;
+    this.streaming = streaming;
+  }
+
+  /**
+   * Return a new factory which streams serialization of request messages to bytes on the HTTP thread
+   * This is either the calling thread for {@link Call#execute()}, or one of OkHttp's background
+   * threads for {@link Call#enqueue}. Response bytes are always converted to message instances on
+   * one of OkHttp's background threads.
+   */
+  public GsonConverterFactory withStreaming() {
+    return new GsonConverterFactory(gson, true);
   }
 
   @Override
@@ -72,6 +85,6 @@ public final class GsonConverterFactory extends Converter.Factory {
       Annotation[] methodAnnotations,
       Retrofit retrofit) {
     TypeAdapter<?> adapter = gson.getAdapter(TypeToken.get(type));
-    return new GsonRequestBodyConverter<>(gson, adapter);
+    return new GsonRequestBodyConverter<>(gson, adapter, streaming);
   }
 }

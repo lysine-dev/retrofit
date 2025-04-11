@@ -3331,6 +3331,19 @@ public final class RequestFactoryTest {
   }
 
   @Test
+  public void tagPrimitive() {
+    class Example {
+      @GET("/")
+      Call<ResponseBody> method(@Tag long timestamp) {
+        return null;
+      }
+    }
+
+    Request request = buildRequest(Example.class, 42L);
+    assertThat(request.tag(Long.class)).isEqualTo(42L);
+  }
+
+  @Test
   public void tagGeneric() {
     class Example {
       @GET("/")

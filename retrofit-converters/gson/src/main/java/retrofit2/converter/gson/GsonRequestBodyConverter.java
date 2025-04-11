@@ -26,26 +26,38 @@ import java.io.Writer;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okio.Buffer;
+import okio.BufferedSink;
 import retrofit2.Converter;
 
 final class GsonRequestBodyConverter<T> implements Converter<T, RequestBody> {
-  private static final MediaType MEDIA_TYPE = MediaType.get("application/json; charset=UTF-8");
+  static final MediaType MEDIA_TYPE = MediaType.get("application/json; charset=UTF-8");
 
   private final Gson gson;
   private final TypeAdapter<T> adapter;
+  private final boolean streaming;
 
-  GsonRequestBodyConverter(Gson gson, TypeAdapter<T> adapter) {
+  GsonRequestBodyConverter(Gson gson, TypeAdapter<T> adapter, boolean streaming) {
     this.gson = gson;
     this.adapter = adapter;
+    this.streaming = streaming;
   }
 
   @Override
   public RequestBody convert(T value) throws IOException {
+    if (streaming) {
+      return new GsonStreamingRequestBody<>(gson, adapter, value);
+    }
+
     Buffer buffer = new Buffer();
-    Writer writer = new OutputStreamWriter(buffer.outputStream(), UTF_8);
+    writeJson(buffer, gson, adapter, value);
+    return RequestBody.create(MEDIA_TYPE, buffer.readByteString());
+  }
+
+  static <T> void writeJson(BufferedSink sink, Gson gson, TypeAdapter<T> adapter, T value)
+      throws IOException {
+    Writer writer = new OutputStreamWriter(sink.outputStream(), UTF_8);
     JsonWriter jsonWriter = gson.newJsonWriter(writer);
     adapter.write(jsonWriter, value);
     jsonWriter.close();
-    return RequestBody.create(MEDIA_TYPE, buffer.readByteString());
   }
 }

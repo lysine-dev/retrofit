@@ -17,6 +17,7 @@ package retrofit2.converter.gson;
 
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeTrue;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -25,20 +26,27 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
+import com.google.testing.junit.testparameterinjector.TestParameter;
+import com.google.testing.junit.testparameterinjector.TestParameterInjector;
+import java.io.EOFException;
 import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicReference;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 
+@RunWith(TestParameterInjector.class)
 public final class GsonConverterFactoryTest {
   interface AnInterface {
     String getName();
@@ -57,27 +65,27 @@ public final class GsonConverterFactoryTest {
     }
   }
 
-  static final class Value {
-    static final TypeAdapter<Value> BROKEN_ADAPTER =
-        new TypeAdapter<Value>() {
+  static final class ErroringValue {
+    static final TypeAdapter<ErroringValue> BROKEN_ADAPTER =
+        new TypeAdapter<ErroringValue>() {
           @Override
-          public void write(JsonWriter out, Value value) {
-            throw new AssertionError();
+          public void write(JsonWriter out, ErroringValue value) throws IOException {
+            throw new EOFException("oops!");
           }
 
           @Override
           @SuppressWarnings("CheckReturnValue")
-          public Value read(JsonReader reader) throws IOException {
+          public ErroringValue read(JsonReader reader) throws IOException {
             reader.beginObject();
             reader.nextName();
             String theName = reader.nextString();
-            return new Value(theName);
+            return new ErroringValue(theName);
           }
         };
 
     final String theName;
 
-    Value(String theName) {
+    ErroringValue(String theName) {
       this.theName = theName;
     }
   }
@@ -116,25 +124,36 @@ public final class GsonConverterFactoryTest {
     Call<AnInterface> anInterface(@Body AnInterface impl);
 
     @GET("/")
-    Call<Value> value();
+    Call<ErroringValue> readErroringValue();
+
+    @POST("/")
+    Call<Void> writeErroringValue(@Body ErroringValue value);
   }
 
   @Rule public final MockWebServer server = new MockWebServer();
 
-  private Service service;
+  private final boolean streaming;
+  private final Service service;
 
-  @Before
-  public void setUp() {
+  public GsonConverterFactoryTest(@TestParameter boolean streaming) {
+    this.streaming = streaming;
+
     Gson gson =
         new GsonBuilder()
             .registerTypeAdapter(AnInterface.class, new AnInterfaceAdapter())
-            .registerTypeAdapter(Value.class, Value.BROKEN_ADAPTER)
+            .registerTypeAdapter(ErroringValue.class, ErroringValue.BROKEN_ADAPTER)
             .setLenient()
             .create();
+
+    GsonConverterFactory factory = GsonConverterFactory.create(gson);
+    if (streaming) {
+      factory = factory.withStreaming();
+    }
+
     Retrofit retrofit =
-        new Retrofit.Builder()
-            .baseUrl(server.url("/"))
-            .addConverterFactory(GsonConverterFactory.create(gson))
+        new Retrofit.Builder() //
+            .baseUrl(server.url("/")) //
+            .addConverterFactory(factory) //
             .build();
     service = retrofit.create(Service.class);
   }
@@ -191,12 +210,42 @@ public final class GsonConverterFactoryTest {
   public void requireFullResponseDocumentConsumption() throws Exception {
     server.enqueue(new MockResponse().setBody("{\"theName\":\"value\"}"));
 
-    Call<Value> call = service.value();
+    Call<ErroringValue> call = service.readErroringValue();
     try {
       call.execute();
       fail();
     } catch (JsonIOException e) {
       assertThat(e).hasMessageThat().isEqualTo("JSON document was not fully consumed.");
     }
+  }
+
+  @Test
+  public void serializeIsStreamed() throws InterruptedException {
+    assumeTrue(streaming);
+
+    Call<Void> call = service.writeErroringValue(new ErroringValue("hi"));
+
+    final AtomicReference<Throwable> throwableRef = new AtomicReference<>();
+    final CountDownLatch latch = new CountDownLatch(1);
+
+    // If streaming were broken, the call to enqueue would throw the exception synchronously.
+    call.enqueue(
+        new Callback<Void>() {
+          @Override
+          public void onResponse(Call<Void> call, Response<Void> response) {
+            latch.countDown();
+          }
+
+          @Override
+          public void onFailure(Call<Void> call, Throwable t) {
+            throwableRef.set(t);
+            latch.countDown();
+          }
+        });
+    latch.await();
+
+    Throwable throwable = throwableRef.get();
+    assertThat(throwable).isInstanceOf(EOFException.class);
+    assertThat(throwable).hasMessageThat().isEqualTo("oops!");
   }
 }

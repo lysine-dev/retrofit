@@ -3,6 +3,7 @@ apply plugin: 'java-library'
 dependencies {
   testImplementation projects.retrofit
   testImplementation projects.retrofit.testHelpers
+  testImplementation libs.findBugsAnnotations
   testImplementation libs.junit
   testImplementation libs.truth
   testImplementation libs.guava
@@ -14,7 +15,7 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 // Create a test task for each supported JDK.
-(8..21).each { majorVersion ->
+(8..24).each { majorVersion ->
   def jdkTest = tasks.register("testJdk$majorVersion", Test) {
     javaLauncher = javaToolchains.launcherFor {
       languageVersion = JavaLanguageVersion.of(majorVersion)

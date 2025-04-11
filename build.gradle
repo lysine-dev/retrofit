@@ -48,7 +48,7 @@ subprojects {
 
   tasks.withType(JavaCompile).configureEach { task ->
     task.options.errorprone {
-      excludedPaths = '.*/build/generated/source/proto/.*'
+      excludedPaths = '.*/build/generated/sources/proto/.*'
       check('MissingFail', CheckSeverity.ERROR)
       check('MissingOverride', CheckSeverity.ERROR)
       check('UnusedException', CheckSeverity.ERROR)

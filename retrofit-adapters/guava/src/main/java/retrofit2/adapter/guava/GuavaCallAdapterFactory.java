@@ -164,7 +164,7 @@ public final class GuavaCallAdapterFactory extends CallAdapter.Factory {
     }
 
     @Override
-    public boolean set(@org.checkerframework.checker.nullness.qual.Nullable T value) {
+    public boolean set(T value) {
       return super.set(value);
     }
 
