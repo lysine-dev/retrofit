@@ -15,7 +15,7 @@
 [versions]
 kotlin = "2.1.20"
 okhttp = "3.14.9"
-protobuf = "3.25.6"
+protobuf = "3.25.7"
 robovm = "2.3.14"
 kotlinx-serialization = "1.8.1"
 autoService = "1.1.1"
@@ -23,7 +23,7 @@ incap = "1.0.0"
 jackson = "2.18.3"
 
 [libraries]
-androidPlugin = { module = "com.android.tools.build:gradle", version = "8.9.1" }
+androidPlugin = { module = "com.android.tools.build:gradle", version = "8.9.2" }
 robovmPlugin = { module = "com.mobidevelop.robovm:robovm-gradle-plugin", version.ref = "robovm" }
 dokkaPlugin = "org.jetbrains.dokka:dokka-gradle-plugin:2.0.0"
 gradleMavenPublishPlugin = "com.vanniktech:gradle-maven-publish-plugin:0.31.0"
@@ -33,7 +33,7 @@ kotlin-stdLib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "
 kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlin-serializationPlugin = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
 
-errorpronePlugin = "net.ltgt.gradle:gradle-errorprone-plugin:4.1.0"
+errorpronePlugin = "net.ltgt.gradle:gradle-errorprone-plugin:4.2.0"
 errorproneCore = { module = "com.google.errorprone:error_prone_core", version = "2.10.0" }
 errorproneJavac = { module = "com.google.errorprone:javac", version = "9+181-r4173-1" }
 
@@ -59,7 +59,7 @@ okhttp-loggingInterceptor = { module = "com.squareup.okhttp3:logging-interceptor
 okhttp-mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "okhttp" }
 junit = { module = "junit:junit", version = "4.13.2" }
 truth = "com.google.truth:truth:1.4.4"
-guava = { module = "com.google.guava:guava", version = "33.4.7-jre" }
+guava = { module = "com.google.guava:guava", version = "33.4.8-jre" }
 android = { module = "com.google.android:android", version = "4.1.1.4" }
 findBugsAnnotations = { module = "com.google.code.findbugs:jsr305", version = "3.0.2" }
 androidxTestRunner = { module = "androidx.test:runner", version = "1.4.0" }
@@ -68,7 +68,7 @@ rxjava2 = { module = "io.reactivex.rxjava2:rxjava", version = "2.2.21" }
 rxjava3 = { module = "io.reactivex.rxjava3:rxjava", version = "3.1.10" }
 reactiveStreams = { module = "org.reactivestreams:reactive-streams", version = "1.0.4" }
 scalaLibrary = { module = "org.scala-lang:scala-library", version = "2.13.16" }
-gson = { module = "com.google.code.gson:gson", version = "2.12.1" }
+gson = { module = "com.google.code.gson:gson", version = "2.13.1" }
 jacksonDatabind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
 jacksonDataformatCbor = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-cbor", version.ref = "jackson" }
 jaxbApi = { module = "javax.xml.bind:jaxb-api", version = "2.3.1" }
