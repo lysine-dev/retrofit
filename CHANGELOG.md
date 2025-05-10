@@ -9,6 +9,7 @@
    The following converters support this feature through a new `withStreaming()` factory method:
    - Gson
    - Moshi
+   - Protobuf
    - Wire
 
 **Changed**

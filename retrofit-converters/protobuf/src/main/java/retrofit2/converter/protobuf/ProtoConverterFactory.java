@@ -26,6 +26,7 @@ import java.lang.reflect.Type;
 import javax.annotation.Nullable;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
+import retrofit2.Call;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
 
@@ -37,18 +38,30 @@ import retrofit2.Retrofit;
  */
 public final class ProtoConverterFactory extends Converter.Factory {
   public static ProtoConverterFactory create() {
-    return new ProtoConverterFactory(null);
+    return new ProtoConverterFactory(null, false);
   }
 
   /** Create an instance which uses {@code registry} when deserializing. */
   public static ProtoConverterFactory createWithRegistry(@Nullable ExtensionRegistryLite registry) {
-    return new ProtoConverterFactory(registry);
+    return new ProtoConverterFactory(registry, false);
   }
 
   private final @Nullable ExtensionRegistryLite registry;
+  private final boolean streaming;
 
-  private ProtoConverterFactory(@Nullable ExtensionRegistryLite registry) {
+  private ProtoConverterFactory(@Nullable ExtensionRegistryLite registry, boolean streaming) {
     this.registry = registry;
+    this.streaming = streaming;
+  }
+
+  /**
+   * Return a new factory which streams serialization of request messages to bytes on the HTTP thread
+   * This is either the calling thread for {@link Call#execute()}, or one of OkHttp's background
+   * threads for {@link Call#enqueue}. Response bytes are always converted to message instances on
+   * one of OkHttp's background threads.
+   */
+  public ProtoConverterFactory withStreaming() {
+    return new ProtoConverterFactory(registry, true);
   }
 
   @Override
@@ -98,6 +111,6 @@ public final class ProtoConverterFactory extends Converter.Factory {
     if (!MessageLite.class.isAssignableFrom((Class<?>) type)) {
       return null;
     }
-    return new ProtoRequestBodyConverter<>();
+    return new ProtoRequestBodyConverter<>(streaming);
   }
 }

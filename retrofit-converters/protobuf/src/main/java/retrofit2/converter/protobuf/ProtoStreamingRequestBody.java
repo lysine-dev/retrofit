@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Square, Inc.
+ * Copyright (C) 2025 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,27 +15,28 @@
  */
 package retrofit2.converter.protobuf;
 
+import static retrofit2.converter.protobuf.ProtoRequestBodyConverter.MEDIA_TYPE;
+
 import com.google.protobuf.MessageLite;
+import java.io.IOException;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
-import retrofit2.Converter;
+import okio.BufferedSink;
 
-final class ProtoRequestBodyConverter<T extends MessageLite> implements Converter<T, RequestBody> {
-  static final MediaType MEDIA_TYPE = MediaType.get("application/x-protobuf");
+final class ProtoStreamingRequestBody extends RequestBody {
+  private final MessageLite value;
 
-  private final boolean streaming;
-
-  ProtoRequestBodyConverter(boolean streaming) {
-    this.streaming = streaming;
+  public ProtoStreamingRequestBody(MessageLite value) {
+    this.value = value;
   }
 
   @Override
-  public RequestBody convert(T value) {
-    if (streaming) {
-      return new ProtoStreamingRequestBody(value);
-    }
+  public MediaType contentType() {
+    return MEDIA_TYPE;
+  }
 
-    byte[] bytes = value.toByteArray();
-    return RequestBody.create(MEDIA_TYPE, bytes);
+  @Override
+  public void writeTo(BufferedSink sink) throws IOException {
+    value.writeTo(sink.outputStream());
   }
 }
