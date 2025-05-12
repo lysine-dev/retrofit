@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Square, Inc.
+ * Copyright (C) 2025 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,26 +19,26 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import java.io.IOException;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
-import retrofit2.Converter;
+import okio.BufferedSink;
 
-final class JacksonRequestBodyConverter<T> implements Converter<T, RequestBody> {
+final class JacksonStreamingRequestBody extends RequestBody {
   private final ObjectWriter adapter;
+  private final Object value;
   private final MediaType mediaType;
-  private final boolean streaming;
 
-  JacksonRequestBodyConverter(ObjectWriter adapter, MediaType mediaType, boolean streaming) {
+  public JacksonStreamingRequestBody(ObjectWriter adapter, Object value, MediaType mediaType) {
     this.adapter = adapter;
+    this.value = value;
     this.mediaType = mediaType;
-    this.streaming = streaming;
   }
 
   @Override
-  public RequestBody convert(T value) throws IOException {
-    if (streaming) {
-      return new JacksonStreamingRequestBody(adapter, value, mediaType);
-    }
+  public MediaType contentType() {
+    return mediaType;
+  }
 
-    byte[] bytes = adapter.writeValueAsBytes(value);
-    return RequestBody.create(mediaType, bytes);
+  @Override
+  public void writeTo(BufferedSink sink) throws IOException {
+    adapter.writeValue(sink.outputStream(), value);
   }
 }

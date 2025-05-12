@@ -8,6 +8,7 @@
 
    The following converters support this feature through a new `withStreaming()` factory method:
    - Gson
+   - Jackson
    - Moshi
    - Protobuf
    - Wire

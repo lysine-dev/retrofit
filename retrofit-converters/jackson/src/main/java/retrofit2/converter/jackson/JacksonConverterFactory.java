@@ -24,6 +24,7 @@ import java.lang.reflect.Type;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
+import retrofit2.Call;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
 
@@ -41,7 +42,7 @@ public final class JacksonConverterFactory extends Converter.Factory {
 
   /** Create an instance using a default {@link ObjectMapper} instance for conversion. */
   public static JacksonConverterFactory create() {
-    return new JacksonConverterFactory(new ObjectMapper(), DEFAULT_MEDIA_TYPE);
+    return new JacksonConverterFactory(new ObjectMapper(), DEFAULT_MEDIA_TYPE, false);
   }
 
   /** Create an instance using {@code mapper} for conversion. */
@@ -54,15 +55,27 @@ public final class JacksonConverterFactory extends Converter.Factory {
   public static JacksonConverterFactory create(ObjectMapper mapper, MediaType mediaType) {
     if (mapper == null) throw new NullPointerException("mapper == null");
     if (mediaType == null) throw new NullPointerException("mediaType == null");
-    return new JacksonConverterFactory(mapper, mediaType);
+    return new JacksonConverterFactory(mapper, mediaType, false);
   }
 
   private final ObjectMapper mapper;
   private final MediaType mediaType;
+  private final boolean streaming;
 
-  private JacksonConverterFactory(ObjectMapper mapper, MediaType mediaType) {
+  private JacksonConverterFactory(ObjectMapper mapper, MediaType mediaType, boolean streaming) {
     this.mapper = mapper;
     this.mediaType = mediaType;
+    this.streaming = streaming;
+  }
+
+  /**
+   * Return a new factory which streams serialization of request messages to bytes on the HTTP thread
+   * This is either the calling thread for {@link Call#execute()}, or one of OkHttp's background
+   * threads for {@link Call#enqueue}. Response bytes are always converted to message instances on
+   * one of OkHttp's background threads.
+   */
+  public JacksonConverterFactory withStreaming() {
+    return new JacksonConverterFactory(mapper, mediaType, true);
   }
 
   @Override
@@ -81,6 +94,6 @@ public final class JacksonConverterFactory extends Converter.Factory {
       Retrofit retrofit) {
     JavaType javaType = mapper.getTypeFactory().constructType(type);
     ObjectWriter writer = mapper.writerFor(javaType);
-    return new JacksonRequestBodyConverter<>(writer, mediaType);
+    return new JacksonRequestBodyConverter<>(writer, mediaType, streaming);
   }
 }

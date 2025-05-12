@@ -16,6 +16,7 @@
 package retrofit2.converter.jackson;
 
 import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assume.assumeTrue;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -28,20 +29,27 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import com.google.testing.junit.testparameterinjector.TestParameter;
+import com.google.testing.junit.testparameterinjector.TestParameterInjector;
+import java.io.EOFException;
 import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicReference;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.http.Body;
 import retrofit2.http.POST;
 
-public class JacksonConverterFactoryTest {
+@RunWith(TestParameterInjector.class)
+public final class JacksonConverterFactoryTest {
   interface AnInterface {
     String getName();
   }
@@ -102,22 +110,51 @@ public class JacksonConverterFactoryTest {
     }
   }
 
+  static final class ErroringValue {
+    final String theName;
+
+    ErroringValue(String theName) {
+      this.theName = theName;
+    }
+  }
+
+  static final class ErroringValueSerializer extends StdSerializer<ErroringValue> {
+    ErroringValueSerializer() {
+      super(ErroringValue.class);
+    }
+
+    @Override
+    public void serialize(
+        ErroringValue erroringValue,
+        JsonGenerator jsonGenerator,
+        SerializerProvider serializerProvider)
+        throws IOException {
+      throw new EOFException("oops!");
+    }
+  }
+
   interface Service {
     @POST("/")
     Call<AnImplementation> anImplementation(@Body AnImplementation impl);
 
     @POST("/")
     Call<AnInterface> anInterface(@Body AnInterface impl);
+
+    @POST("/")
+    Call<Void> erroringValue(@Body ErroringValue value);
   }
 
   @Rule public final MockWebServer server = new MockWebServer();
 
-  private Service service;
+  private final Service service;
+  private final boolean streaming;
 
-  @Before
-  public void setUp() {
+  public JacksonConverterFactoryTest(@TestParameter boolean streaming) {
+    this.streaming = streaming;
+
     SimpleModule module = new SimpleModule();
     module.addSerializer(AnInterface.class, new AnInterfaceSerializer());
+    module.addSerializer(ErroringValue.class, new ErroringValueSerializer());
     module.addDeserializer(AnInterface.class, new AnInterfaceDeserializer());
     ObjectMapper mapper = new ObjectMapper();
     mapper.registerModule(module);
@@ -130,11 +167,13 @@ public class JacksonConverterFactoryTest {
             .getDefaultVisibilityChecker()
             .withFieldVisibility(JsonAutoDetect.Visibility.ANY));
 
+    JacksonConverterFactory factory = JacksonConverterFactory.create(mapper);
+    if (streaming) {
+      factory = factory.withStreaming();
+    }
+
     Retrofit retrofit =
-        new Retrofit.Builder()
-            .baseUrl(server.url("/"))
-            .addConverterFactory(JacksonConverterFactory.create(mapper))
-            .build();
+        new Retrofit.Builder().baseUrl(server.url("/")).addConverterFactory(factory).build();
     service = retrofit.create(Service.class);
   }
 
@@ -165,5 +204,35 @@ public class JacksonConverterFactoryTest {
     // TODO figure out how to get Jackson to stop using AnInterface's serializer here.
     assertThat(request.getBody().readUtf8()).isEqualTo("{\"name\":\"value\"}");
     assertThat(request.getHeader("Content-Type")).isEqualTo("application/json; charset=UTF-8");
+  }
+
+  @Test
+  public void serializeIsStreamed() throws InterruptedException {
+    assumeTrue(streaming);
+
+    Call<Void> call = service.erroringValue(new ErroringValue("hi"));
+
+    final AtomicReference<Throwable> throwableRef = new AtomicReference<>();
+    final CountDownLatch latch = new CountDownLatch(1);
+
+    // If streaming were broken, the call to enqueue would throw the exception synchronously.
+    call.enqueue(
+        new Callback<Void>() {
+          @Override
+          public void onResponse(Call<Void> call, Response<Void> response) {
+            latch.countDown();
+          }
+
+          @Override
+          public void onFailure(Call<Void> call, Throwable t) {
+            throwableRef.set(t);
+            latch.countDown();
+          }
+        });
+    latch.await();
+
+    Throwable throwable = throwableRef.get();
+    assertThat(throwable).isInstanceOf(EOFException.class);
+    assertThat(throwable).hasMessageThat().isEqualTo("oops!");
   }
 }
