@@ -1,0 +1,32 @@
+---
+title: Download
+---
+
+import { Code } from '@astrojs/starlight/components';
+import { VERSION } from 'astro:env/server';
+
+export const gradleSnippet = 'implementation("com.squareup.retrofit2:retrofit:' + VERSION + '")';
+export const mavenSnippet = `<dependency>
+  <groupId>com.squareup.retrofit2</groupId>
+  <artifactId>retrofit</artifactId>
+  <version>` + VERSION + `</version>
+</dependency>`;
+
+The source code to the Retrofit, its samples, and this website is [available on GitHub](https://github.com/square/retrofit).
+
+### Gradle
+
+<Code code={gradleSnippet} lang="kotlin" />
+
+### Maven
+
+<Code code={mavenSnippet} lang="xml" />
+
+Retrofit requires at minimum Java 8+ or Android API 21+.
+
+### R8 / ProGuard
+
+If you are using R8 the shrinking and obfuscation rules are included automatically.
+
+ProGuard users must manually add the options from [retrofit2.pro](https://github.com/square/retrofit/blob/master/retrofit/src/main/resources/META-INF/proguard/retrofit2.pro).
+You might also need rules for [OkHttp](https://square.github.io/okhttp/r8_proguard) and [Okio](https://github.com/square/okio#r8--proguard) which are dependencies of this library.

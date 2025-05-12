@@ -10,7 +10,7 @@ on:
       - '**'
 
 env:
-  GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4g -Dorg.gradle.daemon=false -Dkotlin.incremental=false"
+  GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4g -Dorg.gradle.daemon=false -Dkotlin.incremental=false -Dorg.gradle.logging.stacktrace=full"
 
 jobs:
   jvm:
@@ -21,11 +21,8 @@ jobs:
         with:
           distribution: 'zulu'
           java-version-file: .github/workflows/.java-version
-
       - uses: gradle/actions/setup-gradle@v4
-
-      - name: Test
-        run: ./gradlew build --stacktrace
+      - run: ./gradlew build
 
   android:
     runs-on: ubuntu-latest
@@ -59,7 +56,7 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: ${{ matrix.api-level }}
-          script: ./gradlew connectedCheck --stacktrace
+          script: ./gradlew connectedCheck
         env:
           API_LEVEL: ${{ matrix.api-level }}
 
@@ -76,7 +73,7 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
 
       - name: Run Tests
-        run: ./gradlew retrofit:robovm-test:robovmTest --stacktrace
+        run: ./gradlew retrofit:robovm-test:robovmTest
 
   publish:
     runs-on: ubuntu-latest
@@ -92,13 +89,24 @@ jobs:
         with:
           distribution: 'zulu'
           java-version-file: .github/workflows/.java-version
-
       - uses: gradle/actions/setup-gradle@v4
 
-      - name: Upload Artifacts
-        run: ./gradlew publish --stacktrace
+      - run: ./gradlew publish
         env:
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_USERNAME_COM_SQUAREUP }}
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_PASSWORD_COM_SQUAREUP }}
           ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.GPG_SECRET_KEY }}
           ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.GPG_SECRET_PASSPHRASE }}
+
+      - name: Build snapshot website
+        run: |
+          ./gradlew copyWebsiteDocs
+          npm install && npm run build
+
+      - name: Deploy snapshot website
+        uses: JamesIves/github-pages-deploy-action@releases/v3
+        with:
+          branch: site
+          folder: website/dist
+          target_folder: latest
+          clean: true

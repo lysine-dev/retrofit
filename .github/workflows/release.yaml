@@ -6,7 +6,7 @@ on:
       - '**'
 
 env:
-  GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4g -Dorg.gradle.daemon=false -Dkotlin.incremental=false"
+  GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4g -Dorg.gradle.daemon=false -Dkotlin.incremental=false -Dorg.gradle.logging.stacktrace=full"
 
 jobs:
   publish:
@@ -19,13 +19,12 @@ jobs:
           distribution: 'zulu'
           java-version-file: .github/workflows/.java-version
 
-      - name: Build and publish artifacts
+      - run: ./gradlew publish
         env:
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_USERNAME_COM_SQUAREUP }}
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_PASSWORD_COM_SQUAREUP }}
           ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.GPG_SECRET_KEY }}
           ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.GPG_SECRET_PASSPHRASE }}
-        run: ./gradlew publish
 
       - name: Extract release notes
         id: release_notes
@@ -37,12 +36,17 @@ jobs:
           body: ${{ steps.release_notes.outputs.release_notes }}
           discussionCategory: Announcements
 
-      - run: ./gradlew prepareWebsite
+      - name: Build release website
+        run: |
+          ./gradlew copyWebsiteDocs
+          npm install && npm run build -- --mode release
 
-      - name: Deploy docs to website
+      - name: Deploy release website
         uses: JamesIves/github-pages-deploy-action@releases/v3
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: site
-          FOLDER: build/docs/site
-          CLEAN: true
+          branch: site
+          folder: website/dist
+          clean: true
+          clean-exclude: |
+            .nojekyll
+            latest/
