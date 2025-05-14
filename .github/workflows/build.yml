@@ -101,6 +101,7 @@ jobs:
       - name: Build snapshot website
         run: |
           ./gradlew copyWebsiteDocs
+          cd website
           npm install && npm run build
 
       - name: Deploy snapshot website

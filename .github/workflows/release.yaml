@@ -39,6 +39,7 @@ jobs:
       - name: Build release website
         run: |
           ./gradlew copyWebsiteDocs
+          cd website
           npm install && npm run build -- --mode release
 
       - name: Deploy release website
