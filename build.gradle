@@ -103,17 +103,18 @@ tasks.register('copyWebsiteDocs', Copy) {
   description = 'Copies generated documentation to the website'
   group = JavaBasePlugin.DOCUMENTATION_GROUP
 
-  into layout.projectDirectory.dir('website/public/2.x')
-    subprojects { subproject ->
-      if (subproject.name == 'retrofit-bom') return
-      if (!subproject.plugins.hasPlugin('com.vanniktech.maven.publish')) return
+  into layout.projectDirectory.dir('website/public/3.x')
 
-      into(subproject.POM_ARTIFACT_ID) {
-        if (subproject.plugins.hasPlugin('org.jetbrains.dokka')) {
-          from subproject.tasks.named('dokkaHtml').flatMap { it.outputDirectory }
-        } else {
-          from subproject.tasks.named('javadoc').map { it.destinationDir }
-        }
+  subprojects { subproject ->
+    if (subproject.name == 'retrofit-bom') return
+    if (!subproject.plugins.hasPlugin('com.vanniktech.maven.publish')) return
+
+    into(subproject.POM_ARTIFACT_ID) {
+      if (subproject.plugins.hasPlugin('org.jetbrains.dokka')) {
+        from subproject.tasks.named('dokkaHtml').flatMap { it.outputDirectory }
+      } else {
+        from subproject.tasks.named('javadoc').map { it.destinationDir }
       }
     }
   }
+}

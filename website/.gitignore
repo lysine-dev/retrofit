@@ -3,4 +3,4 @@ dist/
 node_modules/
 
 # Populated by ./gradlew copyWebsiteDocs
-public/2.x/
+public/3.x/
