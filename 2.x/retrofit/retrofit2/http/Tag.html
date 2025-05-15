@@ -103,7 +103,9 @@ public @interface <span class="memberNameLabel">Tag</span></pre>
  </code></pre>
 
  Tag arguments may be <code>null</code> which will omit them from the request. Passing a parameterized
- type such as <code>List&lt;String&gt;</code> will use the raw type (i.e., <code>List.class</code>) as the key.
+ type will use the raw type as the key (e.g., <code>List&lt;String&gt;</code> uses <code>List.class</code>).
+ Primitive types will be boxed and stored using the boxed type
+ (e.g., <code>long</code> uses <code>Long.class</code>).
  Duplicate tag types are not allowed.</div>
 </li>
 </ul>

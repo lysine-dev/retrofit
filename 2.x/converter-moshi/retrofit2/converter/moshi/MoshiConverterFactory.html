@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":9,"i2":9,"i3":10,"i4":10,"i5":10,"i6":10};
+var methods = {"i0":10,"i1":9,"i2":9,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10};
 var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -184,6 +184,14 @@ extends retrofit2.Converter.Factory</pre>
 <div class="block">Return a new factory which includes null values into the serialized JSON.</div>
 </td>
 </tr>
+<tr id="i7" class="rowColor">
+<td class="colFirst"><code><a href="../../../retrofit2/converter/moshi/MoshiConverterFactory.html" title="class in retrofit2.converter.moshi">MoshiConverterFactory</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../retrofit2/converter/moshi/MoshiConverterFactory.html#withStreaming--">withStreaming</a></span>()</code>
+<div class="block">Return a new factory which streams serialization of request messages to bytes on the HTTP thread
+ This is either the calling thread for <code>Call.execute()</code>, or one of OkHttp's background
+ threads for <code>Call.enqueue(retrofit2.Callback&lt;T&gt;)</code>.</div>
+</td>
+</tr>
 </table>
 <ul class="blockList">
 <li class="blockList"><a name="methods.inherited.from.class.retrofit2.Converter.Factory">
@@ -261,6 +269,19 @@ extends retrofit2.Converter.Factory</pre>
 <h4>withNullSerialization</h4>
 <pre>public&nbsp;<a href="../../../retrofit2/converter/moshi/MoshiConverterFactory.html" title="class in retrofit2.converter.moshi">MoshiConverterFactory</a>&nbsp;withNullSerialization()</pre>
 <div class="block">Return a new factory which includes null values into the serialized JSON.</div>
+</li>
+</ul>
+<a name="withStreaming--">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>withStreaming</h4>
+<pre>public&nbsp;<a href="../../../retrofit2/converter/moshi/MoshiConverterFactory.html" title="class in retrofit2.converter.moshi">MoshiConverterFactory</a>&nbsp;withStreaming()</pre>
+<div class="block">Return a new factory which streams serialization of request messages to bytes on the HTTP thread
+ This is either the calling thread for <code>Call.execute()</code>, or one of OkHttp's background
+ threads for <code>Call.enqueue(retrofit2.Callback&lt;T&gt;)</code>. Response bytes are always converted to message instances on
+ one of OkHttp's background threads.</div>
 </li>
 </ul>
 <a name="responseBodyConverter-java.lang.reflect.Type-java.lang.annotation.Annotation:A-retrofit2.Retrofit-">

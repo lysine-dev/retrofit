@@ -72,7 +72,10 @@
 <h2 class="title">C</h2>
 <dl>
 <dt><span class="memberNameLink"><a href="retrofit2/converter/wire/WireConverterFactory.html#create--">create()</a></span> - Static method in class retrofit2.converter.wire.<a href="retrofit2/converter/wire/WireConverterFactory.html" title="class in retrofit2.converter.wire">WireConverterFactory</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Create an instance which serializes request messages to bytes eagerly on the caller thread
+ when either <code>Call.execute()</code> or <code>Call.enqueue(retrofit2.Callback&lt;T&gt;)</code> is called.</div>
+</dd>
 </dl>
 <a name="I:R">
 <!--   -->
@@ -94,6 +97,12 @@
 <dt><a href="retrofit2/converter/wire/WireConverterFactory.html" title="class in retrofit2.converter.wire"><span class="typeNameLink">WireConverterFactory</span></a> - Class in <a href="retrofit2/converter/wire/package-summary.html">retrofit2.converter.wire</a></dt>
 <dd>
 <div class="block">A converter that uses Wire for protocol buffers.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="retrofit2/converter/wire/WireConverterFactory.html#withStreaming--">withStreaming()</a></span> - Method in class retrofit2.converter.wire.<a href="retrofit2/converter/wire/WireConverterFactory.html" title="class in retrofit2.converter.wire">WireConverterFactory</a></dt>
+<dd>
+<div class="block">Return a new factory which streams serialization of request messages to bytes on the HTTP thread
+ This is either the calling thread for <code>Call.execute()</code>, or one of OkHttp's background
+ threads for <code>Call.enqueue(retrofit2.Callback&lt;T&gt;)</code>.</div>
 </dd>
 </dl>
 <a href="#I:C">C</a>&nbsp;<a href="#I:R">R</a>&nbsp;<a href="#I:W">W</a>&nbsp;</div>

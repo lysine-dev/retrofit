@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":9,"i1":10,"i2":10};
+var methods = {"i0":9,"i1":10,"i2":10,"i3":10};
 var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -136,7 +136,10 @@ extends retrofit2.Converter.Factory</pre>
 </tr>
 <tr id="i0" class="altColor">
 <td class="colFirst"><code>static <a href="../../../retrofit2/converter/wire/WireConverterFactory.html" title="class in retrofit2.converter.wire">WireConverterFactory</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../retrofit2/converter/wire/WireConverterFactory.html#create--">create</a></span>()</code>&nbsp;</td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../retrofit2/converter/wire/WireConverterFactory.html#create--">create</a></span>()</code>
+<div class="block">Create an instance which serializes request messages to bytes eagerly on the caller thread
+ when either <code>Call.execute()</code> or <code>Call.enqueue(retrofit2.Callback&lt;T&gt;)</code> is called.</div>
+</td>
 </tr>
 <tr id="i1" class="rowColor">
 <td class="colFirst"><code>retrofit2.Converter&lt;?,okhttp3.RequestBody&gt;</code></td>
@@ -150,6 +153,14 @@ extends retrofit2.Converter.Factory</pre>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../retrofit2/converter/wire/WireConverterFactory.html#responseBodyConverter-java.lang.reflect.Type-java.lang.annotation.Annotation:A-retrofit2.Retrofit-">responseBodyConverter</a></span>(java.lang.reflect.Type&nbsp;type,
                      java.lang.annotation.Annotation[]&nbsp;annotations,
                      retrofit2.Retrofit&nbsp;retrofit)</code>&nbsp;</td>
+</tr>
+<tr id="i3" class="rowColor">
+<td class="colFirst"><code><a href="../../../retrofit2/converter/wire/WireConverterFactory.html" title="class in retrofit2.converter.wire">WireConverterFactory</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../retrofit2/converter/wire/WireConverterFactory.html#withStreaming--">withStreaming</a></span>()</code>
+<div class="block">Return a new factory which streams serialization of request messages to bytes on the HTTP thread
+ This is either the calling thread for <code>Call.execute()</code>, or one of OkHttp's background
+ threads for <code>Call.enqueue(retrofit2.Callback&lt;T&gt;)</code>.</div>
+</td>
 </tr>
 </table>
 <ul class="blockList">
@@ -187,6 +198,22 @@ extends retrofit2.Converter.Factory</pre>
 <li class="blockList">
 <h4>create</h4>
 <pre>public static&nbsp;<a href="../../../retrofit2/converter/wire/WireConverterFactory.html" title="class in retrofit2.converter.wire">WireConverterFactory</a>&nbsp;create()</pre>
+<div class="block">Create an instance which serializes request messages to bytes eagerly on the caller thread
+ when either <code>Call.execute()</code> or <code>Call.enqueue(retrofit2.Callback&lt;T&gt;)</code> is called. Response bytes are
+ always converted to message instances on one of OkHttp's background threads.</div>
+</li>
+</ul>
+<a name="withStreaming--">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>withStreaming</h4>
+<pre>public&nbsp;<a href="../../../retrofit2/converter/wire/WireConverterFactory.html" title="class in retrofit2.converter.wire">WireConverterFactory</a>&nbsp;withStreaming()</pre>
+<div class="block">Return a new factory which streams serialization of request messages to bytes on the HTTP thread
+ This is either the calling thread for <code>Call.execute()</code>, or one of OkHttp's background
+ threads for <code>Call.enqueue(retrofit2.Callback&lt;T&gt;)</code>. Response bytes are always converted to message instances on
+ one of OkHttp's background threads.</div>
 </li>
 </ul>
 <a name="responseBodyConverter-java.lang.reflect.Type-java.lang.annotation.Annotation:A-retrofit2.Retrofit-">
