@@ -75,13 +75,50 @@ jobs:
       - name: Run Tests
         run: ./gradlew retrofit:robovm-test:robovmTest
 
-  publish:
+  website:
     runs-on: ubuntu-latest
-    if: github.repository == 'square/retrofit' && github.ref == 'refs/heads/trunk'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version-file: .github/workflows/.java-version
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Build snapshot website
+        run: |
+          ./gradlew copyWebsiteDocs
+          cd website
+          npm install && npm run build
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: website
+          path: website/dist
+          if-no-files-found: error
+
+  final-status:
+    runs-on: ubuntu-latest
+    if: ${{ !cancelled() }}
     needs:
       - jvm
       - android
       - robovm
+      - website
+    steps:
+      - name: Check
+        run: |
+          results=$(tr -d '\n' <<< '${{ toJSON(needs.*.result) }}')
+          if ! grep -q -v -E '(failure|cancelled)' <<< "$results"; then
+            echo "One or more required jobs failed"
+            exit 1
+          fi
+
+  publish:
+    runs-on: ubuntu-latest
+    if: github.repository == 'square/retrofit' && github.ref == 'refs/heads/trunk'
+    needs:
+      - final-status
 
     steps:
       - uses: actions/checkout@v4
@@ -98,11 +135,10 @@ jobs:
           ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.GPG_SECRET_KEY }}
           ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.GPG_SECRET_PASSPHRASE }}
 
-      - name: Build snapshot website
-        run: |
-          ./gradlew copyWebsiteDocs
-          cd website
-          npm install && npm run build
+      - uses: actions/download-artifact@v4
+        with:
+          name: site
+          path: website/dist
 
       - name: Deploy snapshot website
         uses: JamesIves/github-pages-deploy-action@releases/v3
