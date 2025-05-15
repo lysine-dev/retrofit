@@ -10,6 +10,7 @@ import kotlinx.serialization.StringFormat
 import kotlinx.serialization.serializer
 import okhttp3.MediaType
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.ResponseBody
 
 internal sealed class Serializer {
@@ -28,7 +29,7 @@ internal sealed class Serializer {
 
     override fun <T> toRequestBody(contentType: MediaType, saver: SerializationStrategy<T>, value: T): RequestBody {
       val string = format.encodeToString(saver, value)
-      return RequestBody.create(contentType, string)
+      return string.toRequestBody(contentType)
     }
   }
 
@@ -40,7 +41,7 @@ internal sealed class Serializer {
 
     override fun <T> toRequestBody(contentType: MediaType, saver: SerializationStrategy<T>, value: T): RequestBody {
       val bytes = format.encodeToByteArray(saver, value)
-      return RequestBody.create(contentType, bytes)
+      return bytes.toRequestBody(contentType, 0, bytes.size)
     }
   }
 }

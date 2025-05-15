@@ -9,7 +9,9 @@
 
 **Changed**
 
- - Nothing yet!
+ - Upgrade to OkHttp 4.12 (from 3.14).
+
+   This is the version of OkHttp that is written in Kotlin, and as a result Retrofit now has a transitive Kotlin dependency. However, this is also the _supported_ version of OkHttp whereas the previous version was out of support for nearly 4 years.
 
 **Fixed**
 

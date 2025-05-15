@@ -5,6 +5,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.protobuf.ProtoBuf
 import kotlinx.serialization.protobuf.ProtoNumber
 import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okio.Buffer
@@ -36,7 +37,7 @@ class KotlinSerializationConverterFactoryBytesTest {
   data class User(@ProtoNumber(1) val name: String)
 
   @Before fun setUp() {
-    val contentType = MediaType.get("application/x-protobuf")
+    val contentType = "application/x-protobuf".toMediaType()
     val retrofit = Retrofit.Builder()
       .baseUrl(server.url("/"))
       .addConverterFactory(ProtoBuf.asConverterFactory(contentType))

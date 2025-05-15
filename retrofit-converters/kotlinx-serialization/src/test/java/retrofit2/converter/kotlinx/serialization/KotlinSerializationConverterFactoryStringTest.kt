@@ -3,6 +3,7 @@ package retrofit2.converter.kotlinx.serialization
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.Assert.assertEquals
@@ -29,7 +30,7 @@ class KotlinSerializationConverterFactoryStringTest {
   data class User(val name: String)
 
   @Before fun setUp() {
-    val contentType = MediaType.get("application/json; charset=utf-8")
+    val contentType = "application/json; charset=utf-8".toMediaType()
     val retrofit = Retrofit.Builder()
       .baseUrl(server.url("/"))
       .addConverterFactory(Json.asConverterFactory(contentType))
