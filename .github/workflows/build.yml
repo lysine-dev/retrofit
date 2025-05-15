@@ -89,7 +89,7 @@ jobs:
         run: |
           ./gradlew copyWebsiteDocs
           cd website
-          npm install && npm run build
+          npm install && npm run build -- --mode snapshot
 
       - uses: actions/upload-artifact@v4
         with:
