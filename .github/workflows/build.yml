@@ -137,7 +137,7 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          name: site
+          name: website
           path: website/dist
 
       - name: Deploy snapshot website
