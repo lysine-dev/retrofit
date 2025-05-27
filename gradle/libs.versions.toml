@@ -27,7 +27,7 @@ androidPlugin = { module = "com.android.tools.build:gradle", version = "8.10.0" 
 robovmPlugin = { module = "com.mobidevelop.robovm:robovm-gradle-plugin", version.ref = "robovm" }
 dokkaPlugin = "org.jetbrains.dokka:dokka-gradle-plugin:2.0.0"
 gradleMavenPublishPlugin = "com.vanniktech:gradle-maven-publish-plugin:0.32.0"
-spotlessPlugin = "com.diffplug.spotless:spotless-plugin-gradle:7.0.3"
+spotlessPlugin = "com.diffplug.spotless:spotless-plugin-gradle:7.0.4"
 
 kotlin-stdLib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
