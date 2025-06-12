@@ -11,3 +11,12 @@ ij_kotlin_allow_trailing_comma = true
 ij_kotlin_allow_trailing_comma_on_call_site = true
 ij_kotlin_imports_layout = *
 ktlint_code_style = intellij_idea
+
+[*.mjs]
+indent_style = tab
+
+[*.ts]
+indent_style = tab
+
+[*.css]
+indent_style = tab

@@ -1,0 +1,6 @@
+dist/
+.astro/
+node_modules/
+
+# Populated by ./gradlew copyWebsiteDocs
+public/3.x/

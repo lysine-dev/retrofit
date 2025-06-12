@@ -1,6 +1,37 @@
 # Change Log
 
 ## [Unreleased]
+[Unreleased]: https://github.com/square/retrofit/compare/3.0.0...HEAD
+
+**New**
+
+ - Nothing yet!
+
+**Changed**
+
+ - In-development snapshots are now published to the Central Portal Snapshots repository at https://central.sonatype.com/repository/maven-snapshots/.
+
+**Fixed**
+
+ - Nothing yet!
+
+
+## [3.0.0] - 2025-05-15
+[3.0.0]: https://github.com/square/retrofit/releases/tag/3.0.0
+
+**Changed**
+
+ - Upgrade to OkHttp 4.12 (from 3.14).
+
+   This is the version of OkHttp that is written in Kotlin, and as a result Retrofit now has a transitive Kotlin dependency. However, this is also the _supported_ version of OkHttp whereas the previous version was out of support for nearly 4 years.
+
+
+Note: The 3.x versions of Retrofit maintain forward binary-compatibility with the 2.x versions.
+This means libraries compiled against 2.x can still be used with the 3.x versions.
+
+
+## [2.12.0] - 2025-05-15
+[2.12.0]: https://github.com/square/retrofit/releases/tag/2.12.0
 
 **New**
 
@@ -12,10 +43,6 @@
    - Moshi
    - Protobuf
    - Wire
-
-**Changed**
-
- - In-development snapshots are now published to the Central Portal Snapshots repository at https://central.sonatype.com/repository/maven-snapshots/.
 
 **Fixed**
 
@@ -682,7 +709,6 @@ Initial release.
 
 
 
-[Unreleased]: https://github.com/square/retrofit/compare/2.11.0...HEAD
 [2.11.0]: https://github.com/square/retrofit/releases/tag/2.11.0
 [2.10.0]: https://github.com/square/retrofit/releases/tag/2.10.0
 [2.9.0]: https://github.com/square/retrofit/releases/tag/2.9.0

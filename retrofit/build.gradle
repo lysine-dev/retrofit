@@ -35,7 +35,6 @@ dependencies {
   api libs.okhttp.client
 
   compileOnly libs.android
-  compileOnly libs.kotlin.stdLib
   compileOnly libs.kotlinx.coroutines
 
   compileOnly libs.animalSnifferAnnotations

@@ -14,8 +14,8 @@
 
 [versions]
 kotlin = "2.1.21"
-okhttp = "3.14.9"
-protobuf = "3.25.7"
+okhttp = "4.12.0"
+protobuf = "3.25.8"
 robovm = "2.3.14"
 kotlinx-serialization = "1.8.1"
 autoService = "1.1.1"
@@ -23,11 +23,11 @@ incap = "1.0.0"
 jackson = "2.19.0"
 
 [libraries]
-androidPlugin = { module = "com.android.tools.build:gradle", version = "8.10.0" }
+androidPlugin = { module = "com.android.tools.build:gradle", version = "8.10.1" }
 robovmPlugin = { module = "com.mobidevelop.robovm:robovm-gradle-plugin", version.ref = "robovm" }
 dokkaPlugin = "org.jetbrains.dokka:dokka-gradle-plugin:2.0.0"
-gradleMavenPublishPlugin = "com.vanniktech:gradle-maven-publish-plugin:0.31.0"
-spotlessPlugin = "com.diffplug.spotless:spotless-plugin-gradle:7.0.3"
+gradleMavenPublishPlugin = "com.vanniktech:gradle-maven-publish-plugin:0.32.0"
+spotlessPlugin = "com.diffplug.spotless:spotless-plugin-gradle:7.0.4"
 
 kotlin-stdLib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
@@ -81,6 +81,6 @@ wireRuntime = { module = "com.squareup.wire:wire-runtime", version = "2.2.0" }
 jsoup = { module = "org.jsoup:jsoup", version = "1.20.1" }
 robovm = { module = "com.mobidevelop.robovm:robovm-rt", version.ref = "robovm" }
 googleJavaFormat = "com.google.googlejavaformat:google-java-format:1.27.0"
-ktlint = "com.pinterest.ktlint:ktlint-cli:1.5.0"
+ktlint = "com.pinterest.ktlint:ktlint-cli:1.6.0"
 compileTesting = "com.google.testing.compile:compile-testing:0.21.0"
 testParameterInjector = "com.google.testparameterinjector:test-parameter-injector:1.18"
