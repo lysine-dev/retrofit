@@ -20,7 +20,7 @@ robovm = "2.3.14"
 kotlinx-serialization = "1.8.1"
 autoService = "1.1.1"
 incap = "1.0.0"
-jackson = "2.19.0"
+jackson = "2.19.1"
 
 [libraries]
 androidPlugin = { module = "com.android.tools.build:gradle", version = "8.10.1" }
