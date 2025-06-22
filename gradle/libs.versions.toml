@@ -26,7 +26,7 @@ jackson = "2.19.1"
 androidPlugin = { module = "com.android.tools.build:gradle", version = "8.10.1" }
 robovmPlugin = { module = "com.mobidevelop.robovm:robovm-gradle-plugin", version.ref = "robovm" }
 dokkaPlugin = "org.jetbrains.dokka:dokka-gradle-plugin:2.0.0"
-gradleMavenPublishPlugin = "com.vanniktech:gradle-maven-publish-plugin:0.32.0"
+gradleMavenPublishPlugin = "com.vanniktech:gradle-maven-publish-plugin:0.33.0"
 spotlessPlugin = "com.diffplug.spotless:spotless-plugin-gradle:7.0.4"
 
 kotlin-stdLib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
