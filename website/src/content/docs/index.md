@@ -32,3 +32,6 @@ Use annotations to describe the HTTP request on each interface method:
 * URL parameter replacement and query parameter support
 * Object conversion to request body (e.g., JSON, protocol buffers)
 * Multipart request body and file upload
+implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+implementation 'com.google.android.material:material:1.4.0'
