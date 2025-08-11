@@ -16,12 +16,6 @@ dependencies {
   testImplementation projects.retrofitConverters.scalars
 }
 
-jar {
-  manifest {
-    attributes 'Automatic-Module-Name': 'retrofit2.adapter.sse-java9'
-  }
-}
-
 kotlin {
   jvmToolchain 9
 }
