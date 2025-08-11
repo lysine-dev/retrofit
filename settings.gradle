@@ -30,6 +30,7 @@ include ':retrofit-adapters:rxjava'
 include ':retrofit-adapters:rxjava2'
 include ':retrofit-adapters:rxjava3'
 include ':retrofit-adapters:scala'
+include ':retrofit-adapters:sse-java9'
 
 include ':retrofit-converters:gson'
 include ':retrofit-converters:guava'
