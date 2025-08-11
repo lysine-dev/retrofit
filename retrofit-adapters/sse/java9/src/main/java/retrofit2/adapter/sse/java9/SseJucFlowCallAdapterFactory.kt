@@ -67,9 +67,9 @@ object SseJucFlowCallAdapterFactory : CallAdapter.Factory() {
       idType,
       typeType,
       dataType,
-      retrofit.stringConverter(idType, EMPTY_ARRAY),
-      retrofit.stringConverter(typeType, EMPTY_ARRAY),
-      retrofit.stringConverter(dataType, EMPTY_ARRAY),
+      retrofit.responseBodyConverter(idType, EMPTY_ARRAY),
+      retrofit.responseBodyConverter(typeType, EMPTY_ARRAY),
+      retrofit.responseBodyConverter(dataType, EMPTY_ARRAY),
       retrofit,
     )
   }

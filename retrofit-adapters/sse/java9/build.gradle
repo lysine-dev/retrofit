@@ -14,7 +14,6 @@ dependencies {
   testImplementation libs.guava
   testImplementation libs.okhttp.mockwebserver
   testImplementation projects.retrofitConverters.scalars
-  testImplementation projects.retrofitConverters.gson
 }
 
 jar {

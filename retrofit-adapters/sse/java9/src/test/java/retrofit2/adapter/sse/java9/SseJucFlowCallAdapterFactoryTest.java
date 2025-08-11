@@ -41,7 +41,7 @@ public final class SseJucFlowCallAdapterFactoryTest {
   interface Service {
     @Streaming
     @GET("/")
-    Flow.Publisher<ServerSentEvent<String, String, String>> sse();
+    Flow.Publisher<ServerSentEvent<Integer, String, String>> sse();
   }
 
   private Service service;
@@ -52,7 +52,6 @@ public final class SseJucFlowCallAdapterFactoryTest {
       new Retrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(ScalarsConverterFactory.create())
-//        .addConverterFactory(GsonConverterFactory.create())
         .addCallAdapterFactory(SseJucFlowCallAdapterFactory.INSTANCE)
         .build();
     service = retrofit.create(Service.class);
@@ -76,15 +75,15 @@ public final class SseJucFlowCallAdapterFactoryTest {
       }
 
       @Override
-      public void onNext(ServerSentEvent<String, String, String> serverSentEvent) {
+      public void onNext(ServerSentEvent<Integer, String, String> serverSentEvent) {
         switch (count.incrementAndGet()) {
           case 1:
-            assertThat(serverSentEvent.id()).isEqualTo("1");
+            assertThat(serverSentEvent.id()).isEqualTo(1);
             assertThat(serverSentEvent.type()).isEqualTo("type1");
             assertThat(serverSentEvent.data()).isEqualTo("foo");
             break;
           case 2:
-            assertThat(serverSentEvent.id()).isEqualTo("2");
+            assertThat(serverSentEvent.id()).isEqualTo(2);
             assertThat(serverSentEvent.type()).isEqualTo(null);
             assertThat(serverSentEvent.data()).isEqualTo("bar");
             break;

@@ -22,6 +22,7 @@ import java.util.concurrent.Flow
 import java.util.concurrent.ForkJoinPool
 import java.util.concurrent.SubmissionPublisher
 import okhttp3.ResponseBody
+import okhttp3.ResponseBody.Companion.toResponseBody
 import okhttp3.sse.EventSource
 import okhttp3.sse.EventSourceListener
 import okhttp3.sse.EventSources
@@ -40,9 +41,9 @@ internal class SseJucFlowCallAdapter<ID : Any, TYPE : Any, DATA : Any>(
   private val idType: Type,
   private val typeType: Type,
   private val dataType: Type,
-  private val idConverter: Converter<String?, ID?>,
-  private val typeConverter: Converter<String?, TYPE?>,
-  private val dataConverter: Converter<String, DATA>,
+  private val idConverter: Converter<ResponseBody, ID?>,
+  private val typeConverter: Converter<ResponseBody, TYPE?>,
+  private val dataConverter: Converter<ResponseBody, DATA>,
   retrofit: Retrofit,
 ) : CallAdapter<ResponseBody, Flow.Publisher<ServerSentEvent<ID, TYPE, DATA>>> {
 
@@ -102,15 +103,15 @@ internal class SseJucFlowCallAdapter<ID : Any, TYPE : Any, DATA : Any>(
   }
 
   private fun convertId(id: String?): ID? {
-    return if (id != null) idConverter.convert(id) ?: conversionError(id, idType) else null
+    return if (id != null) idConverter.convert(id.toResponseBody()) ?: conversionError(id, idType) else null
   }
 
   private fun convertType(type: String?): TYPE? {
-    return if (type != null) typeConverter.convert(type) ?: conversionError(type, typeType) else null
+    return if (type != null) typeConverter.convert(type.toResponseBody()) ?: conversionError(type, typeType) else null
   }
 
   private fun convertData(data: String): DATA {
-    return dataConverter.convert(data) ?: conversionError(data, dataType)
+    return dataConverter.convert(data.toResponseBody()) ?: conversionError(data, dataType)
   }
 
 }
