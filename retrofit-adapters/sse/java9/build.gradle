@@ -5,6 +5,7 @@ apply plugin: 'org.jetbrains.dokka'
 
 dependencies {
   api projects.retrofit
+  api projects.retrofitAdapters.sse.core
   api libs.okhttp.sse
   compileOnly libs.findBugsAnnotations
 
@@ -18,7 +19,7 @@ dependencies {
 
 jar {
   manifest {
-    attributes  'Automatic-Module-Name': 'retrofit2.adapter.sse-java9'
+    attributes 'Automatic-Module-Name': 'retrofit2.adapter.sse-java9'
   }
 }
 
