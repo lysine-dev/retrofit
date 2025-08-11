@@ -6,14 +6,11 @@ apply plugin: 'org.jetbrains.dokka'
 dependencies {
   api projects.retrofit
   api projects.retrofitAdapters.sse.core
+  api libs.kotlinx.coroutines
   compileOnly libs.findBugsAnnotations
 
   testImplementation libs.junit
   testImplementation libs.truth
   testImplementation libs.okhttp.mockwebserver
   testImplementation projects.retrofitConverters.scalars
-}
-
-kotlin {
-  jvmToolchain 9
 }
