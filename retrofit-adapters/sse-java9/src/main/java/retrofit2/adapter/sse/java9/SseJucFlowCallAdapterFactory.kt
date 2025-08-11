@@ -21,11 +21,11 @@ import java.util.concurrent.Flow
 import retrofit2.CallAdapter
 import retrofit2.Retrofit
 import retrofit2.adapter.sse.ServerSentEvent
+import retrofit2.http.Streaming
 
-class SseJucFlowCallAdapterFactory : CallAdapter.Factory() {
-  companion object {
-    private val EMPTY_ARRAY = emptyArray<Annotation>()
-  }
+private val EMPTY_ARRAY = emptyArray<Annotation>()
+
+object SseJucFlowCallAdapterFactory : CallAdapter.Factory() {
 
   override fun get(
     returnType: Type,
@@ -53,6 +53,10 @@ class SseJucFlowCallAdapterFactory : CallAdapter.Factory() {
         "ServerSentEvent must be parameterized as ServerSentEvent<ID, TYPE, DATA>" +
           " or ServerSentEvent<? extends ID, ? extends TYPE, ? extends DATA>",
       )
+    }
+
+    if (annotations.none { it is Streaming }) {
+      error("SSE endpoint must be annotated with @Streaming")
     }
 
     val idType = getParameterUpperBound(0, innerType)
