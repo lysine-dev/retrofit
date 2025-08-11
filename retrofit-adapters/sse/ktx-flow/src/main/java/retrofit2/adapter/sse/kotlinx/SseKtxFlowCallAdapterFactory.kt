@@ -23,8 +23,6 @@ import retrofit2.Retrofit
 import retrofit2.adapter.sse.ServerSentEvent
 import retrofit2.http.Streaming
 
-private val EMPTY_ARRAY = emptyArray<Annotation>()
-
 object SseKtxFlowCallAdapterFactory : CallAdapter.Factory() {
 
   override fun get(
@@ -63,14 +61,11 @@ object SseKtxFlowCallAdapterFactory : CallAdapter.Factory() {
     val typeType = getParameterUpperBound(1, innerType)
     val dataType = getParameterUpperBound(2, innerType)
 
-    return SseKtxFlowCallAdapter(
+    return SseKtxFlowCallAdapter<Any, Any, Any>(
+      retrofit,
       idType,
       typeType,
       dataType,
-      retrofit.responseBodyConverter(idType, EMPTY_ARRAY),
-      retrofit.responseBodyConverter(typeType, EMPTY_ARRAY),
-      retrofit.responseBodyConverter(dataType, EMPTY_ARRAY),
-      retrofit,
     )
   }
 }

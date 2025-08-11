@@ -22,37 +22,25 @@ import java.util.concurrent.Flow
 import java.util.concurrent.ForkJoinPool
 import java.util.concurrent.SubmissionPublisher
 import okhttp3.ResponseBody
-import okhttp3.ResponseBody.Companion.toResponseBody
 import okhttp3.sse.EventSource
 import okhttp3.sse.EventSourceListener
-import okhttp3.sse.EventSources
 import retrofit2.Call
-import retrofit2.CallAdapter
 import retrofit2.Callback
-import retrofit2.Converter
 import retrofit2.Retrofit
 import retrofit2.adapter.sse.ServerSentEvent
-
-@Suppress("NOTHING_TO_INLINE")
-private inline fun <T : Any> conversionError(value: T, type: Type): Nothing =
-  error("Failed to convert $value to $type, actual type is ${value.javaClass}")
+import retrofit2.adapter.sse.internal.AbstractSseCallAdapter
 
 internal class SseJucFlowCallAdapter<ID : Any, TYPE : Any, DATA : Any>(
-  private val idType: Type,
-  private val typeType: Type,
-  private val dataType: Type,
-  private val idConverter: Converter<ResponseBody, ID?>,
-  private val typeConverter: Converter<ResponseBody, TYPE?>,
-  private val dataConverter: Converter<ResponseBody, DATA>,
   retrofit: Retrofit,
-) : CallAdapter<ResponseBody, Flow.Publisher<ServerSentEvent<ID, TYPE, DATA>>> {
+  idType: Type,
+  typeType: Type,
+  dataType: Type,
+) : AbstractSseCallAdapter<ID, TYPE, DATA, Flow.Publisher<ServerSentEvent<ID, TYPE, DATA>>>(retrofit, idType, typeType, dataType) {
 
   private val executor: Executor =
     retrofit.callbackExecutor()
       ?: ForkJoinPool.commonPool().takeIf { ForkJoinPool.getCommonPoolParallelism() > 1 }
       ?: Executors.newCachedThreadPool()
-
-  override fun responseType(): Type = ResponseBody::class.java
 
   override fun adapt(
     call: Call<ResponseBody>,
@@ -76,14 +64,10 @@ internal class SseJucFlowCallAdapter<ID : Any, TYPE : Any, DATA : Any>(
     private val publisher: SubmissionPublisher<ServerSentEvent<ID, TYPE, DATA>>,
   ) : Callback<ResponseBody> {
     override fun onResponse(call: Call<ResponseBody>, response: retrofit2.Response<ResponseBody>) {
-      EventSources.processResponse(
-        response.raw().newBuilder().body(response.body() ?: error("Response body is null")).build(),
+      response.asSse(
         object : EventSourceListener() {
           override fun onEvent(eventSource: EventSource, id: String?, type: String?, data: String) {
-            val convertedId = convertId(id)
-            val convertedType = convertType(type)
-            val convertedData = convertData(data)
-            publisher.submit(ServerSentEvent(convertedId, convertedType, convertedData))
+            publisher.submit(createTypedEvent(id, type, data))
           }
 
           override fun onClosed(eventSource: EventSource) {
@@ -100,18 +84,6 @@ internal class SseJucFlowCallAdapter<ID : Any, TYPE : Any, DATA : Any>(
     override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
       publisher.closeExceptionally(t)
     }
-  }
-
-  private fun convertId(id: String?): ID? {
-    return if (id != null) idConverter.convert(id.toResponseBody()) ?: conversionError(id, idType) else null
-  }
-
-  private fun convertType(type: String?): TYPE? {
-    return if (type != null) typeConverter.convert(type.toResponseBody()) ?: conversionError(type, typeType) else null
-  }
-
-  private fun convertData(data: String): DATA {
-    return dataConverter.convert(data.toResponseBody()) ?: conversionError(data, dataType)
   }
 
 }
