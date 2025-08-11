@@ -41,7 +41,7 @@ public final class SseJucFlowCallAdapterFactoryTest {
   interface Service {
     @Streaming
     @GET("/")
-    Flow.Publisher<ServerSentEvent<Integer, String, String>> sse();
+    Flow.Publisher<ServerSentEvent<String, String, String>> sse();
   }
 
   private Service service;
@@ -62,30 +62,29 @@ public final class SseJucFlowCallAdapterFactoryTest {
   public void simpleEvents() throws Exception {
     MockResponse mockResponse = new MockResponse()
       .setHeader("Content-Type", "text/event-stream")
-      .setBody("id: 1\ndata: foo\n\nid: 2\ndata: bar\n\n");
+      .setBody("id: 1\nevent: type1\ndata: foo\n\nid: 2\ndata: bar\n\n");
     server.enqueue(mockResponse);
 
     CompletableFuture<Void> completableFuture = new CompletableFuture<>();
 
     service.sse().subscribe(new Flow.Subscriber<>() {
-      private final AtomicInteger count = new AtomicInteger();
+      private final AtomicInteger count = new AtomicInteger(0);
 
       @Override
       public void onSubscribe(Flow.Subscription subscription) {
-        subscription.request(1);
-        count.incrementAndGet();
+        subscription.request(2);
       }
 
       @Override
-      public void onNext(ServerSentEvent<Integer, String, String> serverSentEvent) {
-        switch (count.get()) {
+      public void onNext(ServerSentEvent<String, String, String> serverSentEvent) {
+        switch (count.incrementAndGet()) {
           case 1:
-            assertThat(serverSentEvent.id()).isEqualTo(1);
-            assertThat(serverSentEvent.type()).isEqualTo(null);
+            assertThat(serverSentEvent.id()).isEqualTo("1");
+            assertThat(serverSentEvent.type()).isEqualTo("type1");
             assertThat(serverSentEvent.data()).isEqualTo("foo");
             break;
           case 2:
-            assertThat(serverSentEvent.id()).isEqualTo(2);
+            assertThat(serverSentEvent.id()).isEqualTo("2");
             assertThat(serverSentEvent.type()).isEqualTo(null);
             assertThat(serverSentEvent.data()).isEqualTo("bar");
             break;

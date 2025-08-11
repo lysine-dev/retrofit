@@ -72,7 +72,7 @@ internal class SseJucFlowCallAdapter<ID : Any, TYPE : Any, DATA : Any>(
   ) : Callback<ResponseBody> {
     override fun onResponse(call: Call<ResponseBody>, response: retrofit2.Response<ResponseBody>) {
       EventSources.processResponse(
-        response.raw(),
+        response.raw().newBuilder().body(response.body() ?: error("Response body is null")).build(),
         object : EventSourceListener() {
           override fun onEvent(eventSource: EventSource, id: String?, type: String?, data: String) {
             val convertedId = convertId(id)
