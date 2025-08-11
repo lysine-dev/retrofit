@@ -32,6 +32,10 @@ import retrofit2.Converter
 import retrofit2.Retrofit
 import retrofit2.adapter.sse.ServerSentEvent
 
+@Suppress("NOTHING_TO_INLINE")
+private inline fun <T : Any> conversionError(value: T, type: Type): Nothing =
+  error("Failed to convert $value to $type, actual type is ${value.javaClass}")
+
 internal class SseJucFlowCallAdapter<ID : Any, TYPE : Any, DATA : Any>(
   private val idType: Type,
   private val typeType: Type,
@@ -98,15 +102,15 @@ internal class SseJucFlowCallAdapter<ID : Any, TYPE : Any, DATA : Any>(
   }
 
   private fun convertId(id: String?): ID? {
-    return if (id != null) idConverter.convert(id) ?: error("Failed to convert $id to $idType, actual type is ${id.javaClass}") else null
+    return if (id != null) idConverter.convert(id) ?: conversionError(id, idType) else null
   }
 
   private fun convertType(type: String?): TYPE? {
-    return if (type != null) typeConverter.convert(type) ?: error("Failed to convert $type to $typeType, actual type is ${type.javaClass}") else null
+    return if (type != null) typeConverter.convert(type) ?: conversionError(type, typeType) else null
   }
 
   private fun convertData(data: String): DATA {
-    return dataConverter.convert(data) ?: error("Failed to convert $data to $dataType, actual type is ${data.javaClass}")
+    return dataConverter.convert(data) ?: conversionError(data, dataType)
   }
 
 }
