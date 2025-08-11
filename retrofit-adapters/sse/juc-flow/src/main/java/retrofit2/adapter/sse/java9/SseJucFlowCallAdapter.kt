@@ -31,14 +31,14 @@ import retrofit2.adapter.sse.ServerSentEvent
 import retrofit2.adapter.sse.internal.AbstractSseCallAdapter
 
 internal class SseJucFlowCallAdapter<ID : Any, TYPE : Any, DATA : Any>(
+  executor: Executor?,
   retrofit: Retrofit,
   idType: Type,
   typeType: Type,
   dataType: Type,
 ) : AbstractSseCallAdapter<ID, TYPE, DATA, Flow.Publisher<ServerSentEvent<ID, TYPE, DATA>>>(retrofit, idType, typeType, dataType) {
 
-  private val executor: Executor =
-    retrofit.callbackExecutor()
+  private val executor: Executor = executor ?: retrofit.callbackExecutor()
       ?: ForkJoinPool.commonPool().takeIf { ForkJoinPool.getCommonPoolParallelism() > 1 }
       ?: Executors.newCachedThreadPool()
 

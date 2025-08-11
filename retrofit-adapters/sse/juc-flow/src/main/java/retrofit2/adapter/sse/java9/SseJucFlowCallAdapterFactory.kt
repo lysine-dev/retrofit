@@ -17,13 +17,22 @@ package retrofit2.adapter.sse.java9
 
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
+import java.util.concurrent.Executor
 import java.util.concurrent.Flow
 import retrofit2.CallAdapter
 import retrofit2.Retrofit
 import retrofit2.adapter.sse.ServerSentEvent
 import retrofit2.http.Streaming
 
-object SseJucFlowCallAdapterFactory : CallAdapter.Factory() {
+class SseJucFlowCallAdapterFactory private constructor(
+  private val executor: Executor?,
+): CallAdapter.Factory() {
+
+  companion object {
+    @JvmStatic
+    @JvmOverloads
+    fun create(executor: Executor? = null) = SseJucFlowCallAdapterFactory(executor)
+  }
 
   override fun get(
     returnType: Type,
@@ -62,6 +71,7 @@ object SseJucFlowCallAdapterFactory : CallAdapter.Factory() {
     val dataType = getParameterUpperBound(2, innerType)
 
     return SseJucFlowCallAdapter<Any, Any, Any>(
+      executor,
       retrofit,
       idType,
       typeType,

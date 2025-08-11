@@ -52,7 +52,7 @@ public final class SseJucFlowCallAdapterFactoryTest {
       new Retrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(ScalarsConverterFactory.create())
-        .addCallAdapterFactory(SseJucFlowCallAdapterFactory.INSTANCE)
+        .addCallAdapterFactory(SseJucFlowCallAdapterFactory.create())
         .build();
     service = retrofit.create(Service.class);
   }
