@@ -17,6 +17,10 @@ package retrofit2.adapter.sse.java9;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Flow;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.Before;
@@ -28,15 +32,9 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
 import retrofit2.http.GET;
 import retrofit2.http.Streaming;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Flow;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-
 public final class SseJucFlowCallAdapterFactoryTest {
 
-  @Rule
-  public final MockWebServer server = new MockWebServer();
+  @Rule public final MockWebServer server = new MockWebServer();
 
   interface Service {
     @Streaming
@@ -49,59 +47,62 @@ public final class SseJucFlowCallAdapterFactoryTest {
   @Before
   public void setUp() {
     Retrofit retrofit =
-      new Retrofit.Builder()
-        .baseUrl(server.url("/"))
-        .addConverterFactory(ScalarsConverterFactory.create())
-        .addCallAdapterFactory(SseJucFlowCallAdapterFactory.create())
-        .build();
+        new Retrofit.Builder()
+            .baseUrl(server.url("/"))
+            .addConverterFactory(ScalarsConverterFactory.create())
+            .addCallAdapterFactory(SseJucFlowCallAdapterFactory.create())
+            .build();
     service = retrofit.create(Service.class);
   }
 
   @Test
   public void simpleEvents() throws Exception {
-    MockResponse mockResponse = new MockResponse()
-      .setHeader("Content-Type", "text/event-stream")
-      .setBody("id: 1\nevent: type1\ndata: foo\n\nid: 2\ndata: bar\n\n");
+    MockResponse mockResponse =
+        new MockResponse()
+            .setHeader("Content-Type", "text/event-stream")
+            .setBody("id: 1\nevent: type1\ndata: foo\n\nid: 2\ndata: bar\n\n");
     server.enqueue(mockResponse);
 
     CompletableFuture<Void> completableFuture = new CompletableFuture<>();
 
-    service.sse().subscribe(new Flow.Subscriber<>() {
-      private final AtomicInteger count = new AtomicInteger(0);
+    service
+        .sse()
+        .subscribe(
+            new Flow.Subscriber<>() {
+              private final AtomicInteger count = new AtomicInteger(0);
 
-      @Override
-      public void onSubscribe(Flow.Subscription subscription) {
-        subscription.request(2);
-      }
+              @Override
+              public void onSubscribe(Flow.Subscription subscription) {
+                subscription.request(2);
+              }
 
-      @Override
-      public void onNext(ServerSentEvent<Integer, String, String> serverSentEvent) {
-        switch (count.incrementAndGet()) {
-          case 1:
-            assertThat(serverSentEvent.id()).isEqualTo(1);
-            assertThat(serverSentEvent.type()).isEqualTo("type1");
-            assertThat(serverSentEvent.data()).isEqualTo("foo");
-            break;
-          case 2:
-            assertThat(serverSentEvent.id()).isEqualTo(2);
-            assertThat(serverSentEvent.type()).isEqualTo(null);
-            assertThat(serverSentEvent.data()).isEqualTo("bar");
-            break;
-        }
-      }
+              @Override
+              public void onNext(ServerSentEvent<Integer, String, String> serverSentEvent) {
+                switch (count.incrementAndGet()) {
+                  case 1:
+                    assertThat(serverSentEvent.id()).isEqualTo(1);
+                    assertThat(serverSentEvent.type()).isEqualTo("type1");
+                    assertThat(serverSentEvent.data()).isEqualTo("foo");
+                    break;
+                  case 2:
+                    assertThat(serverSentEvent.id()).isEqualTo(2);
+                    assertThat(serverSentEvent.type()).isEqualTo(null);
+                    assertThat(serverSentEvent.data()).isEqualTo("bar");
+                    break;
+                }
+              }
 
-      @Override
-      public void onError(Throwable throwable) {
-        completableFuture.completeExceptionally(throwable);
-      }
+              @Override
+              public void onError(Throwable throwable) {
+                completableFuture.completeExceptionally(throwable);
+              }
 
-      @Override
-      public void onComplete() {
-        completableFuture.complete(null);
-      }
-    });
+              @Override
+              public void onComplete() {
+                completableFuture.complete(null);
+              }
+            });
 
     completableFuture.get(5, TimeUnit.SECONDS);
   }
-
 }

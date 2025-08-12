@@ -16,46 +16,46 @@
 package retrofit2.adapter.sse.kotlinx
 
 import java.lang.reflect.Type
+import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import okhttp3.ResponseBody
-import okhttp3.sse.EventSource
-import okhttp3.sse.EventSourceListener
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.adapter.sse.ServerSentEvent
 import retrofit2.adapter.sse.internal.AbstractSseCallAdapter
-import retrofit2.awaitResponse
 
 internal class SseKtxFlowCallAdapter<ID : Any, TYPE : Any, DATA : Any>(
   retrofit: Retrofit,
   idType: Type,
   typeType: Type,
   dataType: Type,
-) : AbstractSseCallAdapter<ID, TYPE, DATA, Flow<ServerSentEvent<ID, TYPE, DATA>>>(retrofit, idType, typeType, dataType) {
+) : AbstractSseCallAdapter<ID, TYPE, DATA, Flow<ServerSentEvent<ID, TYPE, DATA>>, ProducerScope<ServerSentEvent<ID, TYPE, DATA>>>(retrofit, idType, typeType, dataType) {
 
   override fun adapt(
     call: Call<ResponseBody>,
   ): Flow<ServerSentEvent<ID, TYPE, DATA>> = callbackFlow {
-    call.awaitResponse().asSse(
-      object : EventSourceListener() {
-        override fun onEvent(eventSource: EventSource, id: String?, type: String?, data: String) {
-          trySendBlocking(createTypedEvent(id, type, data))
-        }
-
-        override fun onClosed(eventSource: EventSource) {
-          close()
-        }
-
-        override fun onFailure(eventSource: EventSource, t: Throwable?, response: okhttp3.Response?) {
-          close(t ?: RuntimeException()) // TODO
-        }
-      },
-    )
-
+    call.attachEventSourceListener(this)
     awaitClose(call::cancel)
   }
 
+  override fun emit(
+    builder: ProducerScope<ServerSentEvent<ID, TYPE, DATA>>,
+    event: ServerSentEvent<ID, TYPE, DATA>,
+  ) {
+    builder.trySendBlocking(event)
+  }
+
+  override fun close(builder: ProducerScope<ServerSentEvent<ID, TYPE, DATA>>) {
+    builder.close()
+  }
+
+  override fun closeExceptionally(
+    builder: ProducerScope<ServerSentEvent<ID, TYPE, DATA>>,
+    t: Throwable,
+  ) {
+    builder.close(t)
+  }
 }

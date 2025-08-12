@@ -26,7 +26,7 @@ import retrofit2.http.Streaming
 
 class SseJucFlowCallAdapterFactory private constructor(
   private val executor: Executor?,
-): CallAdapter.Factory() {
+) : CallAdapter.Factory() {
 
   companion object {
     @JvmStatic

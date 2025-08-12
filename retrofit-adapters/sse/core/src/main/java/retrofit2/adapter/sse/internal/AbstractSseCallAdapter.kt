@@ -21,6 +21,7 @@ import okhttp3.ResponseBody.Companion.toResponseBody
 import okhttp3.sse.EventSource
 import okhttp3.sse.EventSourceListener
 import okhttp3.sse.EventSources
+import retrofit2.Call
 import retrofit2.CallAdapter
 import retrofit2.Converter
 import retrofit2.Response
@@ -30,15 +31,14 @@ import retrofit2.adapter.sse.ServerSentEvent
 private val EMPTY_ARRAY = emptyArray<Annotation>()
 
 @Suppress("NOTHING_TO_INLINE")
-private inline fun <T : Any> conversionError(value: T, type: Type): Nothing =
-  error("Failed to convert $value to $type, actual type is ${value.javaClass}")
+private inline fun <T : Any> conversionError(value: T, type: Type): Nothing = error("Failed to convert $value to $type, actual type is ${value.javaClass}")
 
-abstract class AbstractSseCallAdapter<ID : Any, TYPE : Any, DATA : Any, FLOW : Any>(
+abstract class AbstractSseCallAdapter<ID : Any, TYPE : Any, DATA : Any, O : Any, I : Any>(
   retrofit: Retrofit,
   private val idType: Type,
   private val typeType: Type,
   private val dataType: Type,
-) : CallAdapter<ResponseBody, FLOW> {
+) : CallAdapter<ResponseBody, O> {
 
   private val idConverter: Converter<ResponseBody, ID?> = retrofit.responseBodyConverter(idType, EMPTY_ARRAY)
   private val typeConverter: Converter<ResponseBody, TYPE?> = retrofit.responseBodyConverter(typeType, EMPTY_ARRAY)
@@ -46,12 +46,40 @@ abstract class AbstractSseCallAdapter<ID : Any, TYPE : Any, DATA : Any, FLOW : A
 
   final override fun responseType(): Type = ResponseBody::class.java
 
-  protected fun Response<ResponseBody>.asSse(listener: EventSourceListener) {
+  protected fun Call<ResponseBody>.attachEventSourceListener(builder: I) {
+    this.enqueue(
+      object : retrofit2.Callback<ResponseBody> {
+        override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+          response.asSse(
+            object : EventSourceListener() {
+              override fun onEvent(eventSource: EventSource, id: String?, type: String?, data: String) {
+                emit(builder, createTypedEvent(id, type, data))
+              }
+
+              override fun onClosed(eventSource: EventSource) {
+                close(builder)
+              }
+
+              override fun onFailure(eventSource: EventSource, t: Throwable?, response: okhttp3.Response?) {
+                closeExceptionally(builder, t ?: RuntimeException()) // TODO: exception type
+              }
+            },
+          )
+        }
+
+        override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+          closeExceptionally(builder, t)
+        }
+      },
+    )
+  }
+
+  private fun Response<ResponseBody>.asSse(listener: EventSourceListener) {
     val okhttpResponse = raw().newBuilder().body(body() ?: error("Response body is null")).build()
     EventSources.processResponse(okhttpResponse, listener)
   }
 
-  protected fun createTypedEvent(id: String?, type: String?, data: String): ServerSentEvent<ID, TYPE, DATA> {
+  private fun createTypedEvent(id: String?, type: String?, data: String): ServerSentEvent<ID, TYPE, DATA> {
     val convertedId = convertId(id)
     val convertedType = convertType(type)
     val convertedData = convertData(data)
@@ -70,4 +98,9 @@ abstract class AbstractSseCallAdapter<ID : Any, TYPE : Any, DATA : Any, FLOW : A
     return dataConverter.convert(data.toResponseBody()) ?: conversionError(data, dataType)
   }
 
+  protected abstract fun emit(builder: I, event: ServerSentEvent<ID, TYPE, DATA>)
+
+  protected abstract fun close(builder: I)
+
+  protected abstract fun closeExceptionally(builder: I, t: Throwable)
 }

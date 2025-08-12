@@ -74,7 +74,7 @@ class SseKtxFlowCallAdapterFactoryTest {
         |id: 2
         |data: {"data":"bar"}
         |
-      """.trimMargin(),
+        """.trimMargin(),
       )
     server.enqueue(mockResponse)
 
@@ -94,5 +94,4 @@ class SseKtxFlowCallAdapterFactoryTest {
       }
     }
   }
-
 }
