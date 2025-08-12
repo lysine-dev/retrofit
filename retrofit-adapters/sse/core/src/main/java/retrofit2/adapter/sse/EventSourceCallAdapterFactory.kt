@@ -19,6 +19,7 @@ import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 import retrofit2.CallAdapter
 import retrofit2.Retrofit
+import retrofit2.adapter.sse.internal.EventSourceCallAdapter
 import retrofit2.http.Streaming
 
 object EventSourceCallAdapterFactory : CallAdapter.Factory() {

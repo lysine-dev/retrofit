@@ -23,9 +23,12 @@ import java.util.concurrent.ForkJoinPool
 import java.util.concurrent.SubmissionPublisher
 import okhttp3.ResponseBody
 import retrofit2.Call
+import retrofit2.CallAdapter
 import retrofit2.Retrofit
+import retrofit2.adapter.sse.EventSource
 import retrofit2.adapter.sse.ServerSentEvent
-import retrofit2.adapter.sse.internal.AbstractSseCallAdapter
+import retrofit2.adapter.sse.SseCallback
+import retrofit2.adapter.sse.internal.EventSourceCallAdapter
 
 internal class SseJucFlowCallAdapter<ID : Any, TYPE : Any, DATA : Any>(
   executor: Executor?,
@@ -33,7 +36,16 @@ internal class SseJucFlowCallAdapter<ID : Any, TYPE : Any, DATA : Any>(
   idType: Type,
   typeType: Type,
   dataType: Type,
-) : AbstractSseCallAdapter<ID, TYPE, DATA, Flow.Publisher<ServerSentEvent<ID, TYPE, DATA>>, SubmissionPublisher<ServerSentEvent<ID, TYPE, DATA>>>(retrofit, idType, typeType, dataType) {
+) : CallAdapter<ResponseBody, Flow.Publisher<ServerSentEvent<ID, TYPE, DATA>>> {
+
+  private val delegate = EventSourceCallAdapter<ID, TYPE, DATA>(
+    retrofit,
+    idType,
+    typeType,
+    dataType,
+  )
+
+  override fun responseType(): Type = delegate.responseType()
 
   private val executor: Executor = executor ?: retrofit.callbackExecutor()
     ?: ForkJoinPool.commonPool().takeIf { ForkJoinPool.getCommonPoolParallelism() > 1 }
@@ -42,34 +54,35 @@ internal class SseJucFlowCallAdapter<ID : Any, TYPE : Any, DATA : Any>(
   override fun adapt(
     call: Call<ResponseBody>,
   ): Flow.Publisher<ServerSentEvent<ID, TYPE, DATA>> {
+    val delegate = delegate.adapt(call)
     return object : SubmissionPublisher<ServerSentEvent<ID, TYPE, DATA>>(executor, Flow.defaultBufferSize()) {
       override fun subscribe(subscriber: Flow.Subscriber<in ServerSentEvent<ID, TYPE, DATA>>?) {
         super.subscribe(subscriber)
-        call.attachEventSourceListener(this)
+        delegate.subscribe(object : SseCallback<ID, TYPE, DATA> {
+          override fun onEvent(
+            eventSource: EventSource<ID, TYPE, DATA>,
+            id: ID?,
+            type: TYPE?,
+            data: DATA,
+          ) {
+            submit(ServerSentEvent(id, type, data))
+          }
+
+          override fun onClosed(eventSource: EventSource<ID, TYPE, DATA>) {
+            close()
+          }
+
+          override fun onFailure(eventSource: EventSource<ID, TYPE, DATA>, t: Throwable?) {
+            closeExceptionally(t ?: RuntimeException()) // TODO exception type
+          }
+        })
       }
 
       override fun close() {
-        call.cancel()
+        delegate.cancel()
         super.close()
       }
     }
   }
 
-  override fun emit(
-    builder: SubmissionPublisher<ServerSentEvent<ID, TYPE, DATA>>,
-    event: ServerSentEvent<ID, TYPE, DATA>,
-  ) {
-    builder.submit(event)
-  }
-
-  override fun close(builder: SubmissionPublisher<ServerSentEvent<ID, TYPE, DATA>>) {
-    builder.close()
-  }
-
-  override fun closeExceptionally(
-    builder: SubmissionPublisher<ServerSentEvent<ID, TYPE, DATA>>,
-    t: Throwable,
-  ) {
-    builder.closeExceptionally(t)
-  }
 }

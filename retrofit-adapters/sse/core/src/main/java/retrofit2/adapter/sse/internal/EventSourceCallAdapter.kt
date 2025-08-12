@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package retrofit2.adapter.sse
+package retrofit2.adapter.sse.internal
 
 import java.lang.reflect.Type
 import okhttp3.ResponseBody
@@ -21,11 +21,11 @@ import retrofit2.Call
 import retrofit2.CallAdapter
 import retrofit2.Converter
 import retrofit2.Retrofit
-import retrofit2.adapter.sse.internal.RealEventSource
+import retrofit2.adapter.sse.EventSource
 
 private val EMPTY_ARRAY = emptyArray<Annotation>()
 
-internal class EventSourceCallAdapter<ID : Any, TYPE : Any, DATA : Any>(
+class EventSourceCallAdapter<ID : Any, TYPE : Any, DATA : Any>(
   retrofit: Retrofit,
   private val idType: Type,
   private val typeType: Type,
