@@ -26,12 +26,14 @@ import retrofit2.http.Streaming
 
 class SseJucFlowCallAdapterFactory private constructor(
   private val executor: Executor?,
+  private val maxBufferCapacity: Int,
 ) : CallAdapter.Factory() {
 
   companion object {
     @JvmStatic
     @JvmOverloads
-    fun create(executor: Executor? = null) = SseJucFlowCallAdapterFactory(executor)
+    fun create(executor: Executor? = null, maxBufferCapacity: Int = Flow.defaultBufferSize()) =
+      SseJucFlowCallAdapterFactory(executor, maxBufferCapacity)
   }
 
   override fun get(
@@ -72,6 +74,7 @@ class SseJucFlowCallAdapterFactory private constructor(
 
     return SseJucFlowCallAdapter<Any, Any, Any>(
       executor,
+      maxBufferCapacity,
       retrofit,
       idType,
       typeType,

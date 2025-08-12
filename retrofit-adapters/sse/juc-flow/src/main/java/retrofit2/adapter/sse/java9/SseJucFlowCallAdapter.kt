@@ -32,6 +32,7 @@ import retrofit2.adapter.sse.internal.EventSourceCallAdapter
 
 internal class SseJucFlowCallAdapter<ID : Any, TYPE : Any, DATA : Any>(
   executor: Executor?,
+  private val maxBufferCapacity: Int,
   retrofit: Retrofit,
   idType: Type,
   typeType: Type,
@@ -55,7 +56,7 @@ internal class SseJucFlowCallAdapter<ID : Any, TYPE : Any, DATA : Any>(
     call: Call<ResponseBody>,
   ): Flow.Publisher<ServerSentEvent<ID, TYPE, DATA>> {
     val delegate = delegate.adapt(call)
-    return object : SubmissionPublisher<ServerSentEvent<ID, TYPE, DATA>>(executor, Flow.defaultBufferSize()) {
+    return object : SubmissionPublisher<ServerSentEvent<ID, TYPE, DATA>>(executor, maxBufferCapacity) {
       override fun subscribe(subscriber: Flow.Subscriber<in ServerSentEvent<ID, TYPE, DATA>>?) {
         super.subscribe(subscriber)
         delegate.subscribe(object : SseCallback<ID, TYPE, DATA> {
