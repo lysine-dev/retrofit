@@ -37,10 +37,16 @@ private fun Response<ResponseBody>.asSse(listener: EventSourceListener) {
   EventSources.processResponse(okhttpResponse, listener)
 }
 
-private fun Type.acceptsString(): Boolean {
-  return this === String::class.java || this === Object::class.java || this === CharSequence::class.java || this === Comparable::class.java ||
-    this is ParameterizedType && this.rawType === Comparable::class.java && this.actualTypeArguments[0].let { it === String::class.java || it is WildcardType && it.upperBounds[0] === String::class.java }
-}
+private fun Type.acceptsString(): Boolean =
+  when (this) {
+    String::class.java -> true
+    Object::class.java -> true
+    CharSequence::class.java -> true
+    Comparable::class.java -> true
+    is ParameterizedType -> rawType === Comparable::class.java && actualTypeArguments[0].acceptsString()
+    is WildcardType -> upperBounds[0].acceptsString()
+    else -> false
+  }
 
 internal class RealEventSource<ID : Any, TYPE : Any, DATA : Any>(
   private val idType: Type,
