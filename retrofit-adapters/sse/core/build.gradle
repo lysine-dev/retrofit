@@ -8,12 +8,10 @@ dependencies {
   api libs.okhttp.sse
   compileOnly libs.findBugsAnnotations
 
-//  testImplementation libs.junit
-//  testImplementation libs.truth
-//  testImplementation libs.guava
-//  testImplementation libs.okhttp.mockwebserver
-//  testImplementation projects.retrofitConverters.scalars
-//  testImplementation projects.retrofitConverters.gson
+  testImplementation libs.junit
+  testImplementation libs.truth
+  testImplementation libs.okhttp.mockwebserver
+  testImplementation projects.retrofitConverters.scalars
 }
 
 jar {
