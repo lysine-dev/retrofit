@@ -15,7 +15,9 @@
  */
 package retrofit2.adapter.sse.internal
 
+import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
+import java.lang.reflect.WildcardType
 import okhttp3.Request
 import okhttp3.ResponseBody
 import okhttp3.ResponseBody.Companion.toResponseBody
@@ -33,6 +35,11 @@ private inline fun <T : Any> conversionError(value: T, type: Type): Nothing = er
 private fun Response<ResponseBody>.asSse(listener: EventSourceListener) {
   val okhttpResponse = raw().newBuilder().body(body() ?: error("Response body is null")).build()
   EventSources.processResponse(okhttpResponse, listener)
+}
+
+private fun Type.acceptsString(): Boolean {
+  return this === String::class.java || this === Object::class.java || this === CharSequence::class.java || this === Comparable::class.java ||
+    this is ParameterizedType && this.rawType === Comparable::class.java && this.actualTypeArguments[0].let { it === String::class.java || it is WildcardType && it.upperBounds[0] === String::class.java }
 }
 
 internal class RealEventSource<ID : Any, TYPE : Any, DATA : Any>(
@@ -84,14 +91,28 @@ internal class RealEventSource<ID : Any, TYPE : Any, DATA : Any>(
   }
 
   private fun convertId(id: String?): ID? {
-    return if (id != null) idConverter.convert(id.toResponseBody()) ?: conversionError(id, idType) else null
+    @Suppress("UNCHECKED_CAST")
+    return when {
+      idType.acceptsString() -> id as ID?
+      id != null -> idConverter.convert(id.toResponseBody()) ?: conversionError(id, idType)
+      else -> null
+    }
   }
 
   private fun convertType(type: String?): TYPE? {
-    return if (type != null) typeConverter.convert(type.toResponseBody()) ?: conversionError(type, typeType) else null
+    @Suppress("UNCHECKED_CAST")
+    return when {
+      typeType.acceptsString() -> type as TYPE?
+      type != null -> typeConverter.convert(type.toResponseBody()) ?: conversionError(type, typeType)
+      else -> null
+    }
   }
 
   private fun convertData(data: String): DATA {
-    return dataConverter.convert(data.toResponseBody()) ?: conversionError(data, dataType)
+    @Suppress("UNCHECKED_CAST")
+    return when {
+      dataType.acceptsString() -> data as DATA
+      else -> dataConverter.convert(data.toResponseBody()) ?: conversionError(data, dataType)
+    }
   }
 }
