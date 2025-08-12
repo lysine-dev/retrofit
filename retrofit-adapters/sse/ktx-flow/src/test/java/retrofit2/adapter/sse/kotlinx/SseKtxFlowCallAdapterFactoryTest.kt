@@ -25,6 +25,7 @@ import org.junit.Rule
 import org.junit.Test
 import retrofit2.Retrofit
 import retrofit2.adapter.sse.ServerSentEvent
+import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import retrofit2.create
 import retrofit2.http.GET
@@ -36,10 +37,14 @@ class SseKtxFlowCallAdapterFactoryTest {
   @JvmField
   val server: MockWebServer = MockWebServer()
 
+  data class EventData(
+    val data: String,
+  )
+
   interface Service {
     @Streaming
     @GET("/")
-    fun sse(): Flow<ServerSentEvent<Int, String, String>>
+    fun sse(): Flow<ServerSentEvent<Long, String, EventData>>
   }
 
   private lateinit var service: Service
@@ -50,6 +55,7 @@ class SseKtxFlowCallAdapterFactoryTest {
       Retrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(ScalarsConverterFactory.create())
+        .addConverterFactory(GsonConverterFactory.create())
         .addCallAdapterFactory(SseKtxFlowCallAdapterFactory)
         .build()
     service = retrofit.create<Service>()
@@ -59,7 +65,17 @@ class SseKtxFlowCallAdapterFactoryTest {
   fun simpleEvents() = runBlocking {
     val mockResponse = MockResponse()
       .setHeader("Content-Type", "text/event-stream")
-      .setBody("id: 1\nevent: type1\ndata: foo\n\nid: 2\ndata: bar\n\n")
+      .setBody(
+        """
+        |id: 1
+        |event: TYPE1
+        |data: {"data":"foo"}
+        |
+        |id: 2
+        |data: {"data":"bar"}
+        |
+      """.trimMargin(),
+      )
     server.enqueue(mockResponse)
 
     var count = 0
@@ -67,13 +83,13 @@ class SseKtxFlowCallAdapterFactoryTest {
       when (++count) {
         1 -> {
           assertThat(serverSentEvent.id).isEqualTo(1)
-          assertThat(serverSentEvent.type).isEqualTo("type1")
-          assertThat(serverSentEvent.data).isEqualTo("foo")
+          assertThat(serverSentEvent.type).isEqualTo("TYPE1")
+          assertThat(serverSentEvent.data.data).isEqualTo("foo")
         }
         2 -> {
           assertThat(serverSentEvent.id).isEqualTo(2)
           assertThat(serverSentEvent.type).isEqualTo(null)
-          assertThat(serverSentEvent.data).isEqualTo("bar")
+          assertThat(serverSentEvent.data.data).isEqualTo("bar")
         }
       }
     }

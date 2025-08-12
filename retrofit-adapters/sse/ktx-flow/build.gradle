@@ -13,4 +13,5 @@ dependencies {
   testImplementation libs.truth
   testImplementation libs.okhttp.mockwebserver
   testImplementation projects.retrofitConverters.scalars
+  testImplementation projects.retrofitConverters.gson
 }
