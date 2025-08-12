@@ -20,6 +20,7 @@ import java.lang.reflect.Type
 import retrofit2.CallAdapter
 import retrofit2.Retrofit
 import retrofit2.adapter.sse.internal.EventSourceCallAdapter
+import retrofit2.http.GET
 import retrofit2.http.Streaming
 
 object EventSourceCallAdapterFactory : CallAdapter.Factory() {
@@ -42,6 +43,10 @@ object EventSourceCallAdapterFactory : CallAdapter.Factory() {
 
     if (annotations.none { it is Streaming }) {
       error("SSE endpoint must be annotated with @Streaming")
+    }
+
+    if (annotations.none { it is GET }) {
+      error("SSE endpoint must use @GET method")
     }
 
     val idType = getParameterUpperBound(0, returnType)

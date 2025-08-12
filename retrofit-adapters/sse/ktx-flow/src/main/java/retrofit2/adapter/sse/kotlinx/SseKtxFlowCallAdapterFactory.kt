@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.Flow
 import retrofit2.CallAdapter
 import retrofit2.Retrofit
 import retrofit2.adapter.sse.ServerSentEvent
+import retrofit2.http.GET
 import retrofit2.http.Streaming
 
 object SseKtxFlowCallAdapterFactory : CallAdapter.Factory() {
@@ -55,6 +56,10 @@ object SseKtxFlowCallAdapterFactory : CallAdapter.Factory() {
 
     if (annotations.none { it is Streaming }) {
       error("SSE endpoint must be annotated with @Streaming")
+    }
+
+    if (annotations.none { it is GET }) {
+      error("SSE endpoint must use @GET method")
     }
 
     val idType = getParameterUpperBound(0, innerType)
