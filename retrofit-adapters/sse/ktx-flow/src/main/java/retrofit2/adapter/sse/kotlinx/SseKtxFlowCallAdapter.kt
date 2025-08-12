@@ -23,32 +23,20 @@ import kotlinx.coroutines.flow.callbackFlow
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.CallAdapter
-import retrofit2.Retrofit
 import retrofit2.adapter.sse.EventSource
 import retrofit2.adapter.sse.ServerSentEvent
 import retrofit2.adapter.sse.SseCallback
-import retrofit2.adapter.sse.internal.EventSourceCallAdapter
 
 internal class SseKtxFlowCallAdapter<ID : Any, TYPE : Any, DATA : Any>(
-  retrofit: Retrofit,
-  idType: Type,
-  typeType: Type,
-  dataType: Type,
+  private val delegation: CallAdapter<ResponseBody, EventSource<ID, TYPE, DATA>>,
 ) : CallAdapter<ResponseBody, Flow<ServerSentEvent<ID, TYPE, DATA>>> {
 
-  private val delegate = EventSourceCallAdapter<ID, TYPE, DATA>(
-    retrofit,
-    idType,
-    typeType,
-    dataType,
-  )
-
-  override fun responseType(): Type = delegate.responseType()
+  override fun responseType(): Type = delegation.responseType()
 
   override fun adapt(
     call: Call<ResponseBody>,
   ): Flow<ServerSentEvent<ID, TYPE, DATA>> {
-    val delegate = delegate.adapt(call)
+    val delegate = delegation.adapt(call)
     return callbackFlow {
       delegate.subscribe(
         object : SseCallback<ID, TYPE, DATA> {

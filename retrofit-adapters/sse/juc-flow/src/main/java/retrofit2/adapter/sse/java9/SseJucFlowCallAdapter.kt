@@ -17,45 +17,27 @@ package retrofit2.adapter.sse.java9
 
 import java.lang.reflect.Type
 import java.util.concurrent.Executor
-import java.util.concurrent.Executors
 import java.util.concurrent.Flow
-import java.util.concurrent.ForkJoinPool
 import java.util.concurrent.SubmissionPublisher
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.CallAdapter
-import retrofit2.Retrofit
 import retrofit2.adapter.sse.EventSource
 import retrofit2.adapter.sse.ServerSentEvent
 import retrofit2.adapter.sse.SseCallback
-import retrofit2.adapter.sse.internal.EventSourceCallAdapter
 
 internal class SseJucFlowCallAdapter<ID : Any, TYPE : Any, DATA : Any>(
-  executor: Executor?,
+  private val executor: Executor,
   private val maxBufferCapacity: Int,
-  retrofit: Retrofit,
-  idType: Type,
-  typeType: Type,
-  dataType: Type,
+  private val delegation: CallAdapter<ResponseBody, EventSource<ID, TYPE, DATA>>,
 ) : CallAdapter<ResponseBody, Flow.Publisher<ServerSentEvent<ID, TYPE, DATA>>> {
 
-  private val delegate = EventSourceCallAdapter<ID, TYPE, DATA>(
-    retrofit,
-    idType,
-    typeType,
-    dataType,
-  )
-
-  override fun responseType(): Type = delegate.responseType()
-
-  private val executor: Executor = executor ?: retrofit.callbackExecutor()
-    ?: ForkJoinPool.commonPool().takeIf { ForkJoinPool.getCommonPoolParallelism() > 1 }
-    ?: Executors.newCachedThreadPool()
+  override fun responseType(): Type = delegation.responseType()
 
   override fun adapt(
     call: Call<ResponseBody>,
   ): Flow.Publisher<ServerSentEvent<ID, TYPE, DATA>> {
-    val delegate = delegate.adapt(call)
+    val delegate = delegation.adapt(call)
     return object : SubmissionPublisher<ServerSentEvent<ID, TYPE, DATA>>(executor, maxBufferCapacity) {
       override fun subscribe(subscriber: Flow.Subscriber<in ServerSentEvent<ID, TYPE, DATA>>?) {
         super.subscribe(subscriber)

@@ -24,6 +24,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import retrofit2.Retrofit
+import retrofit2.adapter.sse.EventSourceCallAdapterFactory
 import retrofit2.adapter.sse.ServerSentEvent
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
@@ -57,6 +58,7 @@ class SseKtxFlowCallAdapterFactoryTest {
         .addConverterFactory(ScalarsConverterFactory.create())
         .addConverterFactory(GsonConverterFactory.create())
         .addCallAdapterFactory(SseKtxFlowCallAdapterFactory)
+        .addCallAdapterFactory(EventSourceCallAdapterFactory)
         .build()
     service = retrofit.create<Service>()
   }

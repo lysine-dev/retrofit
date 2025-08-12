@@ -20,7 +20,9 @@ import java.lang.reflect.Type
 import kotlinx.coroutines.flow.Flow
 import retrofit2.CallAdapter
 import retrofit2.Retrofit
+import retrofit2.adapter.sse.EventSource
 import retrofit2.adapter.sse.ServerSentEvent
+import retrofit2.adapter.sse.internal.EventSourceCallAdapter
 import retrofit2.http.GET
 import retrofit2.http.Streaming
 
@@ -66,11 +68,16 @@ object SseKtxFlowCallAdapterFactory : CallAdapter.Factory() {
     val typeType = getParameterUpperBound(1, innerType)
     val dataType = getParameterUpperBound(2, innerType)
 
-    return SseKtxFlowCallAdapter<Any, Any, Any>(
-      retrofit,
-      idType,
-      typeType,
-      dataType,
-    )
+    val returnType = object : ParameterizedType {
+      override fun getRawType(): Type = EventSource::class.java
+      override fun getOwnerType(): Type? = null
+      override fun getActualTypeArguments(): Array<Type> = arrayOf(idType, typeType, dataType)
+    }
+
+    val delegation = runCatching {
+      retrofit.nextCallAdapter(this, returnType, annotations) as? EventSourceCallAdapter<*, *, *>
+    }.getOrNull() ?: return null
+
+    return SseKtxFlowCallAdapter(delegation)
   }
 }

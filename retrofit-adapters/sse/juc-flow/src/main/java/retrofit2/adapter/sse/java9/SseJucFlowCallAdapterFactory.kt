@@ -18,10 +18,14 @@ package retrofit2.adapter.sse.java9
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 import java.util.concurrent.Executor
+import java.util.concurrent.Executors
 import java.util.concurrent.Flow
+import java.util.concurrent.ForkJoinPool
 import retrofit2.CallAdapter
 import retrofit2.Retrofit
+import retrofit2.adapter.sse.EventSource
 import retrofit2.adapter.sse.ServerSentEvent
+import retrofit2.adapter.sse.internal.EventSourceCallAdapter
 import retrofit2.http.GET
 import retrofit2.http.Streaming
 
@@ -77,13 +81,25 @@ class SseJucFlowCallAdapterFactory private constructor(
     val typeType = getParameterUpperBound(1, innerType)
     val dataType = getParameterUpperBound(2, innerType)
 
-    return SseJucFlowCallAdapter<Any, Any, Any>(
-      executor,
+    val returnType = object : ParameterizedType {
+      override fun getRawType(): Type = EventSource::class.java
+      override fun getOwnerType(): Type? = null
+      override fun getActualTypeArguments(): Array<Type> = arrayOf(idType, typeType, dataType)
+    }
+
+    val delegation = runCatching {
+      retrofit.nextCallAdapter(this, returnType, annotations) as? EventSourceCallAdapter<*, *, *>
+    }.getOrNull() ?: return null
+
+    return SseJucFlowCallAdapter(
+      executorOrDefault(retrofit),
       maxBufferCapacity,
-      retrofit,
-      idType,
-      typeType,
-      dataType,
+      delegation,
     )
   }
+
+  private fun executorOrDefault(retrofit: Retrofit): Executor =
+    executor ?: retrofit.callbackExecutor()
+      ?: ForkJoinPool.commonPool().takeIf { ForkJoinPool.getCommonPoolParallelism() > 1 }
+      ?: Executors.newCachedThreadPool()
 }
