@@ -75,7 +75,7 @@ object SseKtxFlowCallAdapterFactory : CallAdapter.Factory() {
     }
 
     val delegation = runCatching {
-      retrofit.nextCallAdapter(this, returnType, annotations) as? EventSourceCallAdapter<*, *, *>
+      retrofit.callAdapter(returnType, annotations) as? EventSourceCallAdapter<*, *, *>
     }.getOrNull() ?: return null
 
     return SseKtxFlowCallAdapter(delegation)
