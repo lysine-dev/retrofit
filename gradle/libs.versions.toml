@@ -13,7 +13,7 @@
 # limitations under the License.
 
 [versions]
-kotlin = "2.2.0"
+kotlin = "2.2.10"
 okhttp = "5.1.0"
 protobuf = "3.25.8"
 robovm = "2.3.14"
