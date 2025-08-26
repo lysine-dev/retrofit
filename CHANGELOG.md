@@ -5,7 +5,7 @@
 
 **New**
 
- - Add explicit keep rules for RxJava `Result` types.
+ - Add explicit keep rules for RxJava `Result` types to prevent their generic information from being removed.
 
 **Changed**
 
