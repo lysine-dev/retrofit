@@ -5,7 +5,7 @@
 
 **New**
 
- - Nothing yet!
+ - Add explicit keep rules for RxJava `Result` types.
 
 **Changed**
 
