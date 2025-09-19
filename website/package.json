@@ -9,7 +9,7 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/starlight": "^0.35.0",
+    "@astrojs/starlight": "^0.36.0",
     "astro": "^5.6.1",
     "sharp": "^0.34.0",
     "starlight-links-validator": "^0.18.0",
