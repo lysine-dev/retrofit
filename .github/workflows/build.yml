@@ -61,7 +61,7 @@ jobs:
           API_LEVEL: ${{ matrix.api-level }}
 
   robovm:
-    runs-on: macos-13
+    runs-on: macos-15
 
     steps:
       - uses: actions/checkout@v5
