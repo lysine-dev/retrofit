@@ -7,6 +7,7 @@
 
  - Add explicit keep rules for RxJava `Result` types to prevent their generic information from being removed.
  - Add `allowoptimization` flags for most kept types.
+ - Support using response type keeper with KSP.
 
 **Changed**
 

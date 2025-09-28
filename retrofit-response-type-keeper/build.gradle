@@ -5,11 +5,15 @@ apply plugin: 'com.vanniktech.maven.publish'
 dependencies {
   compileOnly libs.autoService.annotations
   compileOnly libs.incap.runtime
+  compileOnly libs.ksp.api
   kapt libs.autoService.compiler
   kapt libs.incap.processor
 
   testImplementation libs.junit
   testImplementation libs.compileTesting
+  testImplementation libs.kct.core
+  testImplementation libs.kct.ksp
+  testImplementation libs.ksp.api
   testImplementation libs.truth
   testImplementation libs.testParameterInjector
   testImplementation projects.retrofit

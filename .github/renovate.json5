@@ -22,5 +22,12 @@
       // Only write the major version.
       extractVersionTemplate: '^(?<version>\\d+)',
     },
+    {
+      groupName: 'Kotlin and KSP',
+      matchPackageNames: [
+        'com.google.devtools.ksp{/,}**',
+        'org.jetbrains.kotlin:kotlin{/,}**',
+      ],
+    },
   ]
 }
