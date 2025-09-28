@@ -82,7 +82,7 @@ class RetrofitResponseTypeKeepProcessor : AbstractProcessor() {
       rules.openWriter().buffered().use { w ->
         w.write("# $typeName\n")
         for (referencedType in referencedTypes.sorted()) {
-          w.write("-keep,allowobfuscation,allowoptimization class $referencedType\n")
+          w.write("-keep,allowoptimization,allowshrinking,allowobfuscation class $referencedType\n")
         }
       }
     }
