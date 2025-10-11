@@ -11,5 +11,6 @@ dependencies {
   testImplementation libs.junit
   testImplementation libs.compileTesting
   testImplementation libs.truth
+  testImplementation libs.testParameterInjector
   testImplementation projects.retrofit
 }

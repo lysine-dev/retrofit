@@ -18,40 +18,29 @@ package retrofit2.keeper
 import com.google.common.truth.Truth.assertAbout
 import com.google.testing.compile.JavaFileObjects
 import com.google.testing.compile.JavaSourceSubjectFactory.javaSource
+import com.google.testing.junit.testparameterinjector.TestParameter
+import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import java.nio.charset.StandardCharsets.UTF_8
+import java.nio.file.NoSuchFileException
 import javax.tools.StandardLocation.CLASS_OUTPUT
+import kotlin.io.path.readText
+import kotlin.io.path.toPath
 import org.junit.Test
+import org.junit.runner.RunWith
 
+@RunWith(TestParameterInjector::class)
 class RetrofitResponseTypeKeepProcessorTest {
   @Test
-  fun allHttpMethods() {
+  fun process(
+    @TestParameter(
+      "all-http-methods",
+      "nesting",
+      "kotlin-suspend",
+    ) name: String
+  ) {
     val service = JavaFileObjects.forSourceString(
       "test.Service",
-      """
-      package test;
-      import retrofit2.*;
-      import retrofit2.http.*;
-
-      class DeleteUser {}
-      class GetUser {}
-      class HeadUser {}
-      class HttpUser {}
-      class OptionsUser {}
-      class PatchUser {}
-      class PostUser {}
-      class PutUser {}
-
-      interface Service {
-        @DELETE("/") Call<DeleteUser> delete();
-        @GET("/") Call<GetUser> get();
-        @HEAD("/") Call<HeadUser> head();
-        @HTTP(method = "CUSTOM", path = "/") Call<HttpUser> http();
-        @OPTIONS("/") Call<OptionsUser> options();
-        @PATCH("/") Call<PatchUser> patch();
-        @POST("/") Call<PostUser> post();
-        @PUT("/") Call<PutUser> put();
-      }
-    """.trimIndent(),
+      readResourceAsText("$name/Service.java"),
     )
 
     assertAbout(javaSource())
@@ -65,98 +54,15 @@ class RetrofitResponseTypeKeepProcessorTest {
         "META-INF/proguard/retrofit-response-type-keeper-test.Service.pro",
       ).withStringContents(
         UTF_8,
-        """
-        |# test.Service
-        |-keep,allowoptimization,allowshrinking,allowobfuscation class retrofit2.Call
-        |-keep,allowoptimization,allowshrinking,allowobfuscation class test.DeleteUser
-        |-keep,allowoptimization,allowshrinking,allowobfuscation class test.GetUser
-        |-keep,allowoptimization,allowshrinking,allowobfuscation class test.HeadUser
-        |-keep,allowoptimization,allowshrinking,allowobfuscation class test.HttpUser
-        |-keep,allowoptimization,allowshrinking,allowobfuscation class test.OptionsUser
-        |-keep,allowoptimization,allowshrinking,allowobfuscation class test.PatchUser
-        |-keep,allowoptimization,allowshrinking,allowobfuscation class test.PostUser
-        |-keep,allowoptimization,allowshrinking,allowobfuscation class test.PutUser
-        |
-        """.trimMargin(),
+        readResourceAsText("$name/Service.pro"),
       )
   }
 
-  @Test
-  fun nesting() {
-    val service = JavaFileObjects.forSourceString(
-      "test.Service",
-      """
-      package test;
-      import retrofit2.*;
-      import retrofit2.http.*;
-
-      class One<T> {}
-      class Two<T> {}
-      class Three {}
-
-      interface Service {
-        @GET("/") Call<One<Two<Three>>> get();
-      }
-    """.trimIndent(),
-    )
-
-    assertAbout(javaSource())
-      .that(service)
-      .processedWith(RetrofitResponseTypeKeepProcessor())
-      .compilesWithoutError()
-      .and()
-      .generatesFileNamed(
-        CLASS_OUTPUT,
-        "",
-        "META-INF/proguard/retrofit-response-type-keeper-test.Service.pro",
-      ).withStringContents(
-        UTF_8,
-        """
-        |# test.Service
-        |-keep,allowoptimization,allowshrinking,allowobfuscation class retrofit2.Call
-        |-keep,allowoptimization,allowshrinking,allowobfuscation class test.One
-        |-keep,allowoptimization,allowshrinking,allowobfuscation class test.Three
-        |-keep,allowoptimization,allowshrinking,allowobfuscation class test.Two
-        |
-        """.trimMargin(),
-      )
-  }
-
-  @Test
-  fun kotlinSuspend() {
-    val service = JavaFileObjects.forSourceString(
-      "test.Service",
-      """
-      package test;
-      import kotlin.coroutines.Continuation;
-      import retrofit2.*;
-      import retrofit2.http.*;
-
-      class Body {}
-
-      interface Service {
-        @GET("/") Object get(Continuation<? extends Body> c);
-      }
-    """.trimIndent(),
-    )
-
-    assertAbout(javaSource())
-      .that(service)
-      .processedWith(RetrofitResponseTypeKeepProcessor())
-      .compilesWithoutError()
-      .and()
-      .generatesFileNamed(
-        CLASS_OUTPUT,
-        "",
-        "META-INF/proguard/retrofit-response-type-keeper-test.Service.pro",
-      ).withStringContents(
-        UTF_8,
-        """
-        |# test.Service
-        |-keep,allowoptimization,allowshrinking,allowobfuscation class java.lang.Object
-        |-keep,allowoptimization,allowshrinking,allowobfuscation class test.Body
-        |
-        """.trimMargin(),
-      )
+  private companion object {
+    fun readResourceAsText(name: String): String {
+      val resource = this::class.java.classLoader.getResource(name)
+        ?: throw NoSuchFileException("Resource $name not found.")
+      return resource.toURI().toPath().readText()
+    }
   }
 }
