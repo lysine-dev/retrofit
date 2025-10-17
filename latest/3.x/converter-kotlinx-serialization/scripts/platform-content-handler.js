@@ -1,35 +1,6 @@
 /*
  * Copyright 2014-2024 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
  */
-/** When Dokka is viewed via iframe, local storage could be inaccessible (see https://github.com/Kotlin/dokka/issues/3323)
- * This is a wrapper around local storage to prevent errors in such cases
- * */
-const safeLocalStorage = (() => {
-    let isLocalStorageAvailable = false;
-    try {
-        const testKey = '__testLocalStorageKey__';
-        localStorage.setItem(testKey, testKey);
-        localStorage.removeItem(testKey);
-        isLocalStorageAvailable = true;
-    } catch (e) {
-        console.error('Local storage is not available', e);
-    }
-
-    return {
-        getItem: (key) => {
-            if (!isLocalStorageAvailable) {
-                return null;
-            }
-            return localStorage.getItem(key);
-        },
-        setItem: (key, value) => {
-            if (!isLocalStorageAvailable) {
-                return;
-            }
-            localStorage.setItem(key, value);
-        }
-    };
-})();
 
 filteringContext = {
     dependencies: {},
@@ -91,6 +62,10 @@ const initPlayground = (theme) => {
     // Manually tag code fragments as not processed by playground since we also manually destroy all of its instances
     document.querySelectorAll('code.runnablesample').forEach(node => {
         node.removeAttribute("data-kotlin-playground-initialized");
+
+        if (node.parentNode) {
+            node.parentNode.setAttribute("runnable-code-sample", "");
+        }
     })
 
     KotlinPlayground('code.runnablesample', {
@@ -275,14 +250,18 @@ function togglePlatformDependent(e, container) {
             for (let bm of child.children) {
                 if (bm === target) {
                     bm.setAttribute('data-active', "")
+                    bm.setAttribute('aria-pressed', "true")
                 } else if (bm !== target) {
                     bm.removeAttribute('data-active')
+                    bm.removeAttribute('aria-pressed')
                 }
             }
         } else if (child.getAttribute('data-togglable') === index) {
             child.setAttribute('data-active', "")
+            child.setAttribute('aria-pressed', "true")
         } else {
             child.removeAttribute('data-active')
+            child.removeAttribute('aria-pressed')
         }
     }
 }
@@ -360,12 +339,20 @@ function refreshFilterButtons() {
         .forEach(f => {
             if (filteringContext.activeFilters.indexOf(f.getAttribute("data-filter")) !== -1) {
                 f.setAttribute("data-active", "")
+                f.setAttribute("aria-pressed", "true")
             } else {
                 f.removeAttribute("data-active")
+                f.removeAttribute("aria-pressed")
             }
         })
     document.querySelectorAll("#filter-section .checkbox--input")
         .forEach(f => {
-            f.checked = filteringContext.activeFilters.indexOf(f.getAttribute("data-filter")) !== -1;
+            const isChecked = filteringContext.activeFilters.indexOf(f.getAttribute("data-filter")) !== -1
+            f.checked = isChecked;
+            if (isChecked) {
+                f.setAttribute("aria-pressed", "true")
+            } else {
+                f.removeAttribute("aria-pressed");
+            }
         })
 }

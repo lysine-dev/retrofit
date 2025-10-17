@@ -1,1 +1,1 @@
-sourceset_dependencies='{":retrofit-converters:kotlinx-serialization:dokkaHtml/main":[]}'
+sourceset_dependencies='{":retrofit-converters:kotlinx-serialization/main":[]}'

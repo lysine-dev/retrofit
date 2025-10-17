@@ -21,19 +21,29 @@ code .token {
  * @author Lea Verou
  */
 
+:root {
+	--code-area-punctuation: var(--color-cd-punctuation);
+	--code-area-string: var(--color-cd-builtin);
+	--code-area-keyword: var(--color-cd-keyword);
+	--code-area-function: var(--color-cd-function);
+	--code-area-operator: var(--color-cd-operator);
+	--code-area-number: var(--color-cd-number);
+}
+
+:root.theme-dark {
+	--code-area-string: var(--color-cd-builtin-alternative);
+	--code-area-keyword: var(--color-cd-keyword-alternative);
+	--code-area-function: var(--color-cd-function-alternative);
+	--code-area-operator: var(--color-cd-operator-alternative);
+	--code-area-number: var(--color-cd-number-alternative);
+}
+
 .token.comment,
 .token.prolog,
 .token.doctype,
-.token.cdata {
-	color: #8c8c8c;
-}
-
+.token.cdata,
 .token.punctuation {
-	color: #999;
-}
-
-.token.namespace {
-	opacity: 0.7;
+	color: var(--code-area-punctuation);
 }
 
 .token.property,
@@ -43,7 +53,7 @@ code .token {
 .token.constant,
 .token.symbol,
 .token.deleted {
-	color: #871094;
+	color: var(--code-area-number);
 }
 
 .token.selector,
@@ -52,7 +62,7 @@ code .token {
 .token.char,
 .token.builtin,
 .token.inserted {
-	color: #067d17;
+	color: var(--code-area-string);
 }
 
 .token.operator,
@@ -60,151 +70,42 @@ code .token {
 .token.url,
 .language-css .token.string,
 .style .token.string {
-	color: #9a6e3a;
-	/* This background color was intended by the author of this theme. */
-	background: hsla(0, 0%, 100%, 0.5);
+	color: var(--code-area-operator);
+	background: none;
+}
+
+.token.interpolation-punctuation {
+	color: var(--code-area-keyword);
 }
 
 .token.atrule,
 .token.attr-value,
-.token.keyword {
-	font-size: inherit; /* to override .keyword */
-	color: #0033b3;
+.token.keyword,
+.token.interpolation-punctuation {
+	color: var(--code-area-keyword);
 }
 
 .token.function {
-	color: #00627a;
-}
-
-.token.class-name {
-	color: #000000;
+	color: var(--code-area-function);
 }
 
 .token.regex,
 .token.important,
 .token.variable {
-	color: #871094;
+	color: var(--code-area-number);
 }
 
 .token.important,
 .token.bold {
 	font-weight: bold;
 }
+
 .token.italic {
 	font-style: italic;
 }
 
 .token.entity {
 	cursor: help;
-}
-
-.token.operator {
-	background: none;
-}
-
-/*
- * DARK THEME
- */
-:root.theme-dark .token.comment,
-:root.theme-dark .token.prolog,
-:root.theme-dark .token.cdata {
-	color: #808080;
-}
-
-:root.theme-dark .token.delimiter,
-:root.theme-dark .token.boolean,
-:root.theme-dark .token.keyword,
-:root.theme-dark .token.selector,
-:root.theme-dark .token.important,
-:root.theme-dark .token.atrule {
-	color: #cc7832;
-}
-
-:root.theme-dark .token.operator,
-:root.theme-dark .token.punctuation,
-:root.theme-dark .token.attr-name {
-	color: #a9b7c6;
-}
-
-:root.theme-dark .token.tag,
-:root.theme-dark .token.tag .punctuation,
-:root.theme-dark .token.doctype,
-:root.theme-dark .token.builtin {
-	color: #e8bf6a;
-}
-
-:root.theme-dark .token.entity,
-:root.theme-dark .token.number,
-:root.theme-dark .token.symbol {
-	color: #6897bb;
-}
-
-:root.theme-dark .token.property,
-:root.theme-dark .token.constant,
-:root.theme-dark .token.variable {
-	color: #9876aa;
-}
-
-:root.theme-dark .token.string,
-:root.theme-dark .token.char {
-	color: #6a8759;
-}
-
-:root.theme-dark .token.attr-value,
-:root.theme-dark .token.attr-value .punctuation {
-	color: #a5c261;
-}
-
-:root.theme-dark .token.attr-value .punctuation:first-child {
-	color: #a9b7c6;
-}
-
-:root.theme-dark .token.url {
-	text-decoration: underline;
-
-	color: #287bde;
-	background: transparent;
-}
-
-:root.theme-dark .token.function {
-	color: #ffc66d;
-}
-
-:root.theme-dark .token.regex {
-	background: #364135;
-}
-
-:root.theme-dark .token.deleted {
-	background: #484a4a;
-}
-
-:root.theme-dark .token.inserted {
-	background: #294436;
-}
-
-:root.theme-dark .token.class-name {
-	color: #a9b7c6;
-}
-
-:root.theme-dark .token.function {
-	color: #ffc66d;
-}
-
-:root.theme-darkcode .language-css .token.property,
-:root.theme-darkcode .language-css,
-:root.theme-dark .token.property + .token.punctuation {
-	color: #a9b7c6;
-}
-
-code.language-css .token.id {
-	color: #ffc66d;
-}
-
-:root.theme-dark code.language-css .token.selector > .token.class,
-:root.theme-dark code.language-css .token.selector > .token.attribute,
-:root.theme-dark code.language-css .token.selector > .token.pseudo-class,
-:root.theme-dark code.language-css .token.selector > .token.pseudo-element {
-	color: #ffc66d;
 }
 
 :root.theme-dark .language-plaintext .token {
