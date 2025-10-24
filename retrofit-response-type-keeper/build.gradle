@@ -13,7 +13,6 @@ dependencies {
   testImplementation libs.compileTesting
   testImplementation libs.kct.core
   testImplementation libs.kct.ksp
-  testImplementation libs.ksp.api
   testImplementation libs.truth
   testImplementation libs.testParameterInjector
   testImplementation projects.retrofit

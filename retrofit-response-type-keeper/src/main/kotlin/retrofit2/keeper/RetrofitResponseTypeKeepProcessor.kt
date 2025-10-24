@@ -68,11 +68,11 @@ class RetrofitResponseTypeKeepProcessor : AbstractProcessor() {
 
     for ((element, referencedTypes) in elementToReferencedTypes) {
       val typeName = element.qualifiedName.toString()
-      val rules = processingEnv.filer.createResource(CLASS_OUTPUT, "", outputFile(typeName), element)
+      val rules = processingEnv.filer.createResource(CLASS_OUTPUT, "", proguardFilePath(typeName), element)
       rules.openWriter().buffered().use { w ->
         w.write("# $typeName\n")
         for (referencedType in referencedTypes.sorted()) {
-          w.write("$KEEP_RULE_PREFIX $referencedType\n")
+          w.write(keepRuleForType(referencedType))
         }
       }
     }
