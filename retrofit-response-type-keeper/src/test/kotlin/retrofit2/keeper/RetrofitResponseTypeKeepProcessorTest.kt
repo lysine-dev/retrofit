@@ -34,7 +34,7 @@ import org.junit.runner.RunWith
 
 @RunWith(TestParameterInjector::class)
 class RetrofitResponseTypeKeepProcessorTest(
-  @param:TestParameter private val generator: Generator,
+  @param:TestParameter private val processor: Processor,
 ) {
   @Test
   fun allHttpMethods() {
@@ -52,8 +52,8 @@ class RetrofitResponseTypeKeepProcessorTest(
       |
     """.trimMargin()
 
-    when (generator) {
-      Generator.Apt -> {
+    when (processor) {
+      Processor.Apt -> {
         val source = """
           package test;
 
@@ -80,10 +80,10 @@ class RetrofitResponseTypeKeepProcessorTest(
             @PUT("/") Call<PutUser> put();
           }
         """.trimIndent()
-        generator.validate(source, rules)
+        processor.validate(source, rules)
       }
 
-      Generator.Ksp -> {
+      Processor.Ksp -> {
         val source = """
           package test
 
@@ -125,7 +125,7 @@ class RetrofitResponseTypeKeepProcessorTest(
             fun put(): Call<PutUser>
           }
         """.trimIndent()
-        generator.validate(source, rules)
+        processor.validate(source, rules)
       }
     }
   }
@@ -140,8 +140,8 @@ class RetrofitResponseTypeKeepProcessorTest(
       |-keep,allowoptimization,allowshrinking,allowobfuscation class test.Two
       |
     """.trimMargin()
-    when (generator) {
-      Generator.Apt -> {
+    when (processor) {
+      Processor.Apt -> {
         val source = """
           package test;
 
@@ -156,10 +156,10 @@ class RetrofitResponseTypeKeepProcessorTest(
             @GET("/") Call<One<Two<Three>>> get();
           }
         """.trimIndent()
-        generator.validate(source, rules)
+        processor.validate(source, rules)
       }
 
-      Generator.Ksp -> {
+      Processor.Ksp -> {
         val source = """
           package test
 
@@ -175,7 +175,7 @@ class RetrofitResponseTypeKeepProcessorTest(
             fun get(): Call<One<Two<Three>>>
           }
         """.trimIndent()
-        generator.validate(source, rules)
+        processor.validate(source, rules)
       }
     }
   }
@@ -188,8 +188,8 @@ class RetrofitResponseTypeKeepProcessorTest(
       |-keep,allowoptimization,allowshrinking,allowobfuscation class test.Body
       |
     """.trimMargin()
-    when (generator) {
-      Generator.Apt -> {
+    when (processor) {
+      Processor.Apt -> {
         val source = """
           package test;
 
@@ -203,10 +203,10 @@ class RetrofitResponseTypeKeepProcessorTest(
             @GET("/") Object get(Continuation<? extends Body> c);
           }
         """.trimIndent()
-        generator.validate(source, rules)
+        processor.validate(source, rules)
       }
 
-      Generator.Ksp -> {
+      Processor.Ksp -> {
         val source = """
           package test
 
@@ -220,12 +220,12 @@ class RetrofitResponseTypeKeepProcessorTest(
             suspend fun get(c: Body): Any
           }
         """.trimIndent()
-        generator.validate(source, rules)
+        processor.validate(source, rules)
       }
     }
   }
 
-  enum class Generator {
+  enum class Processor {
     Apt {
       override fun validate(source: String, rules: String) {
         val service = JavaFileObjects.forSourceString("test.Service", source)
