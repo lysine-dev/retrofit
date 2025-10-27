@@ -27,10 +27,7 @@ import com.tschuchort.compiletesting.SourceFile
 import com.tschuchort.compiletesting.configureKsp
 import com.tschuchort.compiletesting.kspSourcesDir
 import java.nio.charset.StandardCharsets.UTF_8
-import java.nio.file.NoSuchFileException
 import javax.tools.StandardLocation.CLASS_OUTPUT
-import kotlin.io.path.readText
-import kotlin.io.path.toPath
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -40,23 +37,189 @@ class RetrofitResponseTypeKeepProcessorTest(
   @param:TestParameter private val generator: Generator,
 ) {
   @Test
-  fun process(
-    @TestParameter(
-      "all-http-methods",
-      "nesting",
-      "kotlin-suspend",
-    ) name: String,
-  ) {
-    val rules = readResourceAsText("$name/Service.pro")
+  fun allHttpMethods() {
+    val rules = """
+      |# test.Service
+      |-keep,allowoptimization,allowshrinking,allowobfuscation class retrofit2.Call
+      |-keep,allowoptimization,allowshrinking,allowobfuscation class test.DeleteUser
+      |-keep,allowoptimization,allowshrinking,allowobfuscation class test.GetUser
+      |-keep,allowoptimization,allowshrinking,allowobfuscation class test.HeadUser
+      |-keep,allowoptimization,allowshrinking,allowobfuscation class test.HttpUser
+      |-keep,allowoptimization,allowshrinking,allowobfuscation class test.OptionsUser
+      |-keep,allowoptimization,allowshrinking,allowobfuscation class test.PatchUser
+      |-keep,allowoptimization,allowshrinking,allowobfuscation class test.PostUser
+      |-keep,allowoptimization,allowshrinking,allowobfuscation class test.PutUser
+      |
+    """.trimMargin()
 
     when (generator) {
       Generator.Apt -> {
-        val source = readResourceAsText("$name/Service.java")
+        val source = """
+          package test;
+
+          import retrofit2.*;
+          import retrofit2.http.*;
+
+          class DeleteUser {}
+          class GetUser {}
+          class HeadUser {}
+          class HttpUser {}
+          class OptionsUser {}
+          class PatchUser {}
+          class PostUser {}
+          class PutUser {}
+
+          interface Service {
+            @DELETE("/") Call<DeleteUser> delete();
+            @GET("/") Call<GetUser> get();
+            @HEAD("/") Call<HeadUser> head();
+            @HTTP(method = "CUSTOM", path = "/") Call<HttpUser> http();
+            @OPTIONS("/") Call<OptionsUser> options();
+            @PATCH("/") Call<PatchUser> patch();
+            @POST("/") Call<PostUser> post();
+            @PUT("/") Call<PutUser> put();
+          }
+        """.trimIndent()
         generator.validate(source, rules)
       }
 
       Generator.Ksp -> {
-        val source = readResourceAsText("$name/Service.kt")
+        val source = """
+          package test
+
+          import retrofit2.*
+          import retrofit2.http.*
+
+          class DeleteUser
+          class GetUser
+          class HeadUser
+          class HttpUser
+          class OptionsUser
+          class PatchUser
+          class PostUser
+          class PutUser
+
+          interface Service {
+            @DELETE("/")
+            fun delete(): Call<DeleteUser>
+
+            @GET("/")
+            fun get(): Call<GetUser>
+
+            @HEAD("/")
+            fun head(): Call<HeadUser>
+
+            @retrofit2.http.HTTP(method = "CUSTOM", path = "/")
+            fun http(): Call<HttpUser>
+
+            @OPTIONS("/")
+            fun options(): Call<OptionsUser>
+
+            @PATCH("/")
+            fun patch(): Call<PatchUser>
+
+            @POST("/")
+            fun post(): Call<PostUser>
+
+            @PUT("/")
+            fun put(): Call<PutUser>
+          }
+        """.trimIndent()
+        generator.validate(source, rules)
+      }
+    }
+  }
+
+  @Test
+  fun nesting() {
+    val rules = """
+      |# test.Service
+      |-keep,allowoptimization,allowshrinking,allowobfuscation class retrofit2.Call
+      |-keep,allowoptimization,allowshrinking,allowobfuscation class test.One
+      |-keep,allowoptimization,allowshrinking,allowobfuscation class test.Three
+      |-keep,allowoptimization,allowshrinking,allowobfuscation class test.Two
+      |
+    """.trimMargin()
+    when (generator) {
+      Generator.Apt -> {
+        val source = """
+          package test;
+
+          import retrofit2.*;
+          import retrofit2.http.*;
+
+          class One<T> {}
+          class Two<T> {}
+          class Three {}
+
+          interface Service {
+            @GET("/") Call<One<Two<Three>>> get();
+          }
+        """.trimIndent()
+        generator.validate(source, rules)
+      }
+
+      Generator.Ksp -> {
+        val source = """
+          package test
+
+          import retrofit2.*
+          import retrofit2.http.*
+
+          internal class One<T>
+          internal class Two<T>
+          internal class Three
+
+          internal interface Service {
+            @GET("/")
+            fun get(): Call<One<Two<Three>>>
+          }
+        """.trimIndent()
+        generator.validate(source, rules)
+      }
+    }
+  }
+
+  @Test
+  fun kotlinSuspend() {
+    val rules = """
+      |# test.Service
+      |-keep,allowoptimization,allowshrinking,allowobfuscation class java.lang.Object
+      |-keep,allowoptimization,allowshrinking,allowobfuscation class test.Body
+      |
+    """.trimMargin()
+    when (generator) {
+      Generator.Apt -> {
+        val source = """
+          package test;
+
+          import kotlin.coroutines.Continuation;
+          import retrofit2.*;
+          import retrofit2.http.*;
+
+          class Body {}
+
+          interface Service {
+            @GET("/") Object get(Continuation<? extends Body> c);
+          }
+        """.trimIndent()
+        generator.validate(source, rules)
+      }
+
+      Generator.Ksp -> {
+        val source = """
+          package test
+
+          import retrofit2.*
+          import retrofit2.http.*
+
+          internal class Body
+
+          internal interface Service {
+            @GET("/")
+            suspend fun get(c: Body): Any
+          }
+        """.trimIndent()
         generator.validate(source, rules)
       }
     }
@@ -105,14 +268,6 @@ class RetrofitResponseTypeKeepProcessorTest(
 
     private companion object {
       const val GENERATED_PATH = "META-INF/proguard/retrofit-response-type-keeper-test.Service.pro"
-    }
-  }
-
-  private companion object {
-    fun readResourceAsText(name: String): String {
-      val resource = this::class.java.classLoader.getResource(name)
-        ?: throw NoSuchFileException("Resource $name not found.")
-      return resource.toURI().toPath().readText()
     }
   }
 }
