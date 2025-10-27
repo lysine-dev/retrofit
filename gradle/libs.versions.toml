@@ -13,7 +13,7 @@
 # limitations under the License.
 
 [versions]
-kotlin = "2.2.20"
+kotlin = "2.2.21"
 okhttp = "5.2.1"
 protobuf = "3.25.8"
 robovm = "2.3.14"
@@ -26,7 +26,7 @@ jackson = "2.20.0"
 [libraries]
 androidPlugin = { module = "com.android.tools.build:gradle", version = "8.13.0" }
 robovmPlugin = { module = "com.mobidevelop.robovm:robovm-gradle-plugin", version.ref = "robovm" }
-dokkaPlugin = "org.jetbrains.dokka:dokka-gradle-plugin:2.0.0"
+dokkaPlugin = "org.jetbrains.dokka:dokka-gradle-plugin:2.1.0"
 gradleMavenPublishPlugin = "com.vanniktech:gradle-maven-publish-plugin:0.34.0"
 spotlessPlugin = "com.diffplug.spotless:spotless-plugin-gradle:8.0.0"
 

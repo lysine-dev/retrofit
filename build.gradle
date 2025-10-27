@@ -111,7 +111,7 @@ tasks.register('copyWebsiteDocs', Copy) {
 
     into(subproject.POM_ARTIFACT_ID) {
       if (subproject.plugins.hasPlugin('org.jetbrains.dokka')) {
-        from subproject.tasks.named('dokkaHtml').flatMap { it.outputDirectory }
+        from subproject.tasks.named('dokkaGeneratePublicationHtml').flatMap { it.outputDirectory }
       } else {
         from subproject.tasks.named('javadoc').map { it.destinationDir }
       }
