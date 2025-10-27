@@ -37,9 +37,8 @@ import org.junit.runner.RunWith
 
 @RunWith(TestParameterInjector::class)
 class RetrofitResponseTypeKeepProcessorTest(
-  @param:TestParameter private val useKsp: Boolean,
+  @param:TestParameter private val generator: Generator,
 ) {
-  @OptIn(ExperimentalCompilerApi::class)
   @Test
   fun process(
     @TestParameter(
@@ -49,44 +48,63 @@ class RetrofitResponseTypeKeepProcessorTest(
     ) name: String,
   ) {
     val rules = readResourceAsText("$name/Service.pro")
-    val generatedPath = "META-INF/proguard/retrofit-response-type-keeper-test.Service.pro"
 
-    if (useKsp) {
-      val compilation = KotlinCompilation().apply {
-        configureKsp {
-          inheritClassPath = true
-          symbolProcessorProviders += RetrofitResponseTypeKeepSymbolProcessor.Provider()
-          sources = listOf(
-            SourceFile.kotlin(
-              "Service.kt",
-              readResourceAsText("$name/Service.kt"),
-            ),
-          )
-        }
+    when (generator) {
+      Generator.Apt -> {
+        val source = readResourceAsText("$name/Service.java")
+        generator.validate(source, rules)
       }
-      val result = compilation.compile()
 
-      assertThat(result.exitCode).isEqualTo(ExitCode.OK)
-      assertThat(compilation.kspSourcesDir.resolve("resources/$generatedPath").readText())
-        .isEqualTo(rules)
-    } else {
-      val service = JavaFileObjects.forSourceString(
-        "test.Service",
-        readResourceAsText("$name/Service.java"),
-      )
-      assertAbout(javaSource())
-        .that(service)
-        .processedWith(RetrofitResponseTypeKeepProcessor())
-        .compilesWithoutError()
-        .and()
-        .generatesFileNamed(
-          CLASS_OUTPUT,
-          "",
-          generatedPath,
-        ).withStringContents(
-          UTF_8,
-          rules,
-        )
+      Generator.Ksp -> {
+        val source = readResourceAsText("$name/Service.kt")
+        generator.validate(source, rules)
+      }
+    }
+  }
+
+  enum class Generator {
+    Apt {
+      override fun validate(source: String, rules: String) {
+        val service = JavaFileObjects.forSourceString("test.Service", source)
+        assertAbout(javaSource())
+          .that(service)
+          .processedWith(RetrofitResponseTypeKeepProcessor())
+          .compilesWithoutError()
+          .and()
+          .generatesFileNamed(
+            CLASS_OUTPUT,
+            "",
+            GENERATED_PATH,
+          ).withStringContents(
+            UTF_8,
+            rules,
+          )
+      }
+    },
+
+    Ksp {
+      @OptIn(ExperimentalCompilerApi::class)
+      override fun validate(source: String, rules: String) {
+        val compilation = KotlinCompilation().apply {
+          configureKsp {
+            inheritClassPath = true
+            symbolProcessorProviders += RetrofitResponseTypeKeepSymbolProcessor.Provider()
+            sources = listOf(SourceFile.new("Service.kt", source))
+          }
+        }
+        val result = compilation.compile()
+
+        assertThat(result.exitCode).isEqualTo(ExitCode.OK)
+        assertThat(compilation.kspSourcesDir.resolve("resources/$GENERATED_PATH").readText())
+          .isEqualTo(rules)
+      }
+    },
+    ;
+
+    abstract fun validate(source: String, rules: String)
+
+    private companion object {
+      const val GENERATED_PATH = "META-INF/proguard/retrofit-response-type-keeper-test.Service.pro"
     }
   }
 
