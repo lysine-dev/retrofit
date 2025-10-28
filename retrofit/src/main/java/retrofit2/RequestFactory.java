@@ -133,7 +133,7 @@ final class RequestFactory {
 
     return requestBuilder
         .get()
-        .tag(Invocation.class, new Invocation(service, instance, method, argumentList))
+        .tag(Invocation.class, new Invocation(service, instance, method, argumentList, relativeUrl))
         .build();
   }
 
