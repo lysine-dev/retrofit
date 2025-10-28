@@ -90,10 +90,10 @@ public final class InvocationTest {
   @Test
   public void annotationUrlAbsent() {
     Retrofit retrofit =
-      new Retrofit.Builder()
-        .baseUrl("http://example.com/")
-        .callFactory(new OkHttpClient())
-        .build();
+        new Retrofit.Builder()
+            .baseUrl("http://example.com/")
+            .callFactory(new OkHttpClient())
+            .build();
 
     Example example = retrofit.create(Example.class);
     Call<ResponseBody> call = example.urlMethod("/abc");
@@ -134,7 +134,11 @@ public final class InvocationTest {
   public void nullInstance() {
     try {
       Invocation.of(
-          Object.class, null, Object.class.getDeclaredMethods()[0], Arrays.asList("one", "two"), null);
+          Object.class,
+          null,
+          Object.class.getDeclaredMethods()[0],
+          Arrays.asList("one", "two"),
+          null);
       fail();
     } catch (NullPointerException expected) {
       assertThat(expected).hasMessageThat().isEqualTo("instance == null");

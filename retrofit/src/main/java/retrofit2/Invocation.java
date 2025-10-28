@@ -51,7 +51,11 @@ import javax.annotation.Nullable;
  * types for parameters!
  */
 public final class Invocation {
-  public static <T> Invocation of(Class<T> service, T instance, Method method, List<?> arguments,
+  public static <T> Invocation of(
+      Class<T> service,
+      T instance,
+      Method method,
+      List<?> arguments,
       @Nullable String annotationUrl) {
     Objects.requireNonNull(service, "service == null");
     Objects.requireNonNull(instance, "instance == null");
@@ -70,8 +74,8 @@ public final class Invocation {
     Objects.requireNonNull(method, "method == null");
     Objects.requireNonNull(arguments, "arguments == null");
     // Make a defensive copy of arguments.
-    return new Invocation(method.getDeclaringClass(), null, method, new ArrayList<>(arguments),
-      null);
+    return new Invocation(
+        method.getDeclaringClass(), null, method, new ArrayList<>(arguments), null);
   }
 
   private final Class<?> service;
@@ -81,7 +85,11 @@ public final class Invocation {
   @Nullable private final String annotationUrl;
 
   /** Trusted constructor assumes ownership of {@code arguments}. */
-  Invocation(Class<?> service, @Nullable Object instance, Method method, List<?> arguments,
+  Invocation(
+      Class<?> service,
+      @Nullable Object instance,
+      Method method,
+      List<?> arguments,
       @Nullable String annotationUrl) {
     this.service = service;
     this.instance = instance;
