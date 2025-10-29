@@ -130,7 +130,7 @@ public final class Invocation {
    * <p>
    * This value will be null if one of the method's parameter is annotated
    * {@link retrofit2.http.Url @Url}. It will also be null if this Invocation was created using one
-   * of the {@link #of factory-functions} that don't have this value.
+   * of the {@linkplain #of factory-functions} that don't have this value.
    */
   @Nullable
   public String annotationUrl() {
