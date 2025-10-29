@@ -28,15 +28,20 @@ import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import org.junit.Test;
 import retrofit2.http.Body;
+import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
+import retrofit2.http.Url;
 
 public final class InvocationTest {
   interface Example {
     @POST("/{p1}") //
     Call<ResponseBody> postMethod(
         @Path("p1") String p1, @Query("p2") String p2, @Body RequestBody body);
+
+    @GET //
+    Call<ResponseBody> urlMethod(@Url String url);
   }
 
   interface ExampleSub extends Example {}
@@ -58,6 +63,7 @@ public final class InvocationTest {
     assertThat(method.getName()).isEqualTo("postMethod");
     assertThat(method.getDeclaringClass()).isEqualTo(Example.class);
     assertThat(invocation.arguments()).isEqualTo(Arrays.asList("one", "two", requestBody));
+    assertThat(invocation.annotationUrl()).isEqualTo("/{p1}");
   }
 
   @Test
@@ -78,10 +84,30 @@ public final class InvocationTest {
     assertThat(invocation.method().getName()).isEqualTo("postMethod");
     assertThat(invocation.method().getDeclaringClass()).isEqualTo(Example.class);
     assertThat(invocation.arguments()).isEqualTo(Arrays.asList("one", "two", requestBody));
+    assertThat(invocation.annotationUrl()).isEqualTo("/{p1}");
   }
 
   @Test
-  public void nullService() {
+  public void annotationUrlAbsent() {
+    Retrofit retrofit =
+        new Retrofit.Builder()
+            .baseUrl("http://example.com/")
+            .callFactory(new OkHttpClient())
+            .build();
+
+    Example example = retrofit.create(Example.class);
+    Call<ResponseBody> call = example.urlMethod("/abc");
+
+    Invocation invocation = call.request().tag(Invocation.class);
+    Method method = invocation.method();
+    assertThat(method.getName()).isEqualTo("urlMethod");
+    assertThat(method.getDeclaringClass()).isEqualTo(Example.class);
+    assertThat(invocation.arguments()).isEqualTo(Arrays.asList("/abc"));
+    assertThat(invocation.annotationUrl()).isNull();
+  }
+
+  @Test
+  public void ofInstance() {
     try {
       Invocation.of(
           null, new Object(), Object.class.getDeclaredMethods()[0], Arrays.asList("one", "two"));
@@ -92,10 +118,27 @@ public final class InvocationTest {
   }
 
   @Test
+  public void nullService() {
+    Object service = new Object();
+    Method method = Object.class.getDeclaredMethods()[0];
+    List<?> arguments = Arrays.asList("one", "two");
+    Invocation invocation = Invocation.of(Object.class, service, method, arguments, "/abc");
+    assertThat(invocation.service()).isEqualTo(Object.class);
+    assertThat(invocation.instance()).isEqualTo(service);
+    assertThat(invocation.method()).isEqualTo(method);
+    assertThat(invocation.arguments()).isEqualTo(arguments);
+    assertThat(invocation.annotationUrl()).isEqualTo("/abc");
+  }
+
+  @Test
   public void nullInstance() {
     try {
       Invocation.of(
-          Object.class, null, Object.class.getDeclaredMethods()[0], Arrays.asList("one", "two"));
+          Object.class,
+          null,
+          Object.class.getDeclaredMethods()[0],
+          Arrays.asList("one", "two"),
+          null);
       fail();
     } catch (NullPointerException expected) {
       assertThat(expected).hasMessageThat().isEqualTo("instance == null");
@@ -105,7 +148,7 @@ public final class InvocationTest {
   @Test
   public void nullMethod() {
     try {
-      Invocation.of(Object.class, new Object(), null, Arrays.asList("one", "two"));
+      Invocation.of(Object.class, new Object(), null, Arrays.asList("one", "two"), null);
       fail();
     } catch (NullPointerException expected) {
       assertThat(expected).hasMessageThat().isEqualTo("method == null");
@@ -115,7 +158,7 @@ public final class InvocationTest {
   @Test
   public void nullArguments() {
     try {
-      Invocation.of(Object.class, new Object(), Example.class.getDeclaredMethods()[0], null);
+      Invocation.of(Object.class, new Object(), Example.class.getDeclaredMethods()[0], null, null);
       fail();
     } catch (NullPointerException expected) {
       assertThat(expected).hasMessageThat().isEqualTo("arguments == null");
