@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":10,"i2":10,"i3":9,"i4":41,"i5":10,"i6":10};
+var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":9,"i5":9,"i6":41,"i7":10,"i8":10};
 var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"],32:["t6","Deprecated Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -154,38 +154,53 @@ extends java.lang.Object</pre>
 <th class="colLast" scope="col">Method and Description</th>
 </tr>
 <tr id="i0" class="altColor">
+<td class="colFirst"><code>java.lang.String</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../retrofit2/Invocation.html#annotationUrl--">annotationUrl</a></span>()</code>
+<div class="block">The URL from the annotation like <a href="../retrofit2/http/GET.html" title="annotation in retrofit2.http"><code>@GET</code></a> or
+ <a href="../retrofit2/http/POST.html" title="annotation in retrofit2.http"><code>@POST</code></a>.</div>
+</td>
+</tr>
+<tr id="i1" class="rowColor">
 <td class="colFirst"><code>java.util.List&lt;?&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../retrofit2/Invocation.html#arguments--">arguments</a></span>()</code>&nbsp;</td>
 </tr>
-<tr id="i1" class="rowColor">
+<tr id="i2" class="altColor">
 <td class="colFirst"><code>java.lang.Object</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../retrofit2/Invocation.html#instance--">instance</a></span>()</code>
 <div class="block">The instance of <a href="../retrofit2/Invocation.html#service"><code>service</code></a>.</div>
 </td>
 </tr>
-<tr id="i2" class="altColor">
+<tr id="i3" class="rowColor">
 <td class="colFirst"><code>java.lang.reflect.Method</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../retrofit2/Invocation.html#method--">method</a></span>()</code>&nbsp;</td>
 </tr>
-<tr id="i3" class="rowColor">
+<tr id="i4" class="altColor">
 <td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="../retrofit2/Invocation.html" title="class in retrofit2">Invocation</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../retrofit2/Invocation.html#of-java.lang.Class-T-java.lang.reflect.Method-java.util.List-">of</a></span>(java.lang.Class&lt;T&gt;&nbsp;service,
   T&nbsp;instance,
   java.lang.reflect.Method&nbsp;method,
   java.util.List&lt;?&gt;&nbsp;arguments)</code>&nbsp;</td>
 </tr>
-<tr id="i4" class="altColor">
+<tr id="i5" class="rowColor">
+<td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="../retrofit2/Invocation.html" title="class in retrofit2">Invocation</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../retrofit2/Invocation.html#of-java.lang.Class-T-java.lang.reflect.Method-java.util.List-java.lang.String-">of</a></span>(java.lang.Class&lt;T&gt;&nbsp;service,
+  T&nbsp;instance,
+  java.lang.reflect.Method&nbsp;method,
+  java.util.List&lt;?&gt;&nbsp;arguments,
+  java.lang.String&nbsp;annotationUrl)</code>&nbsp;</td>
+</tr>
+<tr id="i6" class="altColor">
 <td class="colFirst"><code>static <a href="../retrofit2/Invocation.html" title="class in retrofit2">Invocation</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../retrofit2/Invocation.html#of-java.lang.reflect.Method-java.util.List-">of</a></span>(java.lang.reflect.Method&nbsp;method,
   java.util.List&lt;?&gt;&nbsp;arguments)</code>
 <div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
 </td>
 </tr>
-<tr id="i5" class="rowColor">
+<tr id="i7" class="rowColor">
 <td class="colFirst"><code>java.lang.Class&lt;?&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../retrofit2/Invocation.html#service--">service</a></span>()</code>&nbsp;</td>
 </tr>
-<tr id="i6" class="altColor">
+<tr id="i8" class="altColor">
 <td class="colFirst"><code>java.lang.String</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../retrofit2/Invocation.html#toString--">toString</a></span>()</code>&nbsp;</td>
 </tr>
@@ -211,6 +226,22 @@ extends java.lang.Object</pre>
 <!--   -->
 </a>
 <h3>Method Detail</h3>
+<a name="of-java.lang.Class-java.lang.Object-java.lang.reflect.Method-java.util.List-java.lang.String-">
+<!--   -->
+</a><a name="of-java.lang.Class-T-java.lang.reflect.Method-java.util.List-java.lang.String-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>of</h4>
+<pre>public static&nbsp;&lt;T&gt;&nbsp;<a href="../retrofit2/Invocation.html" title="class in retrofit2">Invocation</a>&nbsp;of(java.lang.Class&lt;T&gt;&nbsp;service,
+                                T&nbsp;instance,
+                                java.lang.reflect.Method&nbsp;method,
+                                java.util.List&lt;?&gt;&nbsp;arguments,
+                                @Nullable
+                                java.lang.String&nbsp;annotationUrl)</pre>
+</li>
+</ul>
 <a name="of-java.lang.Class-java.lang.Object-java.lang.reflect.Method-java.util.List-">
 <!--   -->
 </a><a name="of-java.lang.Class-T-java.lang.reflect.Method-java.util.List-">
@@ -276,6 +307,25 @@ public&nbsp;java.lang.Object&nbsp;instance()</pre>
 <li class="blockList">
 <h4>arguments</h4>
 <pre>public&nbsp;java.util.List&lt;?&gt;&nbsp;arguments()</pre>
+</li>
+</ul>
+<a name="annotationUrl--">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>annotationUrl</h4>
+<pre>@Nullable
+public&nbsp;java.lang.String&nbsp;annotationUrl()</pre>
+<div class="block">The URL from the annotation like <a href="../retrofit2/http/GET.html" title="annotation in retrofit2.http"><code>@GET</code></a> or
+ <a href="../retrofit2/http/POST.html" title="annotation in retrofit2.http"><code>@POST</code></a>.
+ <p>
+ If the method uses the <a href="../retrofit2/http/Path.html" title="annotation in retrofit2.http"><code>@Path</code></a> annotation, this is the template URL
+ before path substitution, as it occurs in source code.
+ <p>
+ This value will be null if one of the method's parameter is annotated
+ <a href="../retrofit2/http/Url.html" title="annotation in retrofit2.http"><code>@Url</code></a>. It will also be null if this Invocation was created using one
+ of the <a href="../retrofit2/Invocation.html#of-java.lang.Class-T-java.lang.reflect.Method-java.util.List-java.lang.String-">factory-functions</a> that don't have this value.</div>
 </li>
 </ul>
 <a name="toString--">
