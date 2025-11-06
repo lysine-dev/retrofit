@@ -15,7 +15,6 @@
  */
 package retrofit2.keeper
 
-import com.google.auto.service.AutoService
 import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.Dependencies
 import com.google.devtools.ksp.processing.Resolver
@@ -86,8 +85,6 @@ class RetrofitResponseTypeKeepSymbolProcessor(
     }
   }
 
-  @Suppress("unused") // Used in service file.
-  @AutoService(SymbolProcessorProvider::class)
   class Provider : SymbolProcessorProvider {
     override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor =
       RetrofitResponseTypeKeepSymbolProcessor(environment)
