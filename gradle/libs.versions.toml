@@ -14,14 +14,14 @@
 
 [versions]
 kotlin = "2.2.21"
-okhttp = "5.2.1"
+okhttp = "5.3.0"
 protobuf = "3.25.8"
 robovm = "2.3.14"
 kotlinx-serialization = "1.9.0"
 kct = "0.10.0"
 autoService = "1.1.1"
 incap = "1.0.0"
-jackson = "2.20.0"
+jackson = "2.20.1"
 
 [libraries]
 androidPlugin = { module = "com.android.tools.build:gradle", version = "8.13.0" }
@@ -46,12 +46,6 @@ animalSnifferAnnotations = { module = "org.codehaus.mojo:animal-sniffer-annotati
 protobufPlugin = "com.google.protobuf:protobuf-gradle-plugin:0.9.5"
 protobuf = { module = "com.google.protobuf:protobuf-java", version.ref = "protobuf" }
 protoc = { module = "com.google.protobuf:protoc", version.ref = "protobuf" }
-
-incap-runtime = { module = "net.ltgt.gradle.incap:incap", version.ref = "incap" }
-incap-processor = { module = "net.ltgt.gradle.incap:incap-processor", version.ref = "incap" }
-
-autoService-annotations = { module = "com.google.auto.service:auto-service-annotations", version.ref = "autoService" }
-autoService-compiler = { module = "com.google.auto.service:auto-service", version.ref = "autoService" }
 
 kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version = "1.10.2" }
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
