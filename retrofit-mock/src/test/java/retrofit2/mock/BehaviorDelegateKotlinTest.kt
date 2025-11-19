@@ -29,8 +29,11 @@ import retrofit2.Retrofit
 class BehaviorDelegateKotlinTest {
   internal interface DoWorkService {
     suspend fun body(): String
+
     suspend fun failure(): String
+
     suspend fun response(): Response<String>
+
     suspend fun responseWildcard(): Response<out String>
   }
 
@@ -38,35 +41,34 @@ class BehaviorDelegateKotlinTest {
   private val behavior = NetworkBehavior.create(Random(2847))
   private lateinit var service: DoWorkService
 
-  @Before fun before() {
-    val retrofit = Retrofit.Builder()
-      .baseUrl("http://example.com")
-      .build()
-    val mockRetrofit = MockRetrofit.Builder(retrofit)
-      .networkBehavior(behavior)
-      .build()
+  @Before
+  fun before() {
+    val retrofit = Retrofit.Builder().baseUrl("http://example.com").build()
+    val mockRetrofit = MockRetrofit.Builder(retrofit).networkBehavior(behavior).build()
     val delegate = mockRetrofit.create<DoWorkService>()
 
-    service = object : DoWorkService {
-      override suspend fun body(): String {
-        return delegate.returning(Calls.response("Response!")).body()
-      }
+    service =
+      object : DoWorkService {
+        override suspend fun body(): String {
+          return delegate.returning(Calls.response("Response!")).body()
+        }
 
-      override suspend fun failure(): String {
-        val failure = Calls.failure<String>(mockFailure)
-        return delegate.returning(failure).failure()
-      }
+        override suspend fun failure(): String {
+          val failure = Calls.failure<String>(mockFailure)
+          return delegate.returning(failure).failure()
+        }
 
-      override suspend fun response(): Response<String> {
-        val response = Calls.response("Response!")
-        return delegate.returning(response).response()
-      }
+        override suspend fun response(): Response<String> {
+          val response = Calls.response("Response!")
+          return delegate.returning(response).response()
+        }
 
-      override suspend fun responseWildcard() = response()
-    }
+        override suspend fun responseWildcard() = response()
+      }
   }
 
-  @Test fun body() {
+  @Test
+  fun body() {
     behavior.setDelay(100, MILLISECONDS)
     behavior.setVariancePercent(0)
     behavior.setFailurePercent(0)
@@ -79,7 +81,8 @@ class BehaviorDelegateKotlinTest {
     assertThat(result).isEqualTo("Response!")
   }
 
-  @Test fun bodyFailure() {
+  @Test
+  fun bodyFailure() {
     behavior.setDelay(100, MILLISECONDS)
     behavior.setVariancePercent(0)
     behavior.setFailurePercent(100)
@@ -98,7 +101,8 @@ class BehaviorDelegateKotlinTest {
     assertThat(exception).isSameInstanceAs(behavior.failureException())
   }
 
-  @Test fun failure() {
+  @Test
+  fun failure() {
     behavior.setDelay(100, MILLISECONDS)
     behavior.setVariancePercent(0)
     behavior.setFailurePercent(0)
@@ -119,7 +123,8 @@ class BehaviorDelegateKotlinTest {
     assertThat(exception).hasMessageThat().isEqualTo(mockFailure.message)
   }
 
-  @Test fun response() {
+  @Test
+  fun response() {
     behavior.setDelay(100, MILLISECONDS)
     behavior.setVariancePercent(0)
     behavior.setFailurePercent(0)
@@ -132,7 +137,8 @@ class BehaviorDelegateKotlinTest {
     assertThat(result.body()).isEqualTo("Response!")
   }
 
-  @Test fun responseFailure() {
+  @Test
+  fun responseFailure() {
     behavior.setDelay(100, MILLISECONDS)
     behavior.setVariancePercent(0)
     behavior.setFailurePercent(100)
@@ -151,7 +157,8 @@ class BehaviorDelegateKotlinTest {
     assertThat(exception).isSameInstanceAs(behavior.failureException())
   }
 
-  @Test fun responseWildcard() {
+  @Test
+  fun responseWildcard() {
     behavior.setDelay(100, MILLISECONDS)
     behavior.setVariancePercent(0)
     behavior.setFailurePercent(0)
