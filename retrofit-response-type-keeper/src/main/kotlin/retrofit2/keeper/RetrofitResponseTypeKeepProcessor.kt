@@ -27,16 +27,7 @@ import javax.tools.StandardLocation.CLASS_OUTPUT
 
 class RetrofitResponseTypeKeepProcessor : AbstractProcessor() {
   override fun getSupportedSourceVersion() = SourceVersion.latestSupported()
-  override fun getSupportedAnnotationTypes() = setOf(
-    "retrofit2.http.DELETE",
-    "retrofit2.http.GET",
-    "retrofit2.http.HEAD",
-    "retrofit2.http.HTTP",
-    "retrofit2.http.OPTIONS",
-    "retrofit2.http.PATCH",
-    "retrofit2.http.POST",
-    "retrofit2.http.PUT",
-  )
+  override fun getSupportedAnnotationTypes() = annotationNames
 
   override fun process(
     annotations: Set<TypeElement>,
@@ -71,12 +62,11 @@ class RetrofitResponseTypeKeepProcessor : AbstractProcessor() {
 
     for ((element, referencedTypes) in elementToReferencedTypes) {
       val typeName = element.qualifiedName.toString()
-      val outputFile = "META-INF/proguard/retrofit-response-type-keeper-$typeName.pro"
-      val rules = processingEnv.filer.createResource(CLASS_OUTPUT, "", outputFile, element)
+      val rules = processingEnv.filer.createResource(CLASS_OUTPUT, "", proguardFilePath(typeName), element)
       rules.openWriter().buffered().use { w ->
         w.write("# $typeName\n")
         for (referencedType in referencedTypes.sorted()) {
-          w.write("-keep,allowoptimization,allowshrinking,allowobfuscation class $referencedType\n")
+          w.write(keepRuleForType(referencedType))
         }
       }
     }

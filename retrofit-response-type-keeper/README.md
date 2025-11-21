@@ -27,21 +27,21 @@ annotationProcessor 'com.squareup.retrofit2:response-type-keeper:<version>'
 ```
 Or Gradle Kotlin projects with
 ```groovy
-kapt 'com.squareup.retrofit2:response-type-keeper:<version>'
+ksp 'com.squareup.retrofit2:response-type-keeper:<version>'
 ```
 
 For other build systems, the `com.squareup.retrofit2:response-type-keeper` needs added to the Java
 compiler `-processor` classpath.
 
 For the example above, the annotation processor's generated file would contain
-```
--keep com.example.User
+```proguard
+-keep,allowoptimization,allowshrinking,allowobfuscation class com.example.User
 ```
 
 This works for nested generics, such as `Call<ApiResponse<User>>`, which would produce:
-```
--keep com.example.ApiResponse
--keep com.example.User
+```proguard
+-keep,allowoptimization,allowshrinking,allowobfuscation class com.example.ApiResponse
+-keep,allowoptimization,allowshrinking,allowobfuscation class com.example.User
 ```
 
 It also works on Kotlin `suspend` functions which turn into a type like
