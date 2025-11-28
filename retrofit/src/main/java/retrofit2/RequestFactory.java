@@ -14,17 +14,37 @@ final class RequestFactory {
     this.baseUrl = Utils.normalizeUrl(url);
   }
 
-  Request create(Map<String, String> headers, Map<String, String> queryParams, RequestBody body) {
+  Request create(Map<String, String> headers, Map<String, String> queryParams, RequestBody body, boolean isMultipart, boolean isForm) {
     String finalUrl = Utils.buildFinalUrl(baseUrl, queryParams);
-    return buildRequest(finalUrl, headers, body);
+
+    // Replaced long if-else with "strategy-style" conditional
+    if (isMultipart) return createMultipartRequest(finalUrl, headers, body);
+    if (isForm) return createFormRequest(finalUrl, headers, body);
+    if ("GET".equalsIgnoreCase(httpMethod)) return createGetRequest(finalUrl, headers);
+    return createPostRequest(finalUrl, headers, body);
   }
 
-  // Reusable helper to remove duplicate header logic
-  private Request buildRequest(String url, Map<String, String> headers, RequestBody body) {
-    Request.Builder builder = new Request.Builder().url(url);
-    if ("GET".equalsIgnoreCase(httpMethod)) builder.get();
-    else builder.method(httpMethod, body);
+  private Request createGetRequest(String url, Map<String, String> headers) {
+    Request.Builder builder = new Request.Builder().url(url).get();
+    attachHeaders(builder, headers);
+    return builder.build();
+  }
 
+  private Request createPostRequest(String url, Map<String, String> headers, RequestBody body) {
+    Request.Builder builder = new Request.Builder().url(url).method("POST", body);
+    attachHeaders(builder, headers);
+    return builder.build();
+  }
+
+  private Request createMultipartRequest(String url, Map<String, String> headers, RequestBody body) {
+    MultipartBody multipart = new MultipartBody.Builder().setType(MultipartBody.FORM).addPart(body).build();
+    Request.Builder builder = new Request.Builder().url(url).post(multipart);
+    attachHeaders(builder, headers);
+    return builder.build();
+  }
+
+  private Request createFormRequest(String url, Map<String, String> headers, RequestBody body) {
+    Request.Builder builder = new Request.Builder().url(url).post(body);
     attachHeaders(builder, headers);
     return builder.build();
   }
