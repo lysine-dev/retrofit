@@ -5,23 +5,26 @@ import java.util.Map;
 
 final class RequestFactory {
 
-  private final String httpMethod;
+  enum RequestType { GET, POST, MULTIPART, FORM }
+
+  private final RequestType requestType;
   private final String baseUrl;
 
-  RequestFactory(String method, String url) {
-    Utils.validateInputs(url, method);
-    this.httpMethod = method;
+  RequestFactory(RequestType type, String url) {
+    Utils.validateInputs(url, type.name());
+    this.requestType = type;
     this.baseUrl = Utils.normalizeUrl(url);
   }
 
-  Request create(Map<String, String> headers, Map<String, String> queryParams, RequestBody body, boolean isMultipart, boolean isForm) {
+  Request create(Map<String, String> headers, Map<String, String> queryParams, RequestBody body) {
     String finalUrl = Utils.buildFinalUrl(baseUrl, queryParams);
-
-    // Replaced long if-else with "strategy-style" conditional
-    if (isMultipart) return createMultipartRequest(finalUrl, headers, body);
-    if (isForm) return createFormRequest(finalUrl, headers, body);
-    if ("GET".equalsIgnoreCase(httpMethod)) return createGetRequest(finalUrl, headers);
-    return createPostRequest(finalUrl, headers, body);
+    switch(requestType) {
+      case MULTIPART: return createMultipartRequest(finalUrl, headers, body);
+      case FORM: return createFormRequest(finalUrl, headers, body);
+      case GET: return createGetRequest(finalUrl, headers);
+      case POST: return createPostRequest(finalUrl, headers, body);
+      default: throw new IllegalStateException("Unknown request type: " + requestType);
+    }
   }
 
   private Request createGetRequest(String url, Map<String, String> headers) {
