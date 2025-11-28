@@ -16,13 +16,8 @@ final class Utils {
   }
 
   static void validateInputs(String url, String method) {
-    try {
-      if (url == null || url.isEmpty()) throw new IllegalArgumentException("URL must not be null or empty.");
-      if (method == null || method.isEmpty()) throw new IllegalArgumentException("HTTP method must not be null or empty.");
-    } catch (Exception e) {
-      logger.severe("Validation failed: " + e.getMessage());
-      throw e;
-    }
+    if (url == null || url.isEmpty()) throw new IllegalArgumentException("URL must not be null or empty.");
+    if (method == null || method.isEmpty()) throw new IllegalArgumentException("HTTP method must not be null or empty.");
   }
 
   static File resolveFile(String relativePath) {
@@ -33,20 +28,26 @@ final class Utils {
   }
 
   static RequestBody createBody(File file) {
-    try {
-      return RequestBody.create(MediaType.parse("application/octet-stream"), file);
-    } catch (Exception e) {
-      logger.severe("Failed to create RequestBody: " + e.getMessage());
-      throw e;
+    return RequestBody.create(MediaType.parse(determineMimeType(file)), file);
+  }
+
+  // New helper to remove duplication
+  static String determineMimeType(File file) {
+    String name = file.getName();
+    int dot = name.lastIndexOf('.');
+    if (dot == -1) return "application/octet-stream";
+    String ext = name.substring(dot + 1).toLowerCase();
+    switch (ext) {
+      case "txt": return "text/plain";
+      case "json": return "application/json";
+      case "xml": return "application/xml";
+      default: return "application/octet-stream";
     }
   }
 
   static String normalizeUrl(String url) {
     HttpUrl parsed = HttpUrl.parse(url);
-    if (parsed == null) {
-      logger.severe("Malformed URL: " + url);
-      throw new IllegalArgumentException("Malformed URL: " + url);
-    }
+    if (parsed == null) throw new IllegalArgumentException("Malformed URL: " + url);
     return parsed.toString();
   }
 
