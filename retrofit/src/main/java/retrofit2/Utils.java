@@ -5,31 +5,48 @@ import okhttp3.RequestBody;
 import okhttp3.HttpUrl;
 import java.io.File;
 import java.util.Map;
+import java.util.logging.Logger;
 
 final class Utils {
+
+  private static final Logger logger = Logger.getLogger(Utils.class.getName());
 
   private Utils() {
     throw new AssertionError("No instances.");
   }
 
   static void validateInputs(String url, String method) {
-    if (url == null || url.isEmpty()) throw new IllegalArgumentException("URL must not be null or empty.");
-    if (method == null || method.isEmpty()) throw new IllegalArgumentException("HTTP method must not be null or empty.");
+    try {
+      if (url == null || url.isEmpty()) throw new IllegalArgumentException("URL must not be null or empty.");
+      if (method == null || method.isEmpty()) throw new IllegalArgumentException("HTTP method must not be null or empty.");
+    } catch (Exception e) {
+      logger.severe("Validation failed: " + e.getMessage());
+      throw e;
+    }
   }
 
-  // Hardcoded paths replaced with dynamic resolution
   static File resolveFile(String relativePath) {
     String projectRoot = System.getProperty("user.dir");
-    return new File(projectRoot, relativePath);
+    File f = new File(projectRoot, relativePath);
+    if (!f.exists()) logger.warning("File does not exist: " + f.getAbsolutePath());
+    return f;
   }
 
   static RequestBody createBody(File file) {
-    return RequestBody.create(MediaType.parse("application/octet-stream"), file);
+    try {
+      return RequestBody.create(MediaType.parse("application/octet-stream"), file);
+    } catch (Exception e) {
+      logger.severe("Failed to create RequestBody: " + e.getMessage());
+      throw e;
+    }
   }
 
   static String normalizeUrl(String url) {
     HttpUrl parsed = HttpUrl.parse(url);
-    if (parsed == null) throw new IllegalArgumentException("Malformed URL: " + url);
+    if (parsed == null) {
+      logger.severe("Malformed URL: " + url);
+      throw new IllegalArgumentException("Malformed URL: " + url);
+    }
     return parsed.toString();
   }
 
