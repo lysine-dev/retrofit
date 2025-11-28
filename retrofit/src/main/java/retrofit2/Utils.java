@@ -5,15 +5,10 @@ import okhttp3.RequestBody;
 import okhttp3.HttpUrl;
 import java.io.File;
 import java.util.Map;
-import java.util.logging.Logger;
 
 final class Utils {
 
-  private static final Logger logger = Logger.getLogger(Utils.class.getName());
-
-  private Utils() {
-    throw new AssertionError("No instances.");
-  }
+  private Utils() { throw new AssertionError("No instances."); }
 
   static void validateInputs(String url, String method) {
     if (url == null || url.isEmpty()) throw new IllegalArgumentException("URL must not be null or empty.");
@@ -22,16 +17,13 @@ final class Utils {
 
   static File resolveFile(String relativePath) {
     String projectRoot = System.getProperty("user.dir");
-    File f = new File(projectRoot, relativePath);
-    if (!f.exists()) logger.warning("File does not exist: " + f.getAbsolutePath());
-    return f;
+    return new File(projectRoot, relativePath);
   }
 
   static RequestBody createBody(File file) {
     return RequestBody.create(MediaType.parse(determineMimeType(file)), file);
   }
 
-  // New helper to remove duplication
   static String determineMimeType(File file) {
     String name = file.getName();
     int dot = name.lastIndexOf('.');
