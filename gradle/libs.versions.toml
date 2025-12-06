@@ -74,7 +74,7 @@ simpleXml = { module = "org.simpleframework:simple-xml", version = "2.7.1" }
 wireRuntime = { module = "com.squareup.wire:wire-runtime", version = "5.4.0" }
 jsoup = { module = "org.jsoup:jsoup", version = "1.21.2" }
 robovm = { module = "com.mobidevelop.robovm:robovm-rt", version.ref = "robovm" }
-googleJavaFormat = "com.google.googlejavaformat:google-java-format:1.32.0"
+googleJavaFormat = "com.google.googlejavaformat:google-java-format:1.33.0"
 ktfmt = "com.facebook:ktfmt:0.59"
 compileTesting = "com.google.testing.compile:compile-testing:0.23.0"
 testParameterInjector = "com.google.testparameterinjector:test-parameter-injector:1.20"
