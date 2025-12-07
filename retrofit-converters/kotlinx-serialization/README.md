@@ -11,7 +11,7 @@ val retrofit = Retrofit.Builder()
     .baseUrl("https://example.com/")
     .addConverterFactory(
         Json.asConverterFactory(
-            "application/json; charset=UTF8".toMediaType()))
+            "application/json; charset=utf-8".toMediaType()))
     .build()
 ```
 
