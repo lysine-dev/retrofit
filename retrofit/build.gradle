@@ -2,25 +2,17 @@ apply plugin: 'java-library'
 apply plugin: 'org.jetbrains.kotlin.jvm'
 apply plugin: 'com.vanniktech.maven.publish'
 
-def addExtraSourceSet(String name) {
-  def sourceSet = sourceSets.create(name) {
-    java.srcDir("src/main/$name")
-  }
-
-  // Propagate dependencies to be visible to this source set.
-  configurations.getByName("${name}Implementation").extendsFrom(configurations.getByName('implementation'))
-  configurations.getByName("${name}Api").extendsFrom(configurations.getByName('api'))
-  configurations.getByName("${name}CompileOnly").extendsFrom(configurations.getByName('compileOnly'))
-
-  return sourceSet
-}
-
 def addMultiReleaseSourceSet(int version) {
-  def name = "java${version}"
-  def sourceSet = addExtraSourceSet(name)
+  def sourceSet = sourceSets.create("java$version")
+  sourceSet.java.srcDir("src/main/java$version")
+
+  // Propagate dependencies to be visible to this version's source set.
+  configurations.getByName("java${version}Implementation").extendsFrom(configurations.getByName('implementation'))
+  configurations.getByName("java${version}Api").extendsFrom(configurations.getByName('api'))
+  configurations.getByName("java${version}CompileOnly").extendsFrom(configurations.getByName('compileOnly'))
 
   // Allow types in the main source set to be visible to this version's source set.
-  dependencies.add("${name}Implementation", sourceSets.getByName("main").output)
+  dependencies.add("java${version}Implementation", sourceSets.getByName("main").output)
 
   tasks.named("compileJava${version}Java", JavaCompile) {
     javaCompiler = javaToolchains.compilerFor {
@@ -39,17 +31,22 @@ def addMultiReleaseSourceSet(int version) {
 addMultiReleaseSourceSet(14)
 addMultiReleaseSourceSet(16)
 
-def extra = addExtraSourceSet('extra')
+def extra = sourceSets.create('extra') {
+  java.srcDir('src/main/extra')
+}
 
 dependencies {
   api libs.okhttp.client
+  api extra.output
 
-  compileOnly extra.output
   compileOnly libs.android
   compileOnly libs.kotlinx.coroutines
 
   compileOnly libs.animalSnifferAnnotations
   compileOnly libs.findBugsAnnotations
+
+  // Can't extend extraCompileOnly from compileOnly due to the circular dependencies.
+  extraCompileOnly libs.okhttp.client
 }
 
 javadoc {
