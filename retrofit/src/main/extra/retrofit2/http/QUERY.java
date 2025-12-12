@@ -27,7 +27,7 @@ import okhttp3.HttpUrl;
 @Documented
 @Target(METHOD)
 @Retention(RUNTIME)
-public @interface QUERY_METHOD {
+public @interface QUERY {
   /**
    * A relative or absolute path, or full URL of the endpoint. This value is optional if the first
    * parameter of the method is annotated with {@link Url @Url}.

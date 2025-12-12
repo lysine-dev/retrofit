@@ -60,7 +60,7 @@ import retrofit2.http.PUT;
 import retrofit2.http.Part;
 import retrofit2.http.PartMap;
 import retrofit2.http.Path;
-import retrofit2.http.QUERY_METHOD;
+import retrofit2.http.QUERY;
 import retrofit2.http.Query;
 import retrofit2.http.QueryMap;
 import retrofit2.http.QueryName;
@@ -1009,7 +1009,7 @@ public final class RequestFactoryTest {
   @Test
   public void query() {
     class Example {
-      @QUERY_METHOD("/foo/bar/") //
+      @QUERY("/foo/bar/") //
       Call<ResponseBody> method(@Body RequestBody body) {
         return null;
       }
