@@ -84,11 +84,7 @@ subprojects {
         target 'src/*/java*/**/*.java'
       }
       kotlin {
-        ktlint(libs.ktlint.get().version)
-          .editorConfigOverride([
-            // Making something an expression body should be a choice around readability.
-            'ktlint_standard_function-expression-body': 'disabled',
-          ])
+        ktfmt(libs.ktfmt.get().version).googleStyle()
         target 'src/**/*.kt'
       }
     }
@@ -111,7 +107,7 @@ tasks.register('copyWebsiteDocs', Copy) {
 
     into(subproject.POM_ARTIFACT_ID) {
       if (subproject.plugins.hasPlugin('org.jetbrains.dokka')) {
-        from subproject.tasks.named('dokkaHtml').flatMap { it.outputDirectory }
+        from subproject.tasks.named('dokkaGeneratePublicationHtml').flatMap { it.outputDirectory }
       } else {
         from subproject.tasks.named('javadoc').map { it.destinationDir }
       }

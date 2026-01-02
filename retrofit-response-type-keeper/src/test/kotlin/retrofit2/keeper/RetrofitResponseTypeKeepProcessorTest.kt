@@ -67,15 +67,15 @@ class RetrofitResponseTypeKeepProcessorTest {
         UTF_8,
         """
         |# test.Service
-        |-keep,allowobfuscation,allowoptimization class retrofit2.Call
-        |-keep,allowobfuscation,allowoptimization class test.DeleteUser
-        |-keep,allowobfuscation,allowoptimization class test.GetUser
-        |-keep,allowobfuscation,allowoptimization class test.HeadUser
-        |-keep,allowobfuscation,allowoptimization class test.HttpUser
-        |-keep,allowobfuscation,allowoptimization class test.OptionsUser
-        |-keep,allowobfuscation,allowoptimization class test.PatchUser
-        |-keep,allowobfuscation,allowoptimization class test.PostUser
-        |-keep,allowobfuscation,allowoptimization class test.PutUser
+        |-keep,allowoptimization,allowshrinking,allowobfuscation class retrofit2.Call
+        |-keep,allowoptimization,allowshrinking,allowobfuscation class test.DeleteUser
+        |-keep,allowoptimization,allowshrinking,allowobfuscation class test.GetUser
+        |-keep,allowoptimization,allowshrinking,allowobfuscation class test.HeadUser
+        |-keep,allowoptimization,allowshrinking,allowobfuscation class test.HttpUser
+        |-keep,allowoptimization,allowshrinking,allowobfuscation class test.OptionsUser
+        |-keep,allowoptimization,allowshrinking,allowobfuscation class test.PatchUser
+        |-keep,allowoptimization,allowshrinking,allowobfuscation class test.PostUser
+        |-keep,allowoptimization,allowshrinking,allowobfuscation class test.PutUser
         |
         """.trimMargin(),
       )
@@ -113,10 +113,10 @@ class RetrofitResponseTypeKeepProcessorTest {
         UTF_8,
         """
         |# test.Service
-        |-keep,allowobfuscation,allowoptimization class retrofit2.Call
-        |-keep,allowobfuscation,allowoptimization class test.One
-        |-keep,allowobfuscation,allowoptimization class test.Three
-        |-keep,allowobfuscation,allowoptimization class test.Two
+        |-keep,allowoptimization,allowshrinking,allowobfuscation class retrofit2.Call
+        |-keep,allowoptimization,allowshrinking,allowobfuscation class test.One
+        |-keep,allowoptimization,allowshrinking,allowobfuscation class test.Three
+        |-keep,allowoptimization,allowshrinking,allowobfuscation class test.Two
         |
         """.trimMargin(),
       )
@@ -153,8 +153,8 @@ class RetrofitResponseTypeKeepProcessorTest {
         UTF_8,
         """
         |# test.Service
-        |-keep,allowobfuscation,allowoptimization class java.lang.Object
-        |-keep,allowobfuscation,allowoptimization class test.Body
+        |-keep,allowoptimization,allowshrinking,allowobfuscation class java.lang.Object
+        |-keep,allowoptimization,allowshrinking,allowobfuscation class test.Body
         |
         """.trimMargin(),
       )

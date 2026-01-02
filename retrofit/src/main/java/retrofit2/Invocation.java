@@ -51,33 +51,51 @@ import javax.annotation.Nullable;
  * types for parameters!
  */
 public final class Invocation {
-  public static <T> Invocation of(Class<T> service, T instance, Method method, List<?> arguments) {
+  public static <T> Invocation of(
+      Class<T> service,
+      T instance,
+      Method method,
+      List<?> arguments,
+      @Nullable String annotationUrl) {
     Objects.requireNonNull(service, "service == null");
     Objects.requireNonNull(instance, "instance == null");
     Objects.requireNonNull(method, "method == null");
     Objects.requireNonNull(arguments, "arguments == null");
-    return new Invocation(service, instance, method, new ArrayList<>(arguments)); // Defensive copy.
+    // Make a defensive copy of arguments.
+    return new Invocation(service, instance, method, new ArrayList<>(arguments), annotationUrl);
+  }
+
+  public static <T> Invocation of(Class<T> service, T instance, Method method, List<?> arguments) {
+    return of(service, instance, method, arguments, null);
   }
 
   @Deprecated
   public static Invocation of(Method method, List<?> arguments) {
     Objects.requireNonNull(method, "method == null");
     Objects.requireNonNull(arguments, "arguments == null");
+    // Make a defensive copy of arguments.
     return new Invocation(
-        method.getDeclaringClass(), null, method, new ArrayList<>(arguments)); // Defensive copy.
+        method.getDeclaringClass(), null, method, new ArrayList<>(arguments), null);
   }
 
   private final Class<?> service;
   @Nullable private final Object instance;
   private final Method method;
   private final List<?> arguments;
+  @Nullable private final String annotationUrl;
 
   /** Trusted constructor assumes ownership of {@code arguments}. */
-  Invocation(Class<?> service, @Nullable Object instance, Method method, List<?> arguments) {
+  Invocation(
+      Class<?> service,
+      @Nullable Object instance,
+      Method method,
+      List<?> arguments,
+      @Nullable String annotationUrl) {
     this.service = service;
     this.instance = instance;
     this.method = method;
     this.arguments = Collections.unmodifiableList(arguments);
+    this.annotationUrl = annotationUrl;
   }
 
   public Class<?> service() {
@@ -101,6 +119,22 @@ public final class Invocation {
 
   public List<?> arguments() {
     return arguments;
+  }
+
+  /**
+   * The URL from the annotation like {@link retrofit2.http.GET @GET} or
+   * {@link retrofit2.http.POST @POST}.
+   * <p>
+   * If the method uses the {@link retrofit2.http.Path @Path} annotation, this is the template URL
+   * before path substitution, as it occurs in source code.
+   * <p>
+   * This value will be null if one of the method's parameter is annotated
+   * {@link retrofit2.http.Url @Url}. It will also be null if this Invocation was created using one
+   * of the {@linkplain #of factory-functions} that don't have this value.
+   */
+  @Nullable
+  public String annotationUrl() {
+    return annotationUrl;
   }
 
   @Override
