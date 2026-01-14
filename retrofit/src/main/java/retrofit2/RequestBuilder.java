@@ -35,6 +35,56 @@ final class RequestBuilder {
   private static final String PATH_SEGMENT_ALWAYS_ENCODE_SET = " \"<>^`{}|\\?#";
 
   /**
+   * Encodes colons in the first path segment of a relative URL to prevent them from being
+   * misinterpreted as URL scheme separators. Per RFC 3986 section 4.2, a colon in the first segment
+   * of a relative-path reference can be mistaken for a scheme name.
+   *
+   * <p>This method only encodes colons in relative paths. If the URL looks like it has a scheme
+   * (e.g., starts with "http://", "https://"), it is returned unchanged.
+   */
+  private static String encodeColonInFirstPathSegment(String relativeUrl) {
+    if (relativeUrl.isEmpty() || relativeUrl.charAt(0) == '/') {
+      // Absolute path or empty, no encoding needed.
+      return relativeUrl;
+    }
+
+    int firstColon = relativeUrl.indexOf(':');
+    if (firstColon == -1) {
+      // No colon, nothing to encode.
+      return relativeUrl;
+    }
+
+    int firstSlash = relativeUrl.indexOf('/');
+    if (firstSlash != -1 && firstSlash < firstColon) {
+      // Colon is after the first slash, so it's not in the first segment.
+      return relativeUrl;
+    }
+
+    // Check if this looks like a URL scheme (scheme followed by "://").
+    // Per RFC 3986, a scheme is followed by ":" and authority starts with "//".
+    if (relativeUrl.length() > firstColon + 2
+        && relativeUrl.charAt(firstColon + 1) == '/'
+        && relativeUrl.charAt(firstColon + 2) == '/') {
+      // This looks like a scheme (e.g., "http://..."), don't encode.
+      return relativeUrl;
+    }
+
+    // Encode all colons in the first segment (before the first slash or end of string).
+    int endOfFirstSegment = firstSlash == -1 ? relativeUrl.length() : firstSlash;
+    StringBuilder encoded = new StringBuilder();
+    for (int i = 0; i < endOfFirstSegment; i++) {
+      char c = relativeUrl.charAt(i);
+      if (c == ':') {
+        encoded.append("%3A");
+      } else {
+        encoded.append(c);
+      }
+    }
+    encoded.append(relativeUrl.substring(endOfFirstSegment));
+    return encoded.toString();
+  }
+
+  /**
    * Matches strings that contain {@code .} or {@code ..} as a complete path segment. This also
    * matches dots in their percent-encoded form, {@code %2E}.
    *
@@ -187,7 +237,8 @@ final class RequestBuilder {
   void addQueryParam(String name, @Nullable String value, boolean encoded) {
     if (relativeUrl != null) {
       // Do a one-time combination of the built relative URL and the base URL.
-      urlBuilder = baseUrl.newBuilder(relativeUrl);
+      String encodedRelativeUrl = encodeColonInFirstPathSegment(relativeUrl);
+      urlBuilder = baseUrl.newBuilder(encodedRelativeUrl);
       if (urlBuilder == null) {
         throw new IllegalArgumentException(
             "Malformed URL. Base: " + baseUrl + ", Relative: " + relativeUrl);
@@ -239,7 +290,8 @@ final class RequestBuilder {
     } else {
       // No query parameters triggered builder creation, just combine the relative URL and base URL.
       //noinspection ConstantConditions Non-null if urlBuilder is null.
-      url = baseUrl.resolve(relativeUrl);
+      String encodedRelativeUrl = encodeColonInFirstPathSegment(relativeUrl);
+      url = baseUrl.resolve(encodedRelativeUrl);
       if (url == null) {
         throw new IllegalArgumentException(
             "Malformed URL. Base: " + baseUrl + ", Relative: " + relativeUrl);

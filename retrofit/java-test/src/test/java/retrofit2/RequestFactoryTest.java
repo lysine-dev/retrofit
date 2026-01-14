@@ -1411,6 +1411,44 @@ public final class RequestFactoryTest {
   }
 
   @Test
+  public void getWithPathAndQueryColonParam() {
+    class Example {
+      @GET("/foo/bar/{ping}/") //
+      Call<ResponseBody> method(@Path("ping") String ping, @Query("kit") String kit) {
+        return null;
+      }
+    }
+
+    Request request = buildRequest(Example.class, "pong:colon", "kat:colon");
+    assertThat(request.method()).isEqualTo("GET");
+    assertThat(request.headers().size()).isEqualTo(0);
+    // Colon in path segment after first slash is not encoded (safe in that position).
+    // Colon in query is encoded by OkHttp.
+    assertThat(request.url().toString())
+        .isEqualTo("http://example.com/foo/bar/pong:colon/?kit=kat%3Acolon");
+    assertThat(request.body()).isNull();
+  }
+
+  @Test
+  public void getWithColonInRelativeUrlFirstSegment() {
+    // Regression test for https://github.com/square/retrofit/issues/3080
+    // A colon in the first segment of a relative URL (before the first slash) can be
+    // misinterpreted as a URL scheme separator. This test ensures such colons are encoded.
+    class Example {
+      @PUT("user:email={email}/login") //
+      Call<ResponseBody> method(@Path("email") String email, @Body String pass) {
+        return null;
+      }
+    }
+
+    Request request = buildRequest(Example.class, "me@test.com", "password");
+    assertThat(request.method()).isEqualTo("PUT");
+    // Colon in first path segment encoded as %3A to prevent scheme misinterpretation
+    assertThat(request.url().toString())
+        .isEqualTo("http://example.com/user%3Aemail=me@test.com/login");
+  }
+
+  @Test
   public void getWithQueryParamList() {
     class Example {
       @GET("/foo/bar/") //
