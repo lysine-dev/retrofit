@@ -25,10 +25,9 @@ tasks.withType(JavaCompile).configureEach {
     description = "Runs the test suite on JDK $majorVersion"
     group = LifecycleBasePlugin.VERIFICATION_GROUP
 
-    // Copy inputs from normal Test task.
-    def testTask = tasks.getByName("test")
-    classpath = testTask.classpath
-    testClassesDirs = testTask.testClassesDirs
+    // Wire directly to the test source set outputs for proper task dependencies.
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
   }
   tasks.named("check").configure {
     dependsOn(jdkTest)
