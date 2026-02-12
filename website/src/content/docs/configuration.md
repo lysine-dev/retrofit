@@ -14,7 +14,7 @@ Converters can be added to support other types. Sibling modules adapt popular se
 ### Built-in converters
 
 * [Gson](https://github.com/google/gson): `com.squareup.retrofit2:converter-gson`
-* [Jackson](https://github.com/FasterXML/jackson): `com.squareup.retrofit2:converter-jackson`
+* [Jackson](https://github.com/FasterXML/jackson): `com.squareup.retrofit2:converter-jackson` - Supports [multiple formats](https://github.com/FasterXML/jackson#data-format-modules) (JSON, XML, CBOR, YAML, etc.) by supplying a different mapper and media type
 * [Moshi](https://github.com/square/moshi/): `com.squareup.retrofit2:converter-moshi`
 * [Protobuf](https://developers.google.com/protocol-buffers/): `com.squareup.retrofit2:converter-protobuf`
 * [Wire](https://github.com/square/wire): `com.squareup.retrofit2:converter-wire`
