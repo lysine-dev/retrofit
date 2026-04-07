@@ -15,6 +15,8 @@
  */
 package retrofit2;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import android.net.Uri;
 import java.io.IOException;
 import okhttp3.HttpUrl;
@@ -26,8 +28,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import retrofit2.http.GET;
 import retrofit2.http.Url;
-
-import static com.google.common.truth.Truth.assertThat;
 
 public final class UriAndroidTest {
   @Rule public final MockWebServer server1 = new MockWebServer();
@@ -42,10 +42,7 @@ public final class UriAndroidTest {
 
   @Before
   public void setUp() {
-    Retrofit retrofit =
-        new Retrofit.Builder()
-            .baseUrl(server1.url("/"))
-            .build();
+    Retrofit retrofit = new Retrofit.Builder().baseUrl(server1.url("/")).build();
     service = retrofit.create(Service.class);
   }
 

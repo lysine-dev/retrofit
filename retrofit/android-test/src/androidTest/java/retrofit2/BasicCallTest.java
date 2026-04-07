@@ -15,6 +15,8 @@
  */
 package retrofit2;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
 import okhttp3.ResponseBody;
 import okhttp3.mockwebserver.MockResponse;
@@ -23,19 +25,17 @@ import org.junit.Rule;
 import org.junit.Test;
 import retrofit2.http.GET;
 
-import static org.junit.Assert.assertEquals;
-
 public final class BasicCallTest {
   @Rule public final MockWebServer server = new MockWebServer();
 
   interface Service {
-    @GET("/") Call<ResponseBody> getBody();
+    @GET("/")
+    Call<ResponseBody> getBody();
   }
 
-  @Test public void responseBody() throws IOException {
-    Retrofit retrofit = new Retrofit.Builder()
-        .baseUrl(server.url("/"))
-        .build();
+  @Test
+  public void responseBody() throws IOException {
+    Retrofit retrofit = new Retrofit.Builder().baseUrl(server.url("/")).build();
     Service example = retrofit.create(Service.class);
 
     server.enqueue(new MockResponse().setBody("1234"));

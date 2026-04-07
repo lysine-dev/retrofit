@@ -9,7 +9,6 @@ import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.contextual
-import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -24,17 +23,14 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 
 class KotlinxSerializationConverterFactoryContextualListTest {
-  @get:Rule
-  val server = MockWebServer()
+  @get:Rule val server = MockWebServer()
 
   private lateinit var service: Service
 
   interface Service {
-    @GET("/")
-    fun deserialize(): Call<List<User>>
+    @GET("/") fun deserialize(): Call<List<User>>
 
-    @POST("/")
-    fun serialize(@Body users: List<User>): Call<Void?>
+    @POST("/") fun serialize(@Body users: List<User>): Call<Void?>
   }
 
   data class User(val name: String)
@@ -43,30 +39,24 @@ class KotlinxSerializationConverterFactoryContextualListTest {
     override val descriptor = PrimitiveSerialDescriptor("User", PrimitiveKind.STRING)
 
     override fun deserialize(decoder: Decoder): User =
-      decoder.decodeSerializableValue(UserResponse.serializer()).run {
-        User(name)
-      }
+      decoder.decodeSerializableValue(UserResponse.serializer()).run { User(name) }
 
     override fun serialize(encoder: Encoder, value: User): Unit =
       encoder.encodeSerializableValue(UserResponse.serializer(), UserResponse(value.name))
 
-    @Serializable
-    private data class UserResponse(val name: String)
+    @Serializable private data class UserResponse(val name: String)
   }
 
-  private val json = Json {
-    serializersModule = SerializersModule {
-      contextual(UserSerializer)
-    }
-  }
+  private val json = Json { serializersModule = SerializersModule { contextual(UserSerializer) } }
 
   @Before
   fun setUp() {
     val contentType = "application/json; charset=utf-8".toMediaType()
-    val retrofit = Retrofit.Builder()
-      .baseUrl(server.url("/"))
-      .addConverterFactory(json.asConverterFactory(contentType))
-      .build()
+    val retrofit =
+      Retrofit.Builder()
+        .baseUrl(server.url("/"))
+        .addConverterFactory(json.asConverterFactory(contentType))
+        .build()
     service = retrofit.create(Service::class.java)
   }
 

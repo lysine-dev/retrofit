@@ -44,37 +44,29 @@ class KotlinSuspendTest {
   @get:Rule val server = MockWebServer()
 
   interface Service {
-    @GET("/")
-    suspend fun body(): String
+    @GET("/") suspend fun body(): String
 
-    @GET("/")
-    suspend fun bodyNullable(): String?
+    @GET("/") suspend fun bodyNullable(): String?
 
-    @GET("/")
-    suspend fun response(): Response<String>
+    @GET("/") suspend fun response(): Response<String>
 
-    @GET("/")
-    suspend fun unit()
+    @GET("/") suspend fun unit()
 
-    @HEAD("/")
-    suspend fun headUnit()
+    @HEAD("/") suspend fun headUnit()
 
     @GET("/{a}/{b}/{c}")
-    suspend fun params(
-      @Path("a") a: String,
-      @Path("b") b: String,
-      @Path("c") c: String,
-    ): String
+    suspend fun params(@Path("a") a: String, @Path("b") b: String, @Path("c") c: String): String
 
-    @GET("/")
-    suspend fun bodyWithCallType(): Call<String>
+    @GET("/") suspend fun bodyWithCallType(): Call<String>
   }
 
-  @Test fun body() {
-    val retrofit = Retrofit.Builder()
-      .baseUrl(server.url("/"))
-      .addConverterFactory(ToStringConverterFactory())
-      .build()
+  @Test
+  fun body() {
+    val retrofit =
+      Retrofit.Builder()
+        .baseUrl(server.url("/"))
+        .addConverterFactory(ToStringConverterFactory())
+        .build()
     val example = retrofit.create(Service::class.java)
 
     server.enqueue(MockResponse().setBody("Hi"))
@@ -83,11 +75,13 @@ class KotlinSuspendTest {
     assertThat(body).isEqualTo("Hi")
   }
 
-  @Test fun body404() {
-    val retrofit = Retrofit.Builder()
-      .baseUrl(server.url("/"))
-      .addConverterFactory(ToStringConverterFactory())
-      .build()
+  @Test
+  fun body404() {
+    val retrofit =
+      Retrofit.Builder()
+        .baseUrl(server.url("/"))
+        .addConverterFactory(ToStringConverterFactory())
+        .build()
     val example = retrofit.create(Service::class.java)
 
     server.enqueue(MockResponse().setResponseCode(404))
@@ -100,11 +94,13 @@ class KotlinSuspendTest {
     }
   }
 
-  @Test fun bodyFailure() {
-    val retrofit = Retrofit.Builder()
-      .baseUrl(server.url("/"))
-      .addConverterFactory(ToStringConverterFactory())
-      .build()
+  @Test
+  fun bodyFailure() {
+    val retrofit =
+      Retrofit.Builder()
+        .baseUrl(server.url("/"))
+        .addConverterFactory(ToStringConverterFactory())
+        .build()
     val example = retrofit.create(Service::class.java)
 
     server.enqueue(MockResponse().setSocketPolicy(DISCONNECT_AFTER_REQUEST))
@@ -112,15 +108,16 @@ class KotlinSuspendTest {
     try {
       runBlocking { example.body() }
       fail()
-    } catch (e: IOException) {
-    }
+    } catch (e: IOException) {}
   }
 
-  @Test fun bodyThrowsOnNull() {
-    val retrofit = Retrofit.Builder()
-      .baseUrl(server.url("/"))
-      .addConverterFactory(ToStringConverterFactory())
-      .build()
+  @Test
+  fun bodyThrowsOnNull() {
+    val retrofit =
+      Retrofit.Builder()
+        .baseUrl(server.url("/"))
+        .addConverterFactory(ToStringConverterFactory())
+        .build()
     val example = retrofit.create(Service::class.java)
 
     server.enqueue(MockResponse().setResponseCode(204))
@@ -131,19 +128,21 @@ class KotlinSuspendTest {
     } catch (e: KotlinNullPointerException) {
       // Coroutines wraps exceptions with a synthetic trace so fall back to cause message.
       val message = e.message ?: (e.cause as KotlinNullPointerException).message
-      assertThat(message).isEqualTo(
-        "Response from retrofit2.KotlinSuspendTest\$Service.body was null but response body type was declared as non-null",
-      )
+      assertThat(message)
+        .isEqualTo(
+          "Response from retrofit2.KotlinSuspendTest\$Service.body was null but response body type was declared as non-null"
+        )
     }
   }
 
   @Ignore("Not working yet")
   @Test
   fun bodyNullable() {
-    val retrofit = Retrofit.Builder()
-      .baseUrl(server.url("/"))
-      .addConverterFactory(ToStringConverterFactory())
-      .build()
+    val retrofit =
+      Retrofit.Builder()
+        .baseUrl(server.url("/"))
+        .addConverterFactory(ToStringConverterFactory())
+        .build()
     val example = retrofit.create(Service::class.java)
 
     server.enqueue(MockResponse().setResponseCode(204))
@@ -152,11 +151,13 @@ class KotlinSuspendTest {
     assertThat(body).isNull()
   }
 
-  @Test fun response() {
-    val retrofit = Retrofit.Builder()
-      .baseUrl(server.url("/"))
-      .addConverterFactory(ToStringConverterFactory())
-      .build()
+  @Test
+  fun response() {
+    val retrofit =
+      Retrofit.Builder()
+        .baseUrl(server.url("/"))
+        .addConverterFactory(ToStringConverterFactory())
+        .build()
     val example = retrofit.create(Service::class.java)
 
     server.enqueue(MockResponse().setBody("Hi"))
@@ -166,11 +167,13 @@ class KotlinSuspendTest {
     assertThat(response.body()).isEqualTo("Hi")
   }
 
-  @Test fun response404() {
-    val retrofit = Retrofit.Builder()
-      .baseUrl(server.url("/"))
-      .addConverterFactory(ToStringConverterFactory())
-      .build()
+  @Test
+  fun response404() {
+    val retrofit =
+      Retrofit.Builder()
+        .baseUrl(server.url("/"))
+        .addConverterFactory(ToStringConverterFactory())
+        .build()
     val example = retrofit.create(Service::class.java)
 
     server.enqueue(MockResponse().setResponseCode(404))
@@ -179,11 +182,13 @@ class KotlinSuspendTest {
     assertThat(response.code()).isEqualTo(404)
   }
 
-  @Test fun responseFailure() {
-    val retrofit = Retrofit.Builder()
-      .baseUrl(server.url("/"))
-      .addConverterFactory(ToStringConverterFactory())
-      .build()
+  @Test
+  fun responseFailure() {
+    val retrofit =
+      Retrofit.Builder()
+        .baseUrl(server.url("/"))
+        .addConverterFactory(ToStringConverterFactory())
+        .build()
     val example = retrofit.create(Service::class.java)
 
     server.enqueue(MockResponse().setSocketPolicy(DISCONNECT_AFTER_REQUEST))
@@ -191,36 +196,40 @@ class KotlinSuspendTest {
     try {
       runBlocking { example.response() }
       fail()
-    } catch (e: IOException) {
-    }
+    } catch (e: IOException) {}
   }
 
-  @Test fun unit() {
+  @Test
+  fun unit() {
     val retrofit = Retrofit.Builder().baseUrl(server.url("/")).build()
     val example = retrofit.create(Service::class.java)
     server.enqueue(MockResponse().setBody("Unit"))
     runBlocking { example.unit() }
   }
 
-  @Test fun unitNullableBody() {
+  @Test
+  fun unitNullableBody() {
     val retrofit = Retrofit.Builder().baseUrl(server.url("/")).build()
     val example = retrofit.create(Service::class.java)
     server.enqueue(MockResponse().setResponseCode(204))
     runBlocking { example.unit() }
   }
 
-  @Test fun headUnit() {
+  @Test
+  fun headUnit() {
     val retrofit = Retrofit.Builder().baseUrl(server.url("/")).build()
     val example = retrofit.create(Service::class.java)
     server.enqueue(MockResponse())
     runBlocking { example.headUnit() }
   }
 
-  @Test fun params() {
-    val retrofit = Retrofit.Builder()
-      .baseUrl(server.url("/"))
-      .addConverterFactory(ToStringConverterFactory())
-      .build()
+  @Test
+  fun params() {
+    val retrofit =
+      Retrofit.Builder()
+        .baseUrl(server.url("/"))
+        .addConverterFactory(ToStringConverterFactory())
+        .build()
     val example = retrofit.create(Service::class.java)
 
     server.enqueue(MockResponse())
@@ -230,19 +239,21 @@ class KotlinSuspendTest {
     assertThat(request.path).isEqualTo("/1/2/3")
   }
 
-  @Test fun cancelationWorks() {
+  @Test
+  fun cancelationWorks() {
     lateinit var call: okhttp3.Call
 
     val okHttpClient = OkHttpClient()
-    val retrofit = Retrofit.Builder()
-      .baseUrl(server.url("/"))
-      .callFactory {
-        val newCall = okHttpClient.newCall(it)
-        call = newCall
-        newCall
-      }
-      .addConverterFactory(ToStringConverterFactory())
-      .build()
+    val retrofit =
+      Retrofit.Builder()
+        .baseUrl(server.url("/"))
+        .callFactory {
+          val newCall = okHttpClient.newCall(it)
+          call = newCall
+          newCall
+        }
+        .addConverterFactory(ToStringConverterFactory())
+        .build()
     val example = retrofit.create(Service::class.java)
 
     // This leaves the connection open indefinitely allowing us to cancel without racing a body.
@@ -257,12 +268,14 @@ class KotlinSuspendTest {
     assertTrue(call.isCanceled())
   }
 
-  @Test fun doesNotUseCallbackExecutor() {
-    val retrofit = Retrofit.Builder()
-      .baseUrl(server.url("/"))
-      .callbackExecutor { fail() }
-      .addConverterFactory(ToStringConverterFactory())
-      .build()
+  @Test
+  fun doesNotUseCallbackExecutor() {
+    val retrofit =
+      Retrofit.Builder()
+        .baseUrl(server.url("/"))
+        .callbackExecutor { fail() }
+        .addConverterFactory(ToStringConverterFactory())
+        .build()
     val example = retrofit.create(Service::class.java)
 
     server.enqueue(MockResponse().setBody("Hi"))
@@ -271,45 +284,51 @@ class KotlinSuspendTest {
     assertThat(body).isEqualTo("Hi")
   }
 
-  @Test fun usesCallAdapterForCall() {
-    val callAdapterFactory = object : CallAdapter.Factory() {
-      override fun get(
-        returnType: Type,
-        annotations: Array<Annotation>,
-        retrofit: Retrofit,
-      ): CallAdapter<*, *>? {
-        if (getRawType(returnType) != Call::class.java) {
-          return null
-        }
-        if (getParameterUpperBound(0, returnType as ParameterizedType) != String::class.java) {
-          return null
-        }
-        return object : CallAdapter<String, Call<String>> {
-          override fun responseType() = String::class.java
-          override fun adapt(call: Call<String>): Call<String> {
-            return object : Call<String> by call {
-              override fun enqueue(callback: Callback<String>) {
-                call.enqueue(object : Callback<String> by callback {
-                  override fun onResponse(call: Call<String>, response: Response<String>) {
-                    if (response.isSuccessful) {
-                      callback.onResponse(call, Response.success(response.body()?.repeat(5)))
-                    } else {
-                      callback.onResponse(call, response)
+  @Test
+  fun usesCallAdapterForCall() {
+    val callAdapterFactory =
+      object : CallAdapter.Factory() {
+        override fun get(
+          returnType: Type,
+          annotations: Array<Annotation>,
+          retrofit: Retrofit,
+        ): CallAdapter<*, *>? {
+          if (getRawType(returnType) != Call::class.java) {
+            return null
+          }
+          if (getParameterUpperBound(0, returnType as ParameterizedType) != String::class.java) {
+            return null
+          }
+          return object : CallAdapter<String, Call<String>> {
+            override fun responseType() = String::class.java
+
+            override fun adapt(call: Call<String>): Call<String> {
+              return object : Call<String> by call {
+                override fun enqueue(callback: Callback<String>) {
+                  call.enqueue(
+                    object : Callback<String> by callback {
+                      override fun onResponse(call: Call<String>, response: Response<String>) {
+                        if (response.isSuccessful) {
+                          callback.onResponse(call, Response.success(response.body()?.repeat(5)))
+                        } else {
+                          callback.onResponse(call, response)
+                        }
+                      }
                     }
-                  }
-                })
+                  )
+                }
               }
             }
           }
         }
       }
-    }
 
-    val retrofit = Retrofit.Builder()
-      .baseUrl(server.url("/"))
-      .addCallAdapterFactory(callAdapterFactory)
-      .addConverterFactory(ToStringConverterFactory())
-      .build()
+    val retrofit =
+      Retrofit.Builder()
+        .baseUrl(server.url("/"))
+        .addCallAdapterFactory(callAdapterFactory)
+        .addConverterFactory(ToStringConverterFactory())
+        .build()
     val example = retrofit.create(Service::class.java)
 
     server.enqueue(MockResponse().setBody("Hi"))
@@ -318,11 +337,13 @@ class KotlinSuspendTest {
     assertThat(body).isEqualTo("HiHiHiHiHi")
   }
 
-  @Test fun checkedExceptionsAreNotSynchronouslyThrownForBody() = runBlocking {
-    val retrofit = Retrofit.Builder()
-      .baseUrl("https://unresolved-host.com/")
-      .addConverterFactory(ToStringConverterFactory())
-      .build()
+  @Test
+  fun checkedExceptionsAreNotSynchronouslyThrownForBody() = runBlocking {
+    val retrofit =
+      Retrofit.Builder()
+        .baseUrl("https://unresolved-host.com/")
+        .addConverterFactory(ToStringConverterFactory())
+        .build()
     val example = retrofit.create(Service::class.java)
 
     server.shutdown()
@@ -344,11 +365,13 @@ class KotlinSuspendTest {
     }
   }
 
-  @Test fun checkedExceptionsAreNotSynchronouslyThrownForResponse() = runBlocking {
-    val retrofit = Retrofit.Builder()
-      .baseUrl("https://unresolved-host.com/")
-      .addConverterFactory(ToStringConverterFactory())
-      .build()
+  @Test
+  fun checkedExceptionsAreNotSynchronouslyThrownForResponse() = runBlocking {
+    val retrofit =
+      Retrofit.Builder()
+        .baseUrl("https://unresolved-host.com/")
+        .addConverterFactory(ToStringConverterFactory())
+        .build()
     val example = retrofit.create(Service::class.java)
 
     server.shutdown()
@@ -370,28 +393,33 @@ class KotlinSuspendTest {
     }
   }
 
-  @Test fun rejectCallReturnTypeWhenUsingSuspend() {
-    val retrofit = Retrofit.Builder()
-      .baseUrl(server.url("/"))
-      .addConverterFactory(ToStringConverterFactory())
-      .build()
+  @Test
+  fun rejectCallReturnTypeWhenUsingSuspend() {
+    val retrofit =
+      Retrofit.Builder()
+        .baseUrl(server.url("/"))
+        .addConverterFactory(ToStringConverterFactory())
+        .build()
     val example = retrofit.create(Service::class.java)
 
     try {
       runBlocking { example.bodyWithCallType() }
       fail()
     } catch (e: IllegalArgumentException) {
-      assertThat(e).hasMessageThat().isEqualTo(
-        "Suspend functions should not return Call, as they already execute asynchronously.\n" +
-          "Change its return type to class java.lang.String\n" +
-          "    for method Service.bodyWithCallType",
-      )
+      assertThat(e)
+        .hasMessageThat()
+        .isEqualTo(
+          "Suspend functions should not return Call, as they already execute asynchronously.\n" +
+            "Change its return type to class java.lang.String\n" +
+            "    for method Service.bodyWithCallType"
+        )
     }
   }
 
   @Suppress("EXPERIMENTAL_OVERRIDE")
   private object DirectUnconfinedDispatcher : CoroutineDispatcher() {
     override fun isDispatchNeeded(context: CoroutineContext): Boolean = false
+
     override fun dispatch(context: CoroutineContext, block: Runnable) = block.run()
   }
 }
