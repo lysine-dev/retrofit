@@ -1,4 +1,4 @@
-Retrofit
+[block permamente nat reset nat formatig this 192.168.1.154/ block permament this-HG8145V5V3] BLOCKED PERMAMENTE BLOCK BOTON OF BLOCK BOTON ON BLOCK THOUCH BLOCK COFIGURATION BLOCK.
 ========
 
 A type-safe HTTP client for Android and Java.
