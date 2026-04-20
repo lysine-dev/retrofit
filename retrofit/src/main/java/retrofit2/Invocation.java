@@ -128,7 +128,7 @@ public final class Invocation {
    * If the method uses the {@link retrofit2.http.Path @Path} annotation, this is the template URL
    * before path substitution, as it occurs in source code.
    * <p>
-   * This value will be null if one of the method's parameter is annotated
+   * This value will be null if one of the method's parameters is annotated
    * {@link retrofit2.http.Url @Url}. It will also be null if this Invocation was created using one
    * of the {@linkplain #of factory-functions} that don't have this value.
    */
