@@ -15,6 +15,8 @@
  */
 package retrofit2;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import androidx.test.filters.SdkSuppress;
 import java.util.concurrent.CompletableFuture;
 import okhttp3.mockwebserver.MockResponse;
@@ -24,8 +26,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import retrofit2.helpers.ToStringConverterFactory;
 import retrofit2.http.GET;
-
-import static com.google.common.truth.Truth.assertThat;
 
 @SdkSuppress(minSdkVersion = 24)
 public final class CompletableFutureAndroidTest {

@@ -4,7 +4,6 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.protobuf.ProtoBuf
 import kotlinx.serialization.protobuf.ProtoNumber
-import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -20,7 +19,8 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 
-private val bobBytes = ByteString.of(0x0a, 0x03, 'B'.code.toByte(), 'o'.code.toByte(), 'b'.code.toByte())
+private val bobBytes =
+  ByteString.of(0x0a, 0x03, 'B'.code.toByte(), 'o'.code.toByte(), 'b'.code.toByte())
 
 @ExperimentalSerializationApi
 class KotlinSerializationConverterFactoryBytesTest {
@@ -30,28 +30,32 @@ class KotlinSerializationConverterFactoryBytesTest {
 
   interface Service {
     @GET("/") fun deserialize(): Call<User>
+
     @POST("/") fun serialize(@Body user: User): Call<Void?>
   }
 
-  @Serializable
-  data class User(@ProtoNumber(1) val name: String)
+  @Serializable data class User(@ProtoNumber(1) val name: String)
 
-  @Before fun setUp() {
+  @Before
+  fun setUp() {
     val contentType = "application/x-protobuf".toMediaType()
-    val retrofit = Retrofit.Builder()
-      .baseUrl(server.url("/"))
-      .addConverterFactory(ProtoBuf.asConverterFactory(contentType))
-      .build()
+    val retrofit =
+      Retrofit.Builder()
+        .baseUrl(server.url("/"))
+        .addConverterFactory(ProtoBuf.asConverterFactory(contentType))
+        .build()
     service = retrofit.create(Service::class.java)
   }
 
-  @Test fun deserialize() {
+  @Test
+  fun deserialize() {
     server.enqueue(MockResponse().setBody(Buffer().write(bobBytes)))
     val user = service.deserialize().execute().body()!!
     assertEquals(User("Bob"), user)
   }
 
-  @Test fun serialize() {
+  @Test
+  fun serialize() {
     server.enqueue(MockResponse())
     service.serialize(User("Bob")).execute()
     val request = server.takeRequest()

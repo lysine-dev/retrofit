@@ -27,27 +27,27 @@ import javax.tools.StandardLocation.CLASS_OUTPUT
 
 class RetrofitResponseTypeKeepProcessor : AbstractProcessor() {
   override fun getSupportedSourceVersion() = SourceVersion.latestSupported()
-  override fun getSupportedAnnotationTypes() = setOf(
-    "retrofit2.http.DELETE",
-    "retrofit2.http.GET",
-    "retrofit2.http.HEAD",
-    "retrofit2.http.HTTP",
-    "retrofit2.http.OPTIONS",
-    "retrofit2.http.PATCH",
-    "retrofit2.http.POST",
-    "retrofit2.http.PUT",
-  )
 
-  override fun process(
-    annotations: Set<TypeElement>,
-    roundEnv: RoundEnvironment,
-  ): Boolean {
+  override fun getSupportedAnnotationTypes() =
+    setOf(
+      "retrofit2.http.DELETE",
+      "retrofit2.http.GET",
+      "retrofit2.http.HEAD",
+      "retrofit2.http.HTTP",
+      "retrofit2.http.OPTIONS",
+      "retrofit2.http.PATCH",
+      "retrofit2.http.POST",
+      "retrofit2.http.PUT",
+    )
+
+  override fun process(annotations: Set<TypeElement>, roundEnv: RoundEnvironment): Boolean {
     val elements = processingEnv.elementUtils
     val types = processingEnv.typeUtils
 
-    val methods = supportedAnnotationTypes
-      .mapNotNull(elements::getTypeElement)
-      .flatMap(roundEnv::getElementsAnnotatedWith)
+    val methods =
+      supportedAnnotationTypes
+        .mapNotNull(elements::getTypeElement)
+        .flatMap(roundEnv::getElementsAnnotatedWith)
 
     val elementToReferencedTypes = mutableMapOf<TypeElement, MutableSet<String>>()
     for (method in methods) {

@@ -17,10 +17,14 @@ package retrofit2;
 
 public final class RoboVmPlatformTest {
   public static void main(String[] args) {
-    Retrofit retrofit = new Retrofit.Builder()
-      .baseUrl("https://example.com")
-      .callFactory(c -> { throw new AssertionError(); })
-      .build();
+    Retrofit retrofit =
+        new Retrofit.Builder()
+            .baseUrl("https://example.com")
+            .callFactory(
+                c -> {
+                  throw new AssertionError();
+                })
+            .build();
 
     if (retrofit.callAdapterFactories().size() > 1) {
       // Everyone gets the callback executor adapter. If RoboVM was correctly detected it will NOT
@@ -29,6 +33,5 @@ public final class RoboVmPlatformTest {
     }
   }
 
-  private RoboVmPlatformTest() {
-  }
+  private RoboVmPlatformTest() {}
 }

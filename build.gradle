@@ -74,19 +74,19 @@ subprojects {
         signature 'net.sf.androidscents.signature:android-api-level-21:5.0.1_r2@signature'
       }
     }
+  }
 
-    plugins.apply('com.diffplug.spotless')
-    spotless {
-      java {
-        googleJavaFormat(libs.googleJavaFormat.get().version)
-          .formatJavadoc(false)
-        removeUnusedImports()
-        target 'src/*/java*/**/*.java'
-      }
-      kotlin {
-        ktfmt(libs.ktfmt.get().version).googleStyle()
-        target 'src/**/*.kt'
-      }
+  plugins.apply('com.diffplug.spotless')
+  spotless {
+    java {
+      googleJavaFormat(libs.googleJavaFormat.get().version)
+        .formatJavadoc(false)
+      removeUnusedImports()
+      target 'src/**/*.java'
+    }
+    kotlin {
+      ktfmt(libs.ktfmt.get().version).googleStyle()
+      target 'src/**/*.kt'
     }
   }
 }
