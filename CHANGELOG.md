@@ -1,7 +1,7 @@
 # Change Log
 
 ## [Unreleased]
-[Unreleased]: https://github.com/square/retrofit/compare/3.0.0...HEAD
+[Unreleased]: https://github.com/lysine-dev/retrofit/compare/3.0.0...HEAD
 
 **New**
 
@@ -19,7 +19,7 @@
 
 
 ## [3.0.0] - 2025-05-15
-[3.0.0]: https://github.com/square/retrofit/releases/tag/3.0.0
+[3.0.0]: https://github.com/lysine-dev/retrofit/releases/tag/3.0.0
 
 **Changed**
 
@@ -33,7 +33,7 @@ This means libraries compiled against 2.x can still be used with the 3.x version
 
 
 ## [2.12.0] - 2025-05-15
-[2.12.0]: https://github.com/square/retrofit/releases/tag/2.12.0
+[2.12.0]: https://github.com/lysine-dev/retrofit/releases/tag/2.12.0
 
 **New**
 
@@ -78,7 +78,7 @@ This means libraries compiled against 2.x can still be used with the 3.x version
  - `@Header`, `@Headers`, and `@HeaderMap` can now set non-ASCII values through the `allowUnsafeNonAsciiValues` annotation property. These are not technically compliant with the HTTP specification, but are often supported or required by services.
  - Publish a BOM of all modules. The Maven coordinates are `com.squareup.retrofit2:retrofit-bom`.
  - `Invocation` now exposes the service `Class<?>` and the instance on which the method was invoked. This disambiguates the source when service inheritence is used.
- - A response type keeper annotation processor is now available for generating shrinker rules for all referenced types in your service interface. In some cases, it's impossible for static shrinker rules to keep the entirety of what Retrofit needs at runtime. This annotation processor generates those additional rules. For more info see [its README](https://github.com/square/retrofit/tree/trunk/retrofit-response-type-keeper#readme).
+ - A response type keeper annotation processor is now available for generating shrinker rules for all referenced types in your service interface. In some cases, it's impossible for static shrinker rules to keep the entirety of what Retrofit needs at runtime. This annotation processor generates those additional rules. For more info see [its README](https://github.com/lysine-dev/retrofit/tree/trunk/retrofit-response-type-keeper#readme).
 
 **Changed**
 - Add shrinker rules to retain the generic signatures of built-in types (`Call`, `Response`, etc.) which are used via reflection at runtime.
@@ -141,7 +141,7 @@ This means libraries compiled against 2.x can still be used with the 3.x version
 **This release changes the minimum requirements to Java 8+ or Android 5+.**
 See [this blog post](https://cashapp.github.io/2019-02-05/okhttp-3-13-requires-android-5) for more information on the change.
 
- * New: Upgrade to OkHttp 3.14.4. Please see [its changelog for 3.x](https://square.github.io/okhttp/changelog_3x/).
+ * New: Upgrade to OkHttp 3.14.4. Please see [its changelog for 3.x](https://lysine.dev/okhttp/changelog_3x/).
  * Fix: Allow service interfaces to extend other interfaces.
  * Fix: Ensure a non-null body is returned by `Response.error`.
 
@@ -184,7 +184,7 @@ See [this blog post](https://cashapp.github.io/2019-02-05/okhttp-3-13-requires-a
    You can also return `Response<User>` for access to the response metadata.
 
    Currently this integration only supports non-null response body types. Follow
-   [issue 3075](https://github.com/square/retrofit/issues/3075) for nullable type support.
+   [issue 3075](https://github.com/lysine-dev/retrofit/issues/3075) for nullable type support.
 
  * New: **`@Tag`** parameter annotation for setting tags on the underlying OkHttp `Request` object. These can be read
    in `CallAdapter`s or OkHttp `Interceptor`s for tracing, analytics, varying behavior, and more.
@@ -604,7 +604,7 @@ Changes from beta 4:
  * Fix: Support empty HTTP response status reason.
  * If an `ErrorHandler` is supplied it will be invoked for `Callback` and `Observable` methods.
  * HTTP `PATCH` method using `HttpUrlConnection` is no longer supported. Add the
-   [OkHttp](https://square.github.io/okhttp) jar to your project if you need this behavior.
+   [OkHttp](https://lysine.dev/okhttp) jar to your project if you need this behavior.
  * Custom `Client` implementations should no longer set `Content-Type` or `Content-Length` headers
    based on the `TypedInput` body of the `Request`. These headers will now be added automatically
    as part of the standard `Request` header list.
@@ -711,49 +711,49 @@ Initial release.
 
 
 
-[2.11.0]: https://github.com/square/retrofit/releases/tag/2.11.0
-[2.10.0]: https://github.com/square/retrofit/releases/tag/2.10.0
-[2.9.0]: https://github.com/square/retrofit/releases/tag/2.9.0
-[2.8.2]: https://github.com/square/retrofit/releases/tag/2.8.2
-[2.8.1]: https://github.com/square/retrofit/releases/tag/parent-2.8.1
-[2.8.0]: https://github.com/square/retrofit/releases/tag/parent-2.8.0
-[2.7.2]: https://github.com/square/retrofit/releases/tag/parent-2.7.2
-[2.7.1]: https://github.com/square/retrofit/releases/tag/parent-2.7.1
-[2.7.0]: https://github.com/square/retrofit/releases/tag/parent-2.7.0
-[2.6.4]: https://github.com/square/retrofit/releases/tag/parent-2.6.4
-[2.6.3]: https://github.com/square/retrofit/releases/tag/parent-2.6.3
-[2.6.2]: https://github.com/square/retrofit/releases/tag/parent-2.6.2
-[2.6.1]: https://github.com/square/retrofit/releases/tag/parent-2.6.1
-[2.6.0]: https://github.com/square/retrofit/releases/tag/parent-2.6.0
-[2.5.0]: https://github.com/square/retrofit/releases/tag/parent-2.5.0
-[2.4.0]: https://github.com/square/retrofit/releases/tag/parent-2.4.0
-[2.3.0]: https://github.com/square/retrofit/releases/tag/parent-2.3.0
-[2.2.0]: https://github.com/square/retrofit/releases/tag/parent-2.2.0
-[2.1.0]: https://github.com/square/retrofit/releases/tag/parent-2.1.0
-[2.0.2]: https://github.com/square/retrofit/releases/tag/parent-2.0.2
-[2.0.1]: https://github.com/square/retrofit/releases/tag/parent-2.0.1
-[2.0.0]: https://github.com/square/retrofit/releases/tag/parent-2.0.0
-[2.0.0-beta4]: https://github.com/square/retrofit/releases/tag/parent-2.0.0-beta4
-[2.0.0-beta3]: https://github.com/square/retrofit/releases/tag/parent-2.0.0-beta3
-[2.0.0-beta2]: https://github.com/square/retrofit/releases/tag/parent-2.0.0-beta2
-[2.0.0-beta1]: https://github.com/square/retrofit/releases/tag/parent-2.0.0-beta1
-[1.9.0]: https://github.com/square/retrofit/releases/tag/parent-1.9.0
-[1.8.0]: https://github.com/square/retrofit/releases/tag/parent-1.8.0
-[1.7.1]: https://github.com/square/retrofit/releases/tag/parent-1.7.1
-[1.7.0]: https://github.com/square/retrofit/releases/tag/parent-1.7.0
-[1.6.1]: https://github.com/square/retrofit/releases/tag/parent-1.6.1
-[1.6.0]: https://github.com/square/retrofit/releases/tag/parent-1.6.0
-[1.5.1]: https://github.com/square/retrofit/releases/tag/parent-1.5.1
-[1.5.0]: https://github.com/square/retrofit/releases/tag/parent-1.5.0
-[1.4.1]: https://github.com/square/retrofit/releases/tag/parent-1.4.1
-[1.4.0]: https://github.com/square/retrofit/releases/tag/parent-1.4.0
-[1.3.0]: https://github.com/square/retrofit/releases/tag/parent-1.3.0
-[1.2.2]: https://github.com/square/retrofit/releases/tag/parent-1.2.2
-[1.2.1]: https://github.com/square/retrofit/releases/tag/parent-1.2.1
-[1.2.0]: https://github.com/square/retrofit/releases/tag/parent-1.2.0
-[1.1.1]: https://github.com/square/retrofit/releases/tag/parent-1.1.1
-[1.1.0]: https://github.com/square/retrofit/releases/tag/parent-1.1.0
-[1.0.2]: https://github.com/square/retrofit/releases/tag/parent-1.0.2
-[1.0.1]: https://github.com/square/retrofit/releases/tag/parent-1.0.1
-[1.0.0]: https://github.com/square/retrofit/releases/tag/parent-1.0.0
+[2.11.0]: https://github.com/lysine-dev/retrofit/releases/tag/2.11.0
+[2.10.0]: https://github.com/lysine-dev/retrofit/releases/tag/2.10.0
+[2.9.0]: https://github.com/lysine-dev/retrofit/releases/tag/2.9.0
+[2.8.2]: https://github.com/lysine-dev/retrofit/releases/tag/2.8.2
+[2.8.1]: https://github.com/lysine-dev/retrofit/releases/tag/parent-2.8.1
+[2.8.0]: https://github.com/lysine-dev/retrofit/releases/tag/parent-2.8.0
+[2.7.2]: https://github.com/lysine-dev/retrofit/releases/tag/parent-2.7.2
+[2.7.1]: https://github.com/lysine-dev/retrofit/releases/tag/parent-2.7.1
+[2.7.0]: https://github.com/lysine-dev/retrofit/releases/tag/parent-2.7.0
+[2.6.4]: https://github.com/lysine-dev/retrofit/releases/tag/parent-2.6.4
+[2.6.3]: https://github.com/lysine-dev/retrofit/releases/tag/parent-2.6.3
+[2.6.2]: https://github.com/lysine-dev/retrofit/releases/tag/parent-2.6.2
+[2.6.1]: https://github.com/lysine-dev/retrofit/releases/tag/parent-2.6.1
+[2.6.0]: https://github.com/lysine-dev/retrofit/releases/tag/parent-2.6.0
+[2.5.0]: https://github.com/lysine-dev/retrofit/releases/tag/parent-2.5.0
+[2.4.0]: https://github.com/lysine-dev/retrofit/releases/tag/parent-2.4.0
+[2.3.0]: https://github.com/lysine-dev/retrofit/releases/tag/parent-2.3.0
+[2.2.0]: https://github.com/lysine-dev/retrofit/releases/tag/parent-2.2.0
+[2.1.0]: https://github.com/lysine-dev/retrofit/releases/tag/parent-2.1.0
+[2.0.2]: https://github.com/lysine-dev/retrofit/releases/tag/parent-2.0.2
+[2.0.1]: https://github.com/lysine-dev/retrofit/releases/tag/parent-2.0.1
+[2.0.0]: https://github.com/lysine-dev/retrofit/releases/tag/parent-2.0.0
+[2.0.0-beta4]: https://github.com/lysine-dev/retrofit/releases/tag/parent-2.0.0-beta4
+[2.0.0-beta3]: https://github.com/lysine-dev/retrofit/releases/tag/parent-2.0.0-beta3
+[2.0.0-beta2]: https://github.com/lysine-dev/retrofit/releases/tag/parent-2.0.0-beta2
+[2.0.0-beta1]: https://github.com/lysine-dev/retrofit/releases/tag/parent-2.0.0-beta1
+[1.9.0]: https://github.com/lysine-dev/retrofit/releases/tag/parent-1.9.0
+[1.8.0]: https://github.com/lysine-dev/retrofit/releases/tag/parent-1.8.0
+[1.7.1]: https://github.com/lysine-dev/retrofit/releases/tag/parent-1.7.1
+[1.7.0]: https://github.com/lysine-dev/retrofit/releases/tag/parent-1.7.0
+[1.6.1]: https://github.com/lysine-dev/retrofit/releases/tag/parent-1.6.1
+[1.6.0]: https://github.com/lysine-dev/retrofit/releases/tag/parent-1.6.0
+[1.5.1]: https://github.com/lysine-dev/retrofit/releases/tag/parent-1.5.1
+[1.5.0]: https://github.com/lysine-dev/retrofit/releases/tag/parent-1.5.0
+[1.4.1]: https://github.com/lysine-dev/retrofit/releases/tag/parent-1.4.1
+[1.4.0]: https://github.com/lysine-dev/retrofit/releases/tag/parent-1.4.0
+[1.3.0]: https://github.com/lysine-dev/retrofit/releases/tag/parent-1.3.0
+[1.2.2]: https://github.com/lysine-dev/retrofit/releases/tag/parent-1.2.2
+[1.2.1]: https://github.com/lysine-dev/retrofit/releases/tag/parent-1.2.1
+[1.2.0]: https://github.com/lysine-dev/retrofit/releases/tag/parent-1.2.0
+[1.1.1]: https://github.com/lysine-dev/retrofit/releases/tag/parent-1.1.1
+[1.1.0]: https://github.com/lysine-dev/retrofit/releases/tag/parent-1.1.0
+[1.0.2]: https://github.com/lysine-dev/retrofit/releases/tag/parent-1.0.2
+[1.0.1]: https://github.com/lysine-dev/retrofit/releases/tag/parent-1.0.1
+[1.0.0]: https://github.com/lysine-dev/retrofit/releases/tag/parent-1.0.0
 [maven_provided]: https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html

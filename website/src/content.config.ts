@@ -9,7 +9,7 @@ export const collections = {
 			// In non-"release" mode, add a banner indicating snapshot documentation.
 			extend: z.object(import.meta.env.MODE == "release" && {} || {
 				banner: z.object({ content: z.string() }).default({
-					content: `You are viewing the snapshot documentation. Looking for the <a href="https://square.github.io/retrofit/">release documentation</a>?`,
+					content: `You are viewing the snapshot documentation. Looking for the <a href="https://lysine.dev/retrofit/">release documentation</a>?`,
 				}),
 			}),
 		}),

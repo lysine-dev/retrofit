@@ -597,12 +597,12 @@ public final class Retrofit {
      * replace the scheme of {@code baseUrl}.
      *
      * <p>Base URL: http://example.com/<br>
-     * Endpoint: https://github.com/square/retrofit/<br>
-     * Result: https://github.com/square/retrofit/
+     * Endpoint: https://github.com/lysine-dev/retrofit/<br>
+     * Result: https://github.com/lysine-dev/retrofit/
      *
      * <p>Base URL: http://example.com<br>
-     * Endpoint: //github.com/square/retrofit/<br>
-     * Result: http://github.com/square/retrofit/ (note the scheme stays 'http')
+     * Endpoint: //github.com/lysine-dev/retrofit/<br>
+     * Result: http://github.com/lysine-dev/retrofit/ (note the scheme stays 'http')
      */
     public Builder baseUrl(HttpUrl baseUrl) {
       Objects.requireNonNull(baseUrl, "baseUrl == null");

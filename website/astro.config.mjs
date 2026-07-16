@@ -8,7 +8,7 @@ let retrofitProperties = readFileSync('../gradle.properties');
 let retrofitVersion = /VERSION_NAME=(.*?)\n/.exec(retrofitProperties)[1];
 
 export default defineConfig({
-	site: 'https://square.github.io',
+	site: 'https://lysine.dev',
 	base: '/retrofit/latest',
 	env: {
 		schema: {
@@ -22,11 +22,11 @@ export default defineConfig({
 				'./src/styles/theme.css',
 			],
 			editLink: {
-				baseUrl: 'https://github.com/square/retrofit/edit/trunk/website',
+				baseUrl: 'https://github.com/lysine-dev/retrofit/edit/trunk/website',
 			},
 			social: [
 				{ icon: 'stackOverflow', label: 'StackOverflow', href: 'https://stackoverflow.com/questions/tagged/retrofit?sort=active' },
-				{ icon: 'github', label: 'GitHub', href: 'https://github.com/square/retrofit' },
+				{ icon: 'github', label: 'GitHub', href: 'https://github.com/lysine-dev/retrofit' },
 			],
 			sidebar: [
 				{
@@ -42,7 +42,7 @@ export default defineConfig({
 				{
 					label: 'Resources',
 					items: [
-						{ label: 'GitHub', link: 'https://github.com/square/retrofit' },
+						{ label: 'GitHub', link: 'https://github.com/lysine-dev/retrofit' },
 						{
 							label: 'Javadoc',
 							collapsed: true,
