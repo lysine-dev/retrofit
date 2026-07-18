@@ -44,7 +44,7 @@ License
     limitations under the License.
 
 
- [1]: https://square.github.io/retrofit/
+ [1]: https://lysine.dev/retrofit/
  [2]: https://search.maven.org/remote_content?g=com.squareup.retrofit2&a=retrofit&v=LATEST
  [snap]: https://s01.oss.sonatype.org/content/repositories/snapshots/
  [proguard file]: https://github.com/square/retrofit/blob/master/retrofit/src/main/resources/META-INF/proguard/retrofit2.pro
