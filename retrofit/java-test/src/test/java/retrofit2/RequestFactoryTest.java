@@ -1431,21 +1431,85 @@ public final class RequestFactoryTest {
 
   @Test
   public void getWithColonInRelativeUrlFirstSegment() {
-    // Regression test for https://github.com/square/retrofit/issues/3080
-    // A colon in the first segment of a relative URL (before the first slash) can be
-    // misinterpreted as a URL scheme separator. This test ensures such colons are encoded.
     class Example {
       @PUT("user:email={email}/login") //
-      Call<ResponseBody> method(@Path("email") String email, @Body String pass) {
+      Call<ResponseBody> method(@Path("email") String email) {
         return null;
       }
     }
 
-    Request request = buildRequest(Example.class, "me@test.com", "password");
+    Retrofit.Builder retrofitBuilder = new Retrofit.Builder().baseUrl("http://example.com/api/");
+    Request request = buildRequest(Example.class, retrofitBuilder, "me@test.com");
     assertThat(request.method()).isEqualTo("PUT");
-    // Colon in first path segment encoded as %3A to prevent scheme misinterpretation
     assertThat(request.url().toString())
-        .isEqualTo("http://example.com/user%3Aemail=me@test.com/login");
+        .isEqualTo("http://example.com/api/user:email=me@test.com/login");
+  }
+
+  @Test
+  public void getWithExplicitDotSegmentAndColonInRelativeUrlFirstSegment() {
+    class Example {
+      @PUT("./user:email={email}/login") //
+      Call<ResponseBody> method(@Path("email") String email) {
+        return null;
+      }
+    }
+
+    Request request = buildRequest(Example.class, "me@test.com");
+    assertThat(request.url().toString())
+        .isEqualTo("http://example.com/user:email=me@test.com/login");
+  }
+
+  @Test
+  public void explicitDotSegmentStillRejectsPathParameterTraversal() {
+    class Example {
+      @GET("./{path}") //
+      Call<ResponseBody> method(@Path(value = "path", encoded = true) String path) {
+        return null;
+      }
+    }
+
+    assertMalformedRequest(Example.class, "../accounts");
+  }
+
+  @Test
+  public void getWithColonInRelativeUrlFirstSegmentAndQuery() {
+    class Example {
+      @GET("user:email={email}/login") //
+      Call<ResponseBody> method(@Path("email") String email, @Query("redirect") String redirect) {
+        return null;
+      }
+    }
+
+    Request request = buildRequest(Example.class, "me@test.com", "next:step");
+    assertThat(request.url().toString())
+        .isEqualTo("http://example.com/user:email=me@test.com/login?redirect=next%3Astep");
+  }
+
+  @Test
+  public void getWithPathParamBeforeColonInFirstSegment() {
+    class Example {
+      @GET("{type}:items") //
+      Call<ResponseBody> method(@Path("type") String type) {
+        return null;
+      }
+    }
+
+    Request request = buildRequest(Example.class, "user");
+    assertThat(request.url().toString()).isEqualTo("http://example.com/user:items");
+  }
+
+  @Test
+  public void colonInQueryAndFragmentDoesNotDisambiguatePath() {
+    class Example {
+      @GET("{resource}?filter=kind:value#section:details") //
+      Call<ResponseBody> method(@Path("resource") String resource) {
+        return null;
+      }
+    }
+
+    Request request = buildRequest(Example.class, "users");
+    assertThat(request.url().toString())
+        .isEqualTo("http://example.com/users?filter=kind:value#section:details");
   }
 
   @Test
@@ -1650,6 +1714,20 @@ public final class RequestFactoryTest {
     assertThat(request.headers().size()).isEqualTo(0);
     assertThat(request.url().toString()).isEqualTo("http://example2.com/foo/bar/");
     assertThat(request.body()).isNull();
+  }
+
+  @Test
+  public void getAbsoluteUrlWithColonAndPathParameter() {
+    class Example {
+      @GET("https://example2.com/user:email={email}/login") //
+      Call<ResponseBody> method(@Path("email") String email) {
+        return null;
+      }
+    }
+
+    Request request = buildRequest(Example.class, "me@test.com");
+    assertThat(request.url().toString())
+        .isEqualTo("https://example2.com/user:email=me@test.com/login");
   }
 
   @Test
@@ -3221,6 +3299,24 @@ public final class RequestFactoryTest {
   }
 
   @Test
+  public void malformedAnnotationOpaqueUrlThrows() {
+    class Example {
+      @GET("mailto:user@example.com")
+      Call<ResponseBody> get() {
+        return null;
+      }
+    }
+    try {
+      buildRequest(Example.class);
+      fail();
+    } catch (IllegalArgumentException e) {
+      assertThat(e)
+          .hasMessageThat()
+          .isEqualTo("Malformed URL. Base: http://example.com/, Relative: mailto:user@example.com");
+    }
+  }
+
+  @Test
   public void malformedParameterRelativeUrlThrows() {
     class Example {
       @GET
@@ -3235,6 +3331,24 @@ public final class RequestFactoryTest {
       assertThat(e)
           .hasMessageThat()
           .isEqualTo("Malformed URL. Base: http://example.com/, Relative: ftp://example.org");
+    }
+  }
+
+  @Test
+  public void malformedParameterOpaqueUrlThrows() {
+    class Example {
+      @GET
+      Call<ResponseBody> get(@Url String relativeUrl) {
+        return null;
+      }
+    }
+    try {
+      buildRequest(Example.class, "mailto:user@example.com");
+      fail();
+    } catch (IllegalArgumentException e) {
+      assertThat(e)
+          .hasMessageThat()
+          .isEqualTo("Malformed URL. Base: http://example.com/, Relative: mailto:user@example.com");
     }
   }
 

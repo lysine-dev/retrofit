@@ -72,6 +72,7 @@ final class RequestFactory {
   private final HttpUrl baseUrl;
   final String httpMethod;
   private final @Nullable String relativeUrl;
+  private final boolean hasPathParameters;
   private final @Nullable Headers headers;
   private final @Nullable MediaType contentType;
   private final boolean hasBody;
@@ -86,6 +87,8 @@ final class RequestFactory {
     baseUrl = builder.retrofit.baseUrl;
     httpMethod = builder.httpMethod;
     relativeUrl = builder.relativeUrl;
+    hasPathParameters =
+        builder.relativeUrlParamNames != null && !builder.relativeUrlParamNames.isEmpty();
     headers = builder.headers;
     contentType = builder.contentType;
     hasBody = builder.hasBody;
@@ -114,6 +117,7 @@ final class RequestFactory {
             httpMethod,
             baseUrl,
             relativeUrl,
+            hasPathParameters,
             headers,
             contentType,
             hasBody,

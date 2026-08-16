@@ -35,56 +35,6 @@ final class RequestBuilder {
   private static final String PATH_SEGMENT_ALWAYS_ENCODE_SET = " \"<>^`{}|\\?#";
 
   /**
-   * Encodes colons in the first path segment of a relative URL to prevent them from being
-   * misinterpreted as URL scheme separators. Per RFC 3986 section 4.2, a colon in the first segment
-   * of a relative-path reference can be mistaken for a scheme name.
-   *
-   * <p>This method only encodes colons in relative paths. If the URL looks like it has a scheme
-   * (e.g., starts with "http://", "https://"), it is returned unchanged.
-   */
-  private static String encodeColonInFirstPathSegment(String relativeUrl) {
-    if (relativeUrl.isEmpty() || relativeUrl.charAt(0) == '/') {
-      // Absolute path or empty, no encoding needed.
-      return relativeUrl;
-    }
-
-    int firstColon = relativeUrl.indexOf(':');
-    if (firstColon == -1) {
-      // No colon, nothing to encode.
-      return relativeUrl;
-    }
-
-    int firstSlash = relativeUrl.indexOf('/');
-    if (firstSlash != -1 && firstSlash < firstColon) {
-      // Colon is after the first slash, so it's not in the first segment.
-      return relativeUrl;
-    }
-
-    // Check if this looks like a URL scheme (scheme followed by "://").
-    // Per RFC 3986, a scheme is followed by ":" and authority starts with "//".
-    if (relativeUrl.length() > firstColon + 2
-        && relativeUrl.charAt(firstColon + 1) == '/'
-        && relativeUrl.charAt(firstColon + 2) == '/') {
-      // This looks like a scheme (e.g., "http://..."), don't encode.
-      return relativeUrl;
-    }
-
-    // Encode all colons in the first segment (before the first slash or end of string).
-    int endOfFirstSegment = firstSlash == -1 ? relativeUrl.length() : firstSlash;
-    StringBuilder encoded = new StringBuilder();
-    for (int i = 0; i < endOfFirstSegment; i++) {
-      char c = relativeUrl.charAt(i);
-      if (c == ':') {
-        encoded.append("%3A");
-      } else {
-        encoded.append(c);
-      }
-    }
-    encoded.append(relativeUrl.substring(endOfFirstSegment));
-    return encoded.toString();
-  }
-
-  /**
    * Matches strings that contain {@code .} or {@code ..} as a complete path segment. This also
    * matches dots in their percent-encoded form, {@code %2E}.
    *
@@ -102,6 +52,7 @@ final class RequestBuilder {
   private final String method;
 
   private final HttpUrl baseUrl;
+  private final boolean hasPathParameters;
   private @Nullable String relativeUrl;
   private @Nullable HttpUrl.Builder urlBuilder;
 
@@ -118,6 +69,7 @@ final class RequestBuilder {
       String method,
       HttpUrl baseUrl,
       @Nullable String relativeUrl,
+      boolean hasPathParameters,
       @Nullable Headers headers,
       @Nullable MediaType contentType,
       boolean hasBody,
@@ -125,6 +77,7 @@ final class RequestBuilder {
       boolean isMultipart) {
     this.method = method;
     this.baseUrl = baseUrl;
+    this.hasPathParameters = hasPathParameters;
     this.relativeUrl = relativeUrl;
     this.requestBuilder = new Request.Builder();
     this.contentType = contentType;
@@ -148,6 +101,40 @@ final class RequestBuilder {
 
   void setRelativeUrl(Object relativeUrl) {
     this.relativeUrl = relativeUrl.toString();
+  }
+
+  private String disambiguateRelativeUrl(String relativeUrl) {
+    if (!hasPathParameters || relativeUrl.isEmpty() || relativeUrl.charAt(0) == '/') {
+      return relativeUrl;
+    }
+
+    int firstColon = relativeUrl.indexOf(':');
+    if (firstColon == -1) {
+      return relativeUrl;
+    }
+
+    int firstSegmentEnd = relativeUrl.length();
+    int firstSlash = relativeUrl.indexOf('/');
+    if (firstSlash != -1) {
+      firstSegmentEnd = firstSlash;
+    }
+    int queryStart = relativeUrl.indexOf('?');
+    if (queryStart != -1 && queryStart < firstSegmentEnd) {
+      firstSegmentEnd = queryStart;
+    }
+    int fragmentStart = relativeUrl.indexOf('#');
+    if (fragmentStart != -1 && fragmentStart < firstSegmentEnd) {
+      firstSegmentEnd = fragmentStart;
+    }
+    if (firstColon >= firstSegmentEnd
+        || relativeUrl.regionMatches(true, 0, "http:", 0, 5)
+        || relativeUrl.regionMatches(true, 0, "https:", 0, 6)
+        || relativeUrl.startsWith("://", firstColon)) {
+      return relativeUrl;
+    }
+
+    // RFC 3986 section 4.2 uses a leading dot-segment to distinguish this from a URI scheme.
+    return "./" + relativeUrl;
   }
 
   void addHeader(String name, String value, boolean allowUnsafeNonAsciiValues) {
@@ -175,7 +162,9 @@ final class RequestBuilder {
     }
     String replacement = canonicalizeForPath(value, encoded);
     String newRelativeUrl = relativeUrl.replace("{" + name + "}", replacement);
-    if (PATH_TRAVERSAL.matcher(newRelativeUrl).matches()) {
+    String traversalCandidate =
+        relativeUrl.startsWith("./") ? newRelativeUrl.substring(2) : newRelativeUrl;
+    if (PATH_TRAVERSAL.matcher(traversalCandidate).matches()) {
       throw new IllegalArgumentException(
           "@Path parameters shouldn't perform path traversal ('.' or '..'): " + value);
     }
@@ -237,8 +226,7 @@ final class RequestBuilder {
   void addQueryParam(String name, @Nullable String value, boolean encoded) {
     if (relativeUrl != null) {
       // Do a one-time combination of the built relative URL and the base URL.
-      String encodedRelativeUrl = encodeColonInFirstPathSegment(relativeUrl);
-      urlBuilder = baseUrl.newBuilder(encodedRelativeUrl);
+      urlBuilder = baseUrl.newBuilder(disambiguateRelativeUrl(relativeUrl));
       if (urlBuilder == null) {
         throw new IllegalArgumentException(
             "Malformed URL. Base: " + baseUrl + ", Relative: " + relativeUrl);
@@ -290,8 +278,7 @@ final class RequestBuilder {
     } else {
       // No query parameters triggered builder creation, just combine the relative URL and base URL.
       //noinspection ConstantConditions Non-null if urlBuilder is null.
-      String encodedRelativeUrl = encodeColonInFirstPathSegment(relativeUrl);
-      url = baseUrl.resolve(encodedRelativeUrl);
+      url = baseUrl.resolve(disambiguateRelativeUrl(relativeUrl));
       if (url == null) {
         throw new IllegalArgumentException(
             "Malformed URL. Base: " + baseUrl + ", Relative: " + relativeUrl);
