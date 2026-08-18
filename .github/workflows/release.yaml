@@ -40,7 +40,7 @@ jobs:
         run: |
           ./gradlew copyWebsiteDocs
           cd website
-          npm install && npm run build -- --mode release
+          npm ci && npm run build -- --mode release
 
       - name: Deploy release website
         uses: JamesIves/github-pages-deploy-action@releases/v3
