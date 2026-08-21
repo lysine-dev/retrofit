@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 
 android {
-  compileSdk = 36
+  compileSdk = 37
   namespace 'retrofit2.android'
 
   defaultConfig {
