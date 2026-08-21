@@ -31,7 +31,7 @@ jobs:
         uses: ffurrer2/extract-release-notes@v3
 
       - name: Create release
-        uses: ncipollo/release-action@v1
+        uses: ncipollo/release-action@339a81892b84b4eeb0f6e744e4574d79d0d9b8dd # v1.21.0
         with:
           body: ${{ steps.release_notes.outputs.release_notes }}
           discussionCategory: Announcements
