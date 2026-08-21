@@ -141,7 +141,7 @@ jobs:
           path: website/dist
 
       - name: Deploy snapshot website
-        uses: JamesIves/github-pages-deploy-action@releases/v3
+        uses: JamesIves/github-pages-deploy-action@132898c54c57c7cc6b80eb3a89968de8fc283505 # releases/v3
         with:
           branch: site
           folder: website/dist
