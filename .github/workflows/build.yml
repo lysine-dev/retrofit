@@ -53,7 +53,7 @@ jobs:
       - uses: gradle/actions/setup-gradle@v5
 
       - name: Run Tests
-        uses: reactivecircus/android-emulator-runner@v2
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
         with:
           api-level: ${{ matrix.api-level }}
           script: ./gradlew connectedCheck
