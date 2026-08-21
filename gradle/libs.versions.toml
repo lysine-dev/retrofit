@@ -15,7 +15,7 @@
 [versions]
 kotlin = "2.4.10"
 okhttp = "5.5.0"
-protobuf = "3.25.8"
+protobuf = "3.25.9"
 robovm = "2.3.14"
 kotlinx-serialization = "1.11.0"
 autoService = "1.1.1"
@@ -23,9 +23,9 @@ incap = "1.0.0"
 jackson = "2.21.1"
 
 [libraries]
-androidPlugin = "com.android.tools.build:gradle:9.1.0"
+androidPlugin = "com.android.tools.build:gradle:9.3.1"
 robovmPlugin = { module = "com.mobidevelop.robovm:robovm-gradle-plugin", version.ref = "robovm" }
-dokkaPlugin = "org.jetbrains.dokka:dokka-gradle-plugin:2.1.0"
+dokkaPlugin = "org.jetbrains.dokka:dokka-gradle-plugin:2.2.0"
 gradleMavenPublishPlugin = "com.vanniktech:gradle-maven-publish-plugin:0.37.0"
 spotlessPlugin = "com.diffplug.spotless:spotless-plugin-gradle:8.3.0"
 
@@ -40,11 +40,11 @@ errorproneJavac = { module = "com.google.errorprone:javac", version = "9+181-r41
 animalSnifferPlugin = "ru.vyarus:gradle-animalsniffer-plugin:2.0.1"
 animalSnifferAnnotations = { module = "org.codehaus.mojo:animal-sniffer-annotations", version = "1.27" }
 
-protobufPlugin = "com.google.protobuf:protobuf-gradle-plugin:0.9.6"
+protobufPlugin = "com.google.protobuf:protobuf-gradle-plugin:0.10.0"
 protobuf = { module = "com.google.protobuf:protobuf-java", version.ref = "protobuf" }
 protoc = { module = "com.google.protobuf:protoc", version.ref = "protobuf" }
 
-kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version = "1.10.2" }
+kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version = "1.11.0" }
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 kotlinx-serialization-proto = { module = "org.jetbrains.kotlinx:kotlinx-serialization-protobuf", version.ref = "kotlinx-serialization" }
@@ -66,7 +66,7 @@ gson = { module = "com.google.code.gson:gson", version = "2.14.0" }
 jacksonDatabind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
 jacksonDataformatCbor = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-cbor", version.ref = "jackson" }
 jaxbApi = { module = "javax.xml.bind:jaxb-api", version = "2.3.1" }
-jaxbImpl = { module = "org.glassfish.jaxb:jaxb-runtime", version = "4.0.7" }
+jaxbImpl = { module = "org.glassfish.jaxb:jaxb-runtime", version = "4.0.9" }
 jaxb3Api = { module = "jakarta.xml.bind:jakarta.xml.bind-api", version = "3.0.1" }
 jaxb3Impl = { module = "com.sun.xml.bind:jaxb-impl", version = "3.0.2" }
 moshi = { module = "com.squareup.moshi:moshi", version = "1.15.2" }
@@ -75,6 +75,6 @@ wireRuntime = { module = "com.squareup.wire:wire-runtime", version = "5.5.1" }
 jsoup = { module = "org.jsoup:jsoup", version = "1.23.1" }
 robovm = { module = "com.mobidevelop.robovm:robovm-rt", version.ref = "robovm" }
 googleJavaFormat = "com.google.googlejavaformat:google-java-format:1.36.1"
-ktfmt = "com.facebook:ktfmt:0.61"
+ktfmt = "com.facebook:ktfmt:0.64"
 compileTesting = "com.google.testing.compile:compile-testing:0.23.0"
-testParameterInjector = "com.google.testparameterinjector:test-parameter-injector:1.21"
+testParameterInjector = "com.google.testparameterinjector:test-parameter-injector:1.22"
