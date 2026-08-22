@@ -1,15 +1,23 @@
 // @ts-check
 import { readFileSync } from 'fs';
 import { defineConfig, envField } from 'astro/config';
+import { parseArgs } from 'node:util';
+import { loadEnv } from 'vite';
 import starlight from '@astrojs/starlight';
 import starlightLinksValidator from 'starlight-links-validator';
 
 let retrofitProperties = readFileSync('../gradle.properties');
 let retrofitVersion = /VERSION_NAME=(.*?)\n/.exec(retrofitProperties)[1];
 
+const { values } = parseArgs({
+  options: { mode: { type: 'string', default: 'snapshot' } },
+  strict: false,
+});
+const { SITE, BASE_URL } = loadEnv(values.mode, process.cwd(), '');
+
 export default defineConfig({
-	site: 'https://lysine.dev',
-	base: '/retrofit/latest',
+	site: SITE || 'https://lysine.dev',
+	base: BASE_URL || '/retrofit/latest',
 	env: {
 		schema: {
 			VERSION: envField.string({ context: 'server', access: 'public', optional: true, default: retrofitVersion }),
