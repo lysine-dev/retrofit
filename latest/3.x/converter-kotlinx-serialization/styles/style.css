@@ -452,7 +452,3 @@ Just in case of possible performance degradation it excluding tabs with briefs o
     font-size: 20px;
     font-weight: 600;
 }
-
-div.runnablesample {
-    height: fit-content;
-}
