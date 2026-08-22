@@ -43,7 +43,7 @@ jobs:
           npm ci && npm run build -- --mode release
 
       - name: Deploy release website
-        uses: JamesIves/github-pages-deploy-action@132898c54c57c7cc6b80eb3a89968de8fc283505 # 3.7.1
+        uses: JamesIves/github-pages-deploy-action@fa24774553152dd7873cd16ebd8d959b010c5445 # v4.9.0
         with:
           branch: site
           folder: website/dist
