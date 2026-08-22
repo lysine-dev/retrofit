@@ -119,6 +119,9 @@ jobs:
     if: github.repository == 'lysine-dev/retrofit' && github.ref == 'refs/heads/trunk'
     needs:
       - final-status
+    permissions:
+      contents: write
+      actions: read
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -145,5 +148,5 @@ jobs:
         with:
           branch: site
           folder: website/dist
-          target_folder: latest
+          target-folder: latest
           clean: true
