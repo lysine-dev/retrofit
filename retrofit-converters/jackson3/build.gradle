@@ -3,7 +3,7 @@ apply plugin: 'com.vanniktech.maven.publish'
 
 dependencies {
   api projects.retrofit
-  api libs.jacksonDatabind
+  api libs.jackson3Databind
   compileOnly libs.findBugsAnnotations
 
   testImplementation libs.junit
@@ -11,11 +11,17 @@ dependencies {
   testImplementation libs.okhttp.mockwebserver
   testImplementation libs.testParameterInjector
   testImplementation libs.jacksonAnnotations
-  testImplementation libs.jacksonDataformatCbor
+  testImplementation libs.jackson3DataformatCbor
 }
 
 jar {
   manifest {
-    attributes  'Automatic-Module-Name': 'retrofit2.converter.jackson'
+    attributes  'Automatic-Module-Name': 'retrofit2.converter.jackson3'
+  }
+}
+
+java {
+  toolchain {
+    languageVersion = JavaLanguageVersion.of(17)
   }
 }
