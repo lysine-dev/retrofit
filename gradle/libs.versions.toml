@@ -16,7 +16,6 @@
 kotlin = "2.4.10"
 okhttp = "5.5.0"
 protobuf = "3.25.9"
-robovm = "2.3.26"
 kotlinx-serialization = "1.11.0"
 autoService = "1.1.1"
 incap = "1.0.0"
@@ -24,7 +23,6 @@ jackson = "2.22.2"
 
 [libraries]
 androidPlugin = "com.android.tools.build:gradle:9.3.2"
-robovmPlugin = { module = "com.mobidevelop.robovm:robovm-gradle-plugin", version.ref = "robovm" }
 dokkaPlugin = "org.jetbrains.dokka:dokka-gradle-plugin:2.2.0"
 gradleMavenPublishPlugin = "com.vanniktech:gradle-maven-publish-plugin:0.37.0"
 spotlessPlugin = "com.diffplug.spotless:spotless-plugin-gradle:8.10.0"
@@ -73,7 +71,6 @@ moshi = { module = "com.squareup.moshi:moshi", version = "1.15.2" }
 simpleXml = { module = "org.simpleframework:simple-xml", version = "2.7.1" }
 wireRuntime = { module = "com.squareup.wire:wire-runtime", version = "5.5.1" }
 jsoup = { module = "org.jsoup:jsoup", version = "1.23.2" }
-robovm = { module = "com.mobidevelop.robovm:robovm-rt", version.ref = "robovm" }
 googleJavaFormat = "com.google.googlejavaformat:google-java-format:1.36.1"
 ktfmt = "com.facebook:ktfmt:0.64"
 compileTesting = "com.google.testing.compile:compile-testing:0.23.0"
