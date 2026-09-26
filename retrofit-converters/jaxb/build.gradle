@@ -6,7 +6,7 @@ dependencies {
   api libs.jaxbApi
   compileOnly libs.findBugsAnnotations
 
-  testImplementation libs.jaxbImpl
+  testRuntimeOnly libs.jaxbImpl
   testImplementation libs.junit
   testImplementation libs.truth
   testImplementation libs.okhttp.mockwebserver
