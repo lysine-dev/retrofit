@@ -1,4 +1,5 @@
 import net.ltgt.gradle.errorprone.CheckSeverity
+import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 buildscript {
   dependencies {
@@ -22,11 +23,13 @@ buildscript {
 subprojects {
   tasks.withType(JavaCompile).configureEach { task ->
     task.options.encoding = 'UTF-8'
+    task.sourceCompatibility = '1.8'
+    task.targetCompatibility = '1.8'
   }
 
-  plugins.withType(JavaBasePlugin).configureEach {
-    java.toolchain {
-      languageVersion.set(JavaLanguageVersion.of(8))
+  tasks.withType(KotlinJvmCompile).configureEach { task ->
+    task.kotlinOptions {
+      jvmTarget = '1.8'
     }
   }
 

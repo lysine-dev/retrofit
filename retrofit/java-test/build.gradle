@@ -15,7 +15,8 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 // Create a test task for each supported JDK.
-(8..24).each { majorVersion ->
+// The latest JDK should be tested by the normal test task.
+[8, 11, 17, 25].each { majorVersion ->
   def jdkTest = tasks.register("testJdk$majorVersion", Test) {
     javaLauncher = javaToolchains.launcherFor {
       languageVersion = JavaLanguageVersion.of(majorVersion)
@@ -33,6 +34,3 @@ tasks.withType(JavaCompile).configureEach {
     dependsOn(jdkTest)
   }
 }
-
-// We don't need the built-in task which uses Gradle's JVM given the above variants.
-tasks.getByName('test').enabled = false
