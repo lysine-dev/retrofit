@@ -19,7 +19,7 @@ protobuf = "3.25.9"
 kotlinx-serialization = "1.11.0"
 autoService = "1.1.1"
 incap = "1.0.0"
-jackson = "2.22.2"
+jackson = "2.22.3"
 
 [libraries]
 androidPlugin = "com.android.tools.build:gradle:9.3.2"
