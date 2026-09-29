@@ -1,0 +1,1 @@
+typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html","k":"18"},{"p":"retrofit.converter.java8","l":"Java8OptionalConverterFactory"}];updateSearchResults();

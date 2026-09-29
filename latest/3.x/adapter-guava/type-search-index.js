@@ -1,0 +1,1 @@
+typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html","k":"18"},{"p":"retrofit2.adapter.guava","l":"GuavaCallAdapterFactory"},{"p":"retrofit2.adapter.guava","l":"HttpException","k":"13"}];updateSearchResults();

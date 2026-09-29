@@ -1,0 +1,1 @@
+typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html","k":"18"},{"p":"retrofit2.adapter.rxjava3","l":"HttpException","k":"13"},{"p":"retrofit2.adapter.rxjava3","l":"Result"},{"p":"retrofit2.adapter.rxjava3","l":"RxJava3CallAdapterFactory"}];updateSearchResults();

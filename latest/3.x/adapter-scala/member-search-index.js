@@ -1,0 +1,1 @@
+memberSearchIndex = [{"p":"retrofit2.adapter.scala","c":"ScalaCallAdapterFactory","l":"create()","k":"6"},{"p":"retrofit2.adapter.scala","c":"ScalaCallAdapterFactory","l":"get(Type, Annotation[], Retrofit)","u":"get(java.lang.reflect.Type,java.lang.annotation.Annotation[],retrofit2.Retrofit)"}];updateSearchResults();
