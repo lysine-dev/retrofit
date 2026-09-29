@@ -15,6 +15,9 @@
  */
 package retrofit2;
 
+import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.fail;
+
 import androidx.test.filters.SdkSuppress;
 import java.io.IOException;
 import okhttp3.mockwebserver.MockResponse;
@@ -24,9 +27,6 @@ import org.junit.Test;
 import retrofit2.helpers.ToStringConverterFactory;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
-
-import static com.google.common.truth.Truth.assertThat;
-import static org.junit.Assert.fail;
 
 public final class DefaultMethodsAndroidTest {
   @Rule public final MockWebServer server = new MockWebServer();
@@ -54,7 +54,9 @@ public final class DefaultMethodsAndroidTest {
       example.user();
       fail();
     } catch (UnsupportedOperationException e) {
-      assertThat(e).hasMessageThat().isEqualTo("Calling default methods on API 24 and 25 is not supported");
+      assertThat(e)
+          .hasMessageThat()
+          .isEqualTo("Calling default methods on API 24 and 25 is not supported");
     }
   }
 

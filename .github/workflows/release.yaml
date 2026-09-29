@@ -11,10 +11,12 @@ env:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-java@v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
         with:
           distribution: 'zulu'
           java-version-file: .github/workflows/.java-version
@@ -28,10 +30,10 @@ jobs:
 
       - name: Extract release notes
         id: release_notes
-        uses: ffurrer2/extract-release-notes@v3
+        uses: ffurrer2/extract-release-notes@273da39a24fb7db106a35526c8162815faffd31d # v3.1.0
 
       - name: Create release
-        uses: ncipollo/release-action@v1
+        uses: ncipollo/release-action@339a81892b84b4eeb0f6e744e4574d79d0d9b8dd # v1.21.0
         with:
           body: ${{ steps.release_notes.outputs.release_notes }}
           discussionCategory: Announcements
@@ -40,10 +42,10 @@ jobs:
         run: |
           ./gradlew copyWebsiteDocs
           cd website
-          npm install && npm run build -- --mode release
+          npm ci && npm run build -- --mode release
 
       - name: Deploy release website
-        uses: JamesIves/github-pages-deploy-action@releases/v3
+        uses: JamesIves/github-pages-deploy-action@fa24774553152dd7873cd16ebd8d959b010c5445 # v4.9.0
         with:
           branch: site
           folder: website/dist

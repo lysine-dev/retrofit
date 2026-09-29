@@ -29,19 +29,15 @@ import retrofit2.http.GET
 
 suspend fun main() {
   val server = MockWebServer()
-  val client = OkHttpClient.Builder()
-    .addInterceptor(
-      ConditionalLoggingInterceptor(
-        HttpLoggingInterceptor(::println).setLevel(
-          HttpLoggingInterceptor.Level.BODY,
-        ),
-      ),
-    )
-    .build()
-  val retrofit = Retrofit.Builder()
-    .baseUrl(server.url("/"))
-    .client(client)
-    .build()
+  val client =
+    OkHttpClient.Builder()
+      .addInterceptor(
+        ConditionalLoggingInterceptor(
+          HttpLoggingInterceptor(::println).setLevel(HttpLoggingInterceptor.Level.BODY)
+        )
+      )
+      .build()
+  val retrofit = Retrofit.Builder().baseUrl(server.url("/")).client(client).build()
   val exampleApi = retrofit.create<ExampleApi>()
 
   server.enqueue(MockResponse())
@@ -52,23 +48,19 @@ suspend fun main() {
 }
 
 private interface ExampleApi {
-  @GET("one")
-  suspend fun one(): ResponseBody
+  @GET("one") suspend fun one(): ResponseBody
 
-  @Log
-  @GET("two")
-  suspend fun two(): ResponseBody
+  @Log @GET("two") suspend fun two(): ResponseBody
 }
 
 /**
- * Retrofit service functions which are annotated with this class will have their HTTP calls
- * logged. You must add [ConditionalLoggingInterceptor] to your [OkHttpClient] for this to work.
+ * Retrofit service functions which are annotated with this class will have their HTTP calls logged.
+ * You must add [ConditionalLoggingInterceptor] to your [OkHttpClient] for this to work.
  */
 annotation class Log
 
-class ConditionalLoggingInterceptor(
-  private val loggingInterceptor: HttpLoggingInterceptor,
-) : Interceptor {
+class ConditionalLoggingInterceptor(private val loggingInterceptor: HttpLoggingInterceptor) :
+  Interceptor {
   override fun intercept(chain: Interceptor.Chain): Response {
     val request = chain.request()
     request.tag(Invocation::class.java)?.let { invocation ->

@@ -228,6 +228,7 @@ abstract class HttpServiceMethod<ResponseT, ReturnT> extends ServiceMethod<Retur
     }
 
     @Override
+    @SuppressWarnings("removal") // ThreadDeath still available on supported JDKs.
     protected Object adapt(Call<ResponseT> call, Object[] args) {
       call = callAdapter.adapt(call);
 

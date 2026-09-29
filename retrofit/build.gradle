@@ -15,10 +15,7 @@ def addMultiReleaseSourceSet(int version) {
   dependencies.add("java${version}Implementation", sourceSets.getByName("main").output)
 
   tasks.named("compileJava${version}Java", JavaCompile) {
-    javaCompiler = javaToolchains.compilerFor {
-      languageVersion = JavaLanguageVersion.of(version)
-      vendor = JvmVendorSpec.AZUL
-    }
+    options.release = version
   }
 
   tasks.named('jar', Jar) {

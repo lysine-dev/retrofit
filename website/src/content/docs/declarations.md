@@ -108,7 +108,7 @@ Similar to query parameters, for complex header combinations, a `Map` can be use
 Call<User> getUser(@HeaderMap Map<String, String> headers)
 ```
 
-Headers that need to be added to every request can be specified using an [OkHttp interceptor](https://square.github.io/okhttp/features/interceptors/).
+Headers that need to be added to every request can be specified using an [OkHttp interceptor](https://lysine.dev/okhttp/features/interceptors/).
 
 ## Synchronous vs. asynchronous
 

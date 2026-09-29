@@ -15,7 +15,12 @@ import okhttp3.ResponseBody
 
 internal sealed class Serializer {
   abstract fun <T> fromResponseBody(loader: DeserializationStrategy<T>, body: ResponseBody): T
-  abstract fun <T> toRequestBody(contentType: MediaType, saver: SerializationStrategy<T>, value: T): RequestBody
+
+  abstract fun <T> toRequestBody(
+    contentType: MediaType,
+    saver: SerializationStrategy<T>,
+    value: T,
+  ): RequestBody
 
   protected abstract val format: SerialFormat
 
@@ -27,7 +32,11 @@ internal sealed class Serializer {
       return format.decodeFromString(loader, string)
     }
 
-    override fun <T> toRequestBody(contentType: MediaType, saver: SerializationStrategy<T>, value: T): RequestBody {
+    override fun <T> toRequestBody(
+      contentType: MediaType,
+      saver: SerializationStrategy<T>,
+      value: T,
+    ): RequestBody {
       val string = format.encodeToString(saver, value)
       return string.toRequestBody(contentType)
     }
@@ -39,7 +48,11 @@ internal sealed class Serializer {
       return format.decodeFromByteArray(loader, bytes)
     }
 
-    override fun <T> toRequestBody(contentType: MediaType, saver: SerializationStrategy<T>, value: T): RequestBody {
+    override fun <T> toRequestBody(
+      contentType: MediaType,
+      saver: SerializationStrategy<T>,
+      value: T,
+    ): RequestBody {
       val bytes = format.encodeToByteArray(saver, value)
       return bytes.toRequestBody(contentType, 0, bytes.size)
     }

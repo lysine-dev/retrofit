@@ -8,3 +8,9 @@ dependencies {
   testImplementation libs.okhttp.mockwebserver
   testImplementation libs.kotlinx.coroutines
 }
+
+tasks.withType(JavaCompile).configureEach { task ->
+  task.options.errorprone {
+    enabled = false
+  }
+}

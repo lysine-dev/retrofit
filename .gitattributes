@@ -2,3 +2,6 @@
 
 *.bat text eol=crlf
 *.jar binary
+
+# Exclude old docs from being counted as code.
+website/** linguist-detectable=false

@@ -531,6 +531,7 @@ final class Utils {
 
   // https://github.com/ReactiveX/RxJava/blob/6a44e5d0543a48f1c378dc833a155f3f71333bc2/
   // src/main/java/io/reactivex/exceptions/Exceptions.java#L66
+  @SuppressWarnings("removal") // ThreadDeath still available on supported JDKs.
   static void throwIfFatal(Throwable t) {
     if (t instanceof VirtualMachineError) {
       throw (VirtualMachineError) t;

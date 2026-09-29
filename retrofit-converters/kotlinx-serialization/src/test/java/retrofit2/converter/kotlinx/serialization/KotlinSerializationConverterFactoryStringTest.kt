@@ -2,7 +2,6 @@ package retrofit2.converter.kotlinx.serialization
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -23,28 +22,32 @@ class KotlinSerializationConverterFactoryStringTest {
 
   interface Service {
     @GET("/") fun deserialize(): Call<User>
+
     @POST("/") fun serialize(@Body user: User): Call<Void?>
   }
 
-  @Serializable
-  data class User(val name: String)
+  @Serializable data class User(val name: String)
 
-  @Before fun setUp() {
+  @Before
+  fun setUp() {
     val contentType = "application/json; charset=utf-8".toMediaType()
-    val retrofit = Retrofit.Builder()
-      .baseUrl(server.url("/"))
-      .addConverterFactory(Json.asConverterFactory(contentType))
-      .build()
+    val retrofit =
+      Retrofit.Builder()
+        .baseUrl(server.url("/"))
+        .addConverterFactory(Json.asConverterFactory(contentType))
+        .build()
     service = retrofit.create(Service::class.java)
   }
 
-  @Test fun deserialize() {
+  @Test
+  fun deserialize() {
     server.enqueue(MockResponse().setBody("""{"name":"Bob"}"""))
     val user = service.deserialize().execute().body()!!
     assertEquals(User("Bob"), user)
   }
 
-  @Test fun serialize() {
+  @Test
+  fun serialize() {
     server.enqueue(MockResponse())
     service.serialize(User("Bob")).execute()
     val request = server.takeRequest()
