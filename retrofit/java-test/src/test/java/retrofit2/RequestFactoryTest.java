@@ -1298,6 +1298,26 @@ public final class RequestFactoryTest {
   }
 
   @Test
+  public void getWithPathQueryAndHeaders() {
+    class Example {
+      @GET("/users/{user}/items")
+      @Headers("X-Client: retrofit")
+      Call<ResponseBody> method(
+          @Path("user") String user,
+          @Query("page") int page,
+          @Header("Authorization") String authorization) {
+        return null;
+      }
+    }
+
+    Request request = buildRequest(Example.class, "ada", 3, "token");
+    assertThat(request.method()).isEqualTo("GET");
+    assertThat(request.url().toString()).isEqualTo("http://example.com/users/ada/items?page=3");
+    assertThat(request.header("X-Client")).isEqualTo("retrofit");
+    assertThat(request.header("Authorization")).isEqualTo("token");
+  }
+
+  @Test
   public void getWithQueryThenPathThrows() {
     class Example {
       @GET("/foo/bar/{ping}/") //

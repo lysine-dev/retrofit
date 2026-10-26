@@ -43,7 +43,7 @@ public final class RequestFactoryBuilderTest {
   }
 
   private static void expectParams(String path, String... expected) {
-    Set<String> calculated = RequestFactory.Builder.parsePathParameters(path);
+    Set<String> calculated = RequestFactoryBuilder.parsePathParameters(path);
     assertThat(calculated).containsExactlyElementsIn(expected);
   }
 }
