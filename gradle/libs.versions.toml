@@ -16,7 +16,7 @@
 kotlin = "2.4.21"
 okhttp = "5.5.1"
 protobuf = "4.36.2"
-kotlinx-serialization = "1.11.0"
+kotlinx-serialization = "1.12.0"
 autoService = "1.1.1"
 incap = "1.0.0"
 jackson = "2.22.4"
