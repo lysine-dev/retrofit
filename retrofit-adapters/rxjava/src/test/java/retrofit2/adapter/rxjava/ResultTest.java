@@ -16,7 +16,7 @@
 package retrofit2.adapter.rxjava;
 
 import static com.google.common.truth.Truth.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 
 import java.io.IOException;
 import org.junit.Test;
@@ -34,12 +34,8 @@ public final class ResultTest {
 
   @Test
   public void nullResponseThrows() {
-    try {
-      Result.response(null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessageThat().isEqualTo("response == null");
-    }
+    NullPointerException e = assertThrows(NullPointerException.class, () -> Result.response(null));
+    assertThat(e).hasMessageThat().isEqualTo("response == null");
   }
 
   @Test
@@ -53,11 +49,7 @@ public final class ResultTest {
 
   @Test
   public void nullErrorThrows() {
-    try {
-      Result.error(null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessageThat().isEqualTo("error == null");
-    }
+    NullPointerException e = assertThrows(NullPointerException.class, () -> Result.error(null));
+    assertThat(e).hasMessageThat().isEqualTo("error == null");
   }
 }
