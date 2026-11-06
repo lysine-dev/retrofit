@@ -283,10 +283,9 @@ public final class CallsTest {
   public void deferredThrowExecute() throws IOException {
     final IOException failure = new IOException("Hey");
     Call<Object> failing =
-        Calls.defer(
-            () -> {
-              throw failure;
-            });
+        Calls.defer(() -> {
+          throw failure;
+        });
     try {
       failing.execute();
       fail();
@@ -299,10 +298,9 @@ public final class CallsTest {
   public void deferredThrowEnqueue() {
     final IOException failure = new IOException("Hey");
     Call<Object> failing =
-        Calls.defer(
-            () -> {
-              throw failure;
-            });
+        Calls.defer(() -> {
+          throw failure;
+        });
     final AtomicReference<Throwable> failureRef = new AtomicReference<>();
     failing.enqueue(
         new Callback<Object>() {

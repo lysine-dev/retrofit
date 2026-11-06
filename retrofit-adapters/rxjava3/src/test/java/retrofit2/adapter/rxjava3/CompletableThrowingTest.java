@@ -63,12 +63,11 @@ public final class CompletableThrowingTest {
     server.enqueue(new MockResponse());
 
     final AtomicReference<Throwable> errorRef = new AtomicReference<>();
-    RxJavaPlugins.setErrorHandler(
-        throwable -> {
-          if (!errorRef.compareAndSet(null, throwable)) {
-            throw Exceptions.propagate(throwable); // Don't swallow secondary errors!
-          }
-        });
+    RxJavaPlugins.setErrorHandler(throwable -> {
+      if (!errorRef.compareAndSet(null, throwable)) {
+        throw Exceptions.propagate(throwable); // Don't swallow secondary errors!
+      }
+    });
 
     RecordingCompletableObserver observer = observerRule.create();
     final RuntimeException e = new RuntimeException();
@@ -90,12 +89,11 @@ public final class CompletableThrowingTest {
     server.enqueue(new MockResponse().setResponseCode(404));
 
     final AtomicReference<Throwable> pluginRef = new AtomicReference<>();
-    RxJavaPlugins.setErrorHandler(
-        throwable -> {
-          if (!pluginRef.compareAndSet(null, throwable)) {
-            throw Exceptions.propagate(throwable); // Don't swallow secondary errors!
-          }
-        });
+    RxJavaPlugins.setErrorHandler(throwable -> {
+      if (!pluginRef.compareAndSet(null, throwable)) {
+        throw Exceptions.propagate(throwable); // Don't swallow secondary errors!
+      }
+    });
 
     RecordingCompletableObserver observer = observerRule.create();
     final RuntimeException e = new RuntimeException();

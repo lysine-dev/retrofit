@@ -62,12 +62,11 @@ public final class AsyncTest {
   @Before
   public void setUp() {
     ExecutorService executorService =
-        Executors.newCachedThreadPool(
-            r -> {
-              Thread thread = new Thread(r);
-              thread.setUncaughtExceptionHandler((t, e) -> uncaughtExceptions.add(e));
-              return thread;
-            });
+        Executors.newCachedThreadPool(r -> {
+          Thread thread = new Thread(r);
+          thread.setUncaughtExceptionHandler((t, e) -> uncaughtExceptions.add(e));
+          return thread;
+        });
 
     OkHttpClient client =
         new OkHttpClient.Builder().dispatcher(new Dispatcher(executorService)).build();
@@ -113,13 +112,12 @@ public final class AsyncTest {
 
     final CountDownLatch latch = new CountDownLatch(1);
     final AtomicReference<Throwable> errorRef = new AtomicReference<>();
-    RxJavaPlugins.setErrorHandler(
-        throwable -> {
-          if (!errorRef.compareAndSet(null, throwable)) {
-            throw Exceptions.propagate(throwable); // Don't swallow secondary errors!
-          }
-          latch.countDown();
-        });
+    RxJavaPlugins.setErrorHandler(throwable -> {
+      if (!errorRef.compareAndSet(null, throwable)) {
+        throw Exceptions.propagate(throwable); // Don't swallow secondary errors!
+      }
+      latch.countDown();
+    });
 
     TestObserver<Void> observer = new TestObserver<>();
     final RuntimeException e = new RuntimeException();
@@ -146,13 +144,12 @@ public final class AsyncTest {
 
     final CountDownLatch latch = new CountDownLatch(1);
     final AtomicReference<Throwable> pluginRef = new AtomicReference<>();
-    RxJavaPlugins.setErrorHandler(
-        throwable -> {
-          if (!pluginRef.compareAndSet(null, throwable)) {
-            throw Exceptions.propagate(throwable); // Don't swallow secondary errors!
-          }
-          latch.countDown();
-        });
+    RxJavaPlugins.setErrorHandler(throwable -> {
+      if (!pluginRef.compareAndSet(null, throwable)) {
+        throw Exceptions.propagate(throwable); // Don't swallow secondary errors!
+      }
+      latch.countDown();
+    });
 
     TestObserver<Void> observer = new TestObserver<>();
     final RuntimeException e = new RuntimeException();

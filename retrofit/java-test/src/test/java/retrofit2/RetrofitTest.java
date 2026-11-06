@@ -1748,14 +1748,13 @@ public final class RetrofitTest {
 
     AtomicReference<RuntimeException> result1 = new AtomicReference<>();
     Thread thread1 =
-        new Thread(
-            () -> {
-              try {
-                service.method();
-              } catch (RuntimeException e) {
-                result1.set(e);
-              }
-            });
+        new Thread(() -> {
+          try {
+            service.method();
+          } catch (RuntimeException e) {
+            result1.set(e);
+          }
+        });
     thread1.start();
 
     // Wait for thread1 to enter the converter. This means it has inserted and taken a lock on
@@ -1765,15 +1764,14 @@ public final class RetrofitTest {
     CountDownLatch thread2Locked = new CountDownLatch(1);
     AtomicReference<RuntimeException> result2 = new AtomicReference<>();
     Thread thread2 =
-        new Thread(
-            () -> {
-              try {
-                thread2Locked.countDown();
-                service.method();
-              } catch (RuntimeException e) {
-                result2.set(e);
-              }
-            });
+        new Thread(() -> {
+          try {
+            thread2Locked.countDown();
+            service.method();
+          } catch (RuntimeException e) {
+            result2.set(e);
+          }
+        });
     thread2.start();
     thread2Locked.await();
 

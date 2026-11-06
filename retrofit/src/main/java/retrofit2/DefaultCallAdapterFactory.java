@@ -79,16 +79,15 @@ final class DefaultCallAdapterFactory extends CallAdapter.Factory {
           new Callback<T>() {
             @Override
             public void onResponse(Call<T> call, final Response<T> response) {
-              callbackExecutor.execute(
-                  () -> {
-                    if (delegate.isCanceled()) {
-                      // Emulate OkHttp's behavior of throwing/delivering an IOException on
-                      // cancellation.
-                      callback.onFailure(ExecutorCallbackCall.this, new IOException("Canceled"));
-                    } else {
-                      callback.onResponse(ExecutorCallbackCall.this, response);
-                    }
-                  });
+              callbackExecutor.execute(() -> {
+                if (delegate.isCanceled()) {
+                  // Emulate OkHttp's behavior of throwing/delivering an IOException on
+                  // cancellation.
+                  callback.onFailure(ExecutorCallbackCall.this, new IOException("Canceled"));
+                } else {
+                  callback.onResponse(ExecutorCallbackCall.this, response);
+                }
+              });
             }
 
             @Override

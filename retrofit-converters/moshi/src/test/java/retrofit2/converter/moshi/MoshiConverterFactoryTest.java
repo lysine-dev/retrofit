@@ -173,15 +173,14 @@ public final class MoshiConverterFactoryTest {
 
     Moshi moshi =
         new Moshi.Builder()
-            .add(
-                (type, annotations, moshi1) -> {
-                  for (Annotation annotation : annotations) {
-                    if (!annotation.annotationType().isAnnotationPresent(JsonQualifier.class)) {
-                      throw new AssertionError("Non-@JsonQualifier annotation: " + annotation);
-                    }
-                  }
-                  return null;
-                })
+            .add((type, annotations, moshi1) -> {
+              for (Annotation annotation : annotations) {
+                if (!annotation.annotationType().isAnnotationPresent(JsonQualifier.class)) {
+                  throw new AssertionError("Non-@JsonQualifier annotation: " + annotation);
+                }
+              }
+              return null;
+            })
             .add(new Adapters())
             .build();
 
