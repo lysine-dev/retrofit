@@ -337,21 +337,20 @@ public final class CallTest {
     // MWS has no way to trigger IOExceptions during the response body so use an interceptor.
     OkHttpClient client =
         new OkHttpClient.Builder() //
-            .addInterceptor(
-                chain -> {
-                  okhttp3.Response response = chain.proceed(chain.request());
-                  ResponseBody body = response.body();
-                  BufferedSource source =
-                      Okio.buffer(
-                          new ForwardingSource(body.source()) {
-                            @Override
-                            public long read(Buffer sink, long byteCount) throws IOException {
-                              throw new IOException("cause");
-                            }
-                          });
-                  body = ResponseBody.create(body.contentType(), body.contentLength(), source);
-                  return response.newBuilder().body(body).build();
-                })
+            .addInterceptor(chain -> {
+              okhttp3.Response response = chain.proceed(chain.request());
+              ResponseBody body = response.body();
+              BufferedSource source =
+                  Okio.buffer(
+                      new ForwardingSource(body.source()) {
+                        @Override
+                        public long read(Buffer sink, long byteCount) throws IOException {
+                          throw new IOException("cause");
+                        }
+                      });
+              body = ResponseBody.create(body.contentType(), body.contentLength(), source);
+              return response.newBuilder().body(body).build();
+            })
             .build();
 
     Retrofit retrofit =

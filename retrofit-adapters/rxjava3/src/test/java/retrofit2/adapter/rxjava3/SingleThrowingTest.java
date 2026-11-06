@@ -72,12 +72,11 @@ public final class SingleThrowingTest {
     server.enqueue(new MockResponse());
 
     final AtomicReference<Throwable> throwableRef = new AtomicReference<>();
-    RxJavaPlugins.setErrorHandler(
-        throwable -> {
-          if (!throwableRef.compareAndSet(null, throwable)) {
-            throw Exceptions.propagate(throwable);
-          }
-        });
+    RxJavaPlugins.setErrorHandler(throwable -> {
+      if (!throwableRef.compareAndSet(null, throwable)) {
+        throw Exceptions.propagate(throwable);
+      }
+    });
 
     RecordingSingleObserver<String> observer = subscriberRule.create();
     final RuntimeException e = new RuntimeException();
@@ -99,12 +98,11 @@ public final class SingleThrowingTest {
     server.enqueue(new MockResponse().setResponseCode(404));
 
     final AtomicReference<Throwable> throwableRef = new AtomicReference<>();
-    RxJavaPlugins.setErrorHandler(
-        throwable -> {
-          if (!throwableRef.compareAndSet(null, throwable)) {
-            throw Exceptions.propagate(throwable);
-          }
-        });
+    RxJavaPlugins.setErrorHandler(throwable -> {
+      if (!throwableRef.compareAndSet(null, throwable)) {
+        throw Exceptions.propagate(throwable);
+      }
+    });
 
     RecordingSingleObserver<String> observer = subscriberRule.create();
     final AtomicReference<Throwable> errorRef = new AtomicReference<>();
@@ -132,12 +130,11 @@ public final class SingleThrowingTest {
     server.enqueue(new MockResponse());
 
     final AtomicReference<Throwable> throwableRef = new AtomicReference<>();
-    RxJavaPlugins.setErrorHandler(
-        throwable -> {
-          if (!throwableRef.compareAndSet(null, throwable)) {
-            throw Exceptions.propagate(throwable);
-          }
-        });
+    RxJavaPlugins.setErrorHandler(throwable -> {
+      if (!throwableRef.compareAndSet(null, throwable)) {
+        throw Exceptions.propagate(throwable);
+      }
+    });
 
     RecordingSingleObserver<Response<String>> observer = subscriberRule.create();
     final RuntimeException e = new RuntimeException();
@@ -159,12 +156,11 @@ public final class SingleThrowingTest {
     server.enqueue(new MockResponse().setSocketPolicy(DISCONNECT_AFTER_REQUEST));
 
     final AtomicReference<Throwable> throwableRef = new AtomicReference<>();
-    RxJavaPlugins.setErrorHandler(
-        throwable -> {
-          if (!throwableRef.compareAndSet(null, throwable)) {
-            throw Exceptions.propagate(throwable);
-          }
-        });
+    RxJavaPlugins.setErrorHandler(throwable -> {
+      if (!throwableRef.compareAndSet(null, throwable)) {
+        throw Exceptions.propagate(throwable);
+      }
+    });
 
     RecordingSingleObserver<Response<String>> observer = subscriberRule.create();
     final AtomicReference<Throwable> errorRef = new AtomicReference<>();
@@ -192,12 +188,11 @@ public final class SingleThrowingTest {
     server.enqueue(new MockResponse());
 
     final AtomicReference<Throwable> throwableRef = new AtomicReference<>();
-    RxJavaPlugins.setErrorHandler(
-        throwable -> {
-          if (!throwableRef.compareAndSet(null, throwable)) {
-            throw Exceptions.propagate(throwable);
-          }
-        });
+    RxJavaPlugins.setErrorHandler(throwable -> {
+      if (!throwableRef.compareAndSet(null, throwable)) {
+        throw Exceptions.propagate(throwable);
+      }
+    });
 
     RecordingSingleObserver<Result<String>> observer = subscriberRule.create();
     final RuntimeException e = new RuntimeException();
@@ -220,12 +215,11 @@ public final class SingleThrowingTest {
     server.enqueue(new MockResponse());
 
     final AtomicReference<Throwable> throwableRef = new AtomicReference<>();
-    RxJavaPlugins.setErrorHandler(
-        throwable -> {
-          if (!throwableRef.compareAndSet(null, throwable)) {
-            throw Exceptions.propagate(throwable);
-          }
-        });
+    RxJavaPlugins.setErrorHandler(throwable -> {
+      if (!throwableRef.compareAndSet(null, throwable)) {
+        throw Exceptions.propagate(throwable);
+      }
+    });
 
     RecordingSingleObserver<Result<String>> observer = subscriberRule.create();
     final RuntimeException first = new RuntimeException();

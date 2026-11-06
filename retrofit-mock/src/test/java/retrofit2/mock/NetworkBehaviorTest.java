@@ -132,10 +132,9 @@ public final class NetworkBehaviorTest {
   @Test
   public void errorFactoryCannotThrow() {
     final RuntimeException broken = new RuntimeException("Broken");
-    behavior.setErrorFactory(
-        () -> {
-          throw broken;
-        });
+    behavior.setErrorFactory(() -> {
+      throw broken;
+    });
     try {
       behavior.createErrorResponse();
       fail();
