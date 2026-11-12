@@ -2,12 +2,16 @@
  * Copyright 2014-2025 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
  */
 const TOC_STATE_KEY_PREFIX = 'TOC_STATE::';
+const TOC_SCROLL_TOP_KEY = `${TOC_STATE_KEY_PREFIX}SCROLL_TOP`;
 const TOC_CONTAINER_ID = 'sideMenu';
 const TOC_SCROLL_CONTAINER_ID = 'leftColumn';
 const TOC_PART_CLASS = 'toc--part';
 const TOC_PART_HIDDEN_CLASS = 'toc--part_hidden';
+const TOC_ROW_CLASS = 'toc--row';
 const TOC_LINK_CLASS = 'toc--link';
 const TOC_SKIP_LINK_CLASS = 'toc--skip-link';
+const TOC_ACTIVE_ITEM_SELECTOR = '[data-active="true"]';
+const TOC_LINK_NAVIGATION_FLAG = `${TOC_STATE_KEY_PREFIX}TOC_LINK_NAVIGATION`;
 
 (function () {
   function displayToc() {
@@ -15,7 +19,7 @@ const TOC_SKIP_LINK_CLASS = 'toc--skip-link';
       .then((response) => response.text())
       .then((tocHTML) => {
         renderToc(tocHTML);
-        updateTocLinks();
+        initTocLinks();
         collapseTocParts();
         expandTocPathToCurrentPage();
         restoreTocExpandedState();
@@ -30,10 +34,14 @@ const TOC_SKIP_LINK_CLASS = 'toc--skip-link';
     }
   }
 
-  function updateTocLinks() {
+  function initTocLinks() {
     document.querySelectorAll(`.${TOC_LINK_CLASS}`).forEach((tocLink) => {
-      tocLink.setAttribute('href', `${pathToRoot}${tocLink.getAttribute('href')}`);
+      // TOC hrefs are root-relative; strip leading slash before prepending pathToRoot
+      const rootRelativeHref = (tocLink.getAttribute('href') ?? '').replace(/^\//, '');
+      const pageRelativeHref = `${pathToRoot}${rootRelativeHref}`;
+      tocLink.setAttribute('href', pageRelativeHref);
       tocLink.addEventListener('keydown', preventScrollBySpaceKey);
+      tocLink.addEventListener('click', setTocLinkNavigationFlag);
     });
     document.querySelectorAll(`.${TOC_SKIP_LINK_CLASS}`).forEach((skipLink) => {
       skipLink.setAttribute('href', `#main`);
@@ -120,17 +128,38 @@ const TOC_SKIP_LINK_CLASS = 'toc--skip-link';
     const container = document.getElementById(TOC_SCROLL_CONTAINER_ID);
     if (container) {
       const currentScrollTop = container.scrollTop;
-      safeSessionStorage.setItem(`${TOC_STATE_KEY_PREFIX}SCROLL_TOP`, `${currentScrollTop}`);
+      safeSessionStorage.setItem(TOC_SCROLL_TOP_KEY, `${currentScrollTop}`);
     }
+  }
+
+  function scrollActiveItemToCenter(container) {
+    const activePart = container.querySelector(TOC_ACTIVE_ITEM_SELECTOR);
+    if (!activePart) return;
+    const activeLink = activePart.querySelector(`.${TOC_ROW_CLASS} .${TOC_LINK_CLASS}`) ?? activePart;
+    activeLink.scrollIntoView({ block: 'center' });
+    saveTocScrollTop();
+  }
+
+  // Checks if the navigation to the current page was triggered by a click on a TOC link.
+  function consumeTocLinkNavigationFlag() {
+    const flag = safeSessionStorage.getItem(TOC_LINK_NAVIGATION_FLAG);
+    safeSessionStorage.removeItem(TOC_LINK_NAVIGATION_FLAG);
+    return !!flag;
+  }
+
+  function setTocLinkNavigationFlag() {
+    safeSessionStorage.setItem(TOC_LINK_NAVIGATION_FLAG, 'true');
   }
 
   function restoreTocScrollTop() {
     const container = document.getElementById(TOC_SCROLL_CONTAINER_ID);
-    if (container) {
-      const storedScrollTop = safeSessionStorage.getItem(`${TOC_STATE_KEY_PREFIX}SCROLL_TOP`);
-      if (storedScrollTop) {
-        container.scrollTop = Number(storedScrollTop);
-      }
+    if (!container) return;
+
+    const storedScrollTop = safeSessionStorage.getItem(TOC_SCROLL_TOP_KEY);
+    if (consumeTocLinkNavigationFlag() && storedScrollTop) {
+      container.scrollTop = Number(storedScrollTop);
+    } else {
+      scrollActiveItemToCenter(container);
     }
   }
 
@@ -182,7 +211,7 @@ const TOC_SKIP_LINK_CLASS = 'toc--skip-link';
 })();
 
 
-function handleTocButtonClick(event, navId) {
+window.handleTocButtonClick = function (event, navId) {
   const tocPart = document.getElementById(navId);
   if (!tocPart) {
     return;
