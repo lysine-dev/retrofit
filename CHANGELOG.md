@@ -10,6 +10,7 @@
  - Add `Invocation.annotationUrl` which returns the original URL from the method annotation.
  - Support `QUERY` method.
  - Add an optional `RetrofitService` marker interface to keep service interfaces available after R8 shrinking, even when they have no remaining HTTP methods.
+ - Add a converter for Jackson 3.
 
 **Changed**
 
