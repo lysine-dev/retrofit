@@ -23,6 +23,8 @@ import static org.junit.Assert.fail;
 import static retrofit2.TestingUtils.buildRequest;
 
 import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.math.BigInteger;
 import java.net.URI;
 import java.util.Arrays;
@@ -3413,6 +3415,74 @@ public final class RequestFactoryTest {
           .isEqualTo(
               "@Tag type java.util.List is duplicate of parameter 'one' and would always overwrite its value. (parameter 'two')\n"
                   + "    for method Example.method");
+    }
+  }
+
+  private static final class FailingRequestBodyConverterFactory extends Converter.Factory {
+    final IOException failure = new IOException("boom");
+
+    @Override
+    public Converter<?, RequestBody> requestBodyConverter(
+        Type type,
+        Annotation[] parameterAnnotations,
+        Annotation[] methodAnnotations,
+        Retrofit retrofit) {
+      return value -> {
+        throw failure;
+      };
+    }
+  }
+
+  @Test
+  public void partConversionFailureKeepsCauseAndHandlesPercentInValue() {
+    class Example {
+      @Multipart //
+      @POST("/foo/bar/") //
+      Call<ResponseBody> method(@Part("a") String a) {
+        return null;
+      }
+    }
+
+    FailingRequestBodyConverterFactory factory = new FailingRequestBodyConverterFactory();
+    Retrofit.Builder retrofitBuilder =
+        new Retrofit.Builder().baseUrl("http://example.com").addConverterFactory(factory);
+
+    try {
+      buildRequest(Example.class, retrofitBuilder, "100%d done");
+      fail();
+    } catch (IllegalArgumentException e) {
+      assertThat(e)
+          .hasMessageThat()
+          .isEqualTo(
+              "Unable to convert 100%d done to RequestBody (parameter 'a')\n"
+                  + "    for method Example.method");
+      assertThat(e).hasCauseThat().isSameInstanceAs(factory.failure);
+    }
+  }
+
+  @Test
+  public void bodyConversionFailureHandlesPercentInValue() {
+    class Example {
+      @POST("/foo/bar/") //
+      Call<ResponseBody> method(@Body String body) {
+        return null;
+      }
+    }
+
+    FailingRequestBodyConverterFactory factory = new FailingRequestBodyConverterFactory();
+    Retrofit.Builder retrofitBuilder =
+        new Retrofit.Builder().baseUrl("http://example.com").addConverterFactory(factory);
+
+    try {
+      buildRequest(Example.class, retrofitBuilder, "100%d done");
+      fail();
+    } catch (IllegalArgumentException e) {
+      assertThat(e)
+          .hasMessageThat()
+          .isEqualTo(
+              "Unable to convert 100%d done to RequestBody (parameter 'body')\n"
+                  + "    for method Example.method");
+      assertThat(e).hasCauseThat().isSameInstanceAs(factory.failure);
     }
   }
 
