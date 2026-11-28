@@ -355,7 +355,7 @@ abstract class ParameterHandler<T> {
       try {
         body = converter.convert(value);
       } catch (IOException e) {
-        throw Utils.parameterError(method, p, "Unable to convert " + value + " to RequestBody", e);
+        throw Utils.parameterError(method, e, p, "Unable to convert %s to RequestBody", value);
       }
       builder.addPart(headers, body);
     }
@@ -437,7 +437,7 @@ abstract class ParameterHandler<T> {
       try {
         body = converter.convert(value);
       } catch (IOException e) {
-        throw Utils.parameterError(method, e, p, "Unable to convert " + value + " to RequestBody");
+        throw Utils.parameterError(method, e, p, "Unable to convert %s to RequestBody", value);
       }
       builder.setBody(body);
     }
